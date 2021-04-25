@@ -6,6 +6,7 @@
 #include <GLM/gtc/type_ptr.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 #include <assimp/Importer.hpp>
+
 #include "Render/Shader.h"
 #include "Render/VertexBuffer.h"
 #include "Render/IndexBuffer.h"
@@ -14,6 +15,7 @@
 #include "Render/Renderer.h"
 #include "Render/Texture.h"
 #include "Material.h"
+#include "Model.h"
 
 void init(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -47,10 +49,12 @@ int main() {
     std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightMaps.glsl",
         "Resources/Shaders/Fragment/fLightMaps.glsl");
 
+    /*
     std::shared_ptr<Texture> boxTexture = std::make_shared<Texture>("Resources/Textures/box.png");
     std::shared_ptr<Texture> boxSpecular = std::make_shared<Texture>("Resources/Textures/box_specular.png");
 
     Material boxMaterial(boxTexture, boxSpecular, 64.0f);
+    */
 
     GLfloat vertices[] = {
         //position          //normals           //texture
@@ -109,21 +113,22 @@ int main() {
 
     unsigned int indicesCount = 3 * 2 * 6;
 
-    //cube
-    std::shared_ptr<VertexArray> cubeVAO = std::make_shared<VertexArray>();
+    //std::shared_ptr<VertexArray> cubeVAO = std::make_shared<VertexArray>();
+    
     BufferLayout layout = {
         {AttributeDataType::Float3, 3},
         {AttributeDataType::Float3, 3},
         {AttributeDataType::Float2, 2}
     };
 
+    /*
     std::shared_ptr<VertexBuffer> cubeVBO = std::make_shared<VertexBuffer>(vertices, verticesCount * sizeof(GLfloat), GL_STATIC_DRAW, layout);
     cubeVAO->AddVertexBuffer(cubeVBO);
 
     std::shared_ptr<IndexBuffer> cubeIBO = std::make_shared<IndexBuffer>(indices, indicesCount, GL_STATIC_DRAW);
     cubeVAO->SetIndexBuffer(cubeIBO);
 
-    glm::mat4 cubeModel = glm::mat4(1.0f);
+    */
 
     //light
     std::shared_ptr<VertexArray> lightVAO = std::make_shared<VertexArray>();
@@ -137,6 +142,9 @@ int main() {
     float deltaTime;
     float oldTimeSinceStart = glfwGetTime();
     float timeSinceStart = 0.0f;
+
+    Model backpack("Resources/Models/backpack/backpack.obj", false);
+    glm::mat4 backpackModel = glm::mat4(1.0f);
 
     while (!glfwWindowShouldClose(window)) {
         timeSinceStart = (float) glfwGetTime();
@@ -173,19 +181,20 @@ int main() {
         //cube
         lightShader->Use();
 
-        boxMaterial.SendMaterialToShader(lightShader, 0, 1);
+        //boxMaterial.SendMaterialToShader(lightShader, 0, 1);
 
         lightShader->SetUniform("uLight.position", lightSourcePosition);
         lightShader->SetUniform("uLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
         lightShader->SetUniform("uLight.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
         lightShader->SetUniform("uLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
+        backpackModel = glm::rotate(backpackModel, glm::radians(deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         lightShader->SetUniform("uView", view);
         lightShader->SetUniform("uProjection", projection);
-        lightShader->SetUniform("uModel", cubeModel);
+        lightShader->SetUniform("uModel", backpackModel);
         lightShader->SetUniform("uViewPosition", glm::vec3(0.0f, 0.0f, -5.0f));
 
-        Renderer::Instance().Draw(cubeVAO);
+        backpack.Draw(lightShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

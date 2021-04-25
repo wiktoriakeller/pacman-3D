@@ -1,8 +1,7 @@
 #include "BufferLayout.h"
 
-BufferLayoutElement::BufferLayoutElement(AttributeDataType type, GLint count, bool normalized,
-	bool usePredefinedLocation, GLuint location) :
-	Type(type), Count(count), Normalized(normalized), Offset(0), UsePredefinedLocation(usePredefinedLocation), Location(location) { };
+BufferLayoutElement::BufferLayoutElement(AttributeDataType type, GLint count, unsigned int offset, bool normalized) :
+	Type(type), Count(count), Normalized(normalized), Offset(offset) { };
 
 GLenum AttributeDataTypeToOpenGLType(AttributeDataType type) {
 	switch (type) 
@@ -44,22 +43,23 @@ BufferLayout::BufferLayout(const std::initializer_list<BufferLayoutElement>& ele
 
 void BufferLayout::EnableElements() const {
 	for (int i = 0; i < elements.size(); i++) {
-		glEnableVertexAttribArray(elements[i].UsePredefinedLocation ? elements[i].Location : i);
-		glVertexAttribPointer(elements[i].UsePredefinedLocation ? elements[i].Location : i, 
-			elements[i].Count, AttributeDataTypeToOpenGLType(elements[i].Type),
+		glEnableVertexAttribArray(i);
+		glVertexAttribPointer(i, elements[i].Count, AttributeDataTypeToOpenGLType(elements[i].Type),
 			elements[i].Normalized ? GL_TRUE : GL_FALSE, stride, (const void*) elements[i].Offset);
 	}
 }
 
 void BufferLayout::DisableElements() const {
 	for (int i = 0; i < elements.size(); i++) {
-		glDisableVertexAttribArray(elements[i].UsePredefinedLocation ? elements[i].Location : i);
+		glDisableVertexAttribArray(i);
 	}
 }
 
 void BufferLayout::CalculateStrideAndOffset() {
 	for (int i = 0; i < elements.size(); i++) {
-		elements[i].Offset = stride;
+		if(elements[i].Offset == 0)
+			elements[i].Offset = stride;
+		
 		stride += elements[i].Count * AttributeDataTypeSize(elements[i].Type);
 	}
 }

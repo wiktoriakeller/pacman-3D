@@ -1,8 +1,8 @@
 #version 330 core
 
 struct Material {
-	sampler2D diffuseTexture;
-	sampler2D specularTexture;
+	sampler2D diffuseMap1;
+	sampler2D specularMap1;
 	float shininess;
 };
 
@@ -25,19 +25,19 @@ out vec4 fragmentColor;
 
 void main() {
 	//ambient component
-	vec3 ambient = uLight.ambient * texture(uMaterial.diffuseTexture, texturePosition).rgb;
+	vec3 ambient = uLight.ambient * texture(uMaterial.diffuseMap1, texturePosition).rgb;
 	
 	//diffuse component
 	vec3 surfaceNormal = normalize(normal);
 	vec3 lightDirection = normalize(uLight.position - fragmentPosition);
 	float diffuseStrength = max(dot(surfaceNormal, lightDirection), 0.0);
-	vec3 diffuse = uLight.diffuse * diffuseStrength * texture(uMaterial.diffuseTexture, texturePosition).rgb;
+	vec3 diffuse = uLight.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, texturePosition).rgb;
 
 	//specular component
 	vec3 viewDirection = normalize(uViewPosition - fragmentPosition);
 	vec3 reflectedLightDirection = reflect(-lightDirection, surfaceNormal);
 	float specularStrength = pow(max(dot(viewDirection, reflectedLightDirection), 0.0), uMaterial.shininess);
-	vec3 specular = uLight.specular * specularStrength * texture(uMaterial.specularTexture, texturePosition).rgb;
+	vec3 specular = uLight.specular * specularStrength * texture(uMaterial.specularMap1, texturePosition).rgb;
 
 	//end color
 	vec3 result = ambient + diffuse + specular;

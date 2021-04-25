@@ -17,10 +17,8 @@ struct BufferLayoutElement
 	GLint Count;
 	unsigned int Offset;
 	bool Normalized;
-	bool UsePredefinedLocation;
-	GLuint Location;
 
-	BufferLayoutElement(AttributeDataType type, GLint count, bool normalized = false, bool usePredefinedLocation = false, GLuint location = 0);
+	BufferLayoutElement(AttributeDataType type, GLint count, unsigned int offset = 0, bool normalized = false);
 };
 
 class BufferLayout

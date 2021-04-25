@@ -2,20 +2,22 @@
 #include <stb_image.h>
 #include "Texture.h"
 
-Texture::Texture(const std::string& filePath) : textureID(0) {
-	LoadFromFile(filePath);
+Texture::Texture(const std::string& filePath, bool flip) : textureID(0) {
+	LoadFromFile(filePath, flip);
 }
 
 Texture::~Texture() {
 	glDeleteTextures(1, &textureID);
 }
 
-void Texture::LoadFromFile(const std::string& filePath) {
+void Texture::LoadFromFile(const std::string& filePath, bool flip) {
 	if (textureID)
 		glDeleteTextures(1, &textureID);
 
 	GLenum format = GL_RGBA;
-	stbi_set_flip_vertically_on_load(true);
+	
+	stbi_set_flip_vertically_on_load(flip);
+
 	unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &channelsNumber, 0);
 
 	if (data) {

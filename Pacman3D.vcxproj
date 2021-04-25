@@ -145,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Render\BufferLayout.cpp" />
@@ -156,6 +158,8 @@
     <ClCompile Include="src\Render\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Render\BufferLayout.h" />
     <ClInclude Include="src\Render\IndexBuffer.h" />

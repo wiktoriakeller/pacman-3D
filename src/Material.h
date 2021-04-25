@@ -2,23 +2,24 @@
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 #include <memory>
+#include <vector>
+
 #include "Render/Shader.h"
 #include "Render/Texture.h"
 
 class Material
 {
 public:
-	Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess);
-	Material(std::shared_ptr<Texture> diffuseTexture, std::shared_ptr<Texture> specularTexture, float shininess);
+	Material(std::vector<std::shared_ptr<Texture>> diffuseTextures, std::vector<std::shared_ptr<Texture>> specularTextures,
+		std::vector<std::shared_ptr<Texture>> normalTextures, std::vector<std::shared_ptr<Texture>> heightTextures, float shininess);
+
 	void SendMaterialToShader(std::shared_ptr<Shader> shader) const;
-	void SendMaterialToShader(std::shared_ptr<Shader> shader, GLint diffuseSlot, GLint specularSlot) const;
 
 private:
-	glm::vec3 ambientColor;
-	glm::vec3 diffuseColor;
-	glm::vec3 specularColor;
-	float shininess;
+	std::vector<std::shared_ptr<Texture>> diffuseMaps;
+	std::vector<std::shared_ptr<Texture>> specularMaps;
+	std::vector<std::shared_ptr<Texture>> normalMaps;
+	std::vector<std::shared_ptr<Texture>> heightMaps;
 
-	std::shared_ptr<Texture> diffuseTexture;
-	std::shared_ptr<Texture> specularTexture;
+    float shininess;
 };

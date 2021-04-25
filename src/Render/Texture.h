@@ -7,9 +7,9 @@
 class Texture
 {
 public:
-	Texture(const std::string& filePath);
+	Texture(const std::string& filePath, bool flip = true);
 	~Texture();
-	void LoadFromFile(const std::string& filePath);
+	void LoadFromFile(const std::string& filePath, bool flip);
 
 	void Bind(GLuint slot) const;
 	void Unbind() const;

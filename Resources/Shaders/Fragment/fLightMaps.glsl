@@ -13,13 +13,14 @@ struct Light {
 	vec3 specular;
 };
 
-in vec3 normal;
 in vec3 fragmentPosition;
+in vec3 normal;
 in vec2 texturePosition;
 
 uniform Material uMaterial;
 uniform Light uLight;
 uniform vec3 uViewPosition;
+uniform mat3 uNormalMatrix;
 
 out vec4 fragmentColor;
 
@@ -28,7 +29,7 @@ void main() {
 	vec3 ambient = uLight.ambient * texture(uMaterial.diffuseMap1, texturePosition).rgb;
 	
 	//diffuse component
-	vec3 surfaceNormal = normalize(normal);
+	vec3 surfaceNormal = normal;
 	vec3 lightDirection = normalize(uLight.position - fragmentPosition);
 	float diffuseStrength = max(dot(surfaceNormal, lightDirection), 0.0);
 	vec3 diffuse = uLight.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, texturePosition).rgb;

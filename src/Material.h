@@ -10,8 +10,8 @@
 class Material
 {
 public:
-	Material(std::vector<std::shared_ptr<Texture>> diffuseTextures, std::vector<std::shared_ptr<Texture>> specularTextures,
-		std::vector<std::shared_ptr<Texture>> normalTextures, std::vector<std::shared_ptr<Texture>> heightTextures, float shininess);
+	Material(std::vector<std::shared_ptr<Texture>>& diffuseTextures, std::vector<std::shared_ptr<Texture>>& specularTextures,
+		std::vector<std::shared_ptr<Texture>>& normalTextures, std::vector<std::shared_ptr<Texture>>& heightTextures, float shininess);
 
 	void SendMaterialToShader(std::shared_ptr<Shader> shader) const;
 
@@ -20,6 +20,5 @@ private:
 	std::vector<std::shared_ptr<Texture>> specularMaps;
 	std::vector<std::shared_ptr<Texture>> normalMaps;
 	std::vector<std::shared_ptr<Texture>> heightMaps;
-
     float shininess;
 };

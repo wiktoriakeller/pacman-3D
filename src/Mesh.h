@@ -26,12 +26,13 @@ struct Vertex
 class Mesh 
 {
 public:
-    Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Material material);
+    Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, unsigned int materialIndex);
     void Draw(std::shared_ptr<Shader> shader) const;
+    unsigned int GetMaterialIndex() const;
 
 private:
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::shared_ptr<VertexArray> VAO;
-    Material material;
+    unsigned int materialIndex;
 };

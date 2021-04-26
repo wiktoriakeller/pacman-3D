@@ -189,9 +189,12 @@ int main() {
         lightShader->SetUniform("uLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
         backpackModel = glm::rotate(backpackModel, glm::radians(deltaTime * 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(backpackModel)));
+
         lightShader->SetUniform("uView", view);
         lightShader->SetUniform("uProjection", projection);
         lightShader->SetUniform("uModel", backpackModel);
+        lightShader->SetUniform("uNormalMatrix", normalMatrix);
         lightShader->SetUniform("uViewPosition", glm::vec3(0.0f, 0.0f, -5.0f));
 
         backpack.Draw(lightShader);

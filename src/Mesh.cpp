@@ -7,10 +7,10 @@ Vertex::Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords, gl
 	Tangent(tangent),
 	Bitangent(bitangent) { }
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Material material) :
+Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, unsigned int materialIndex) :
 	vertices(vertices),
 	indices(indices),
-	material(material) {
+	materialIndex(materialIndex) {
 	VAO = std::make_shared<VertexArray>();
 
 	BufferLayout layout = {
@@ -22,13 +22,16 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Material m
 	};
 		
 	std::shared_ptr<VertexBuffer> VBO = std::make_shared<VertexBuffer>(&vertices[0], vertices.size() * sizeof(Vertex), GL_STATIC_DRAW, layout);
-	VAO->AddVertexBuffer(VBO);
+	VAO->AddVertexBuffer(std::move(VBO));
 
 	std::shared_ptr<IndexBuffer> IBO = std::make_shared<IndexBuffer>(&indices[0], indices.size(), GL_STATIC_DRAW);
-	VAO->SetIndexBuffer(IBO);
+	VAO->SetIndexBuffer(std::move(IBO));
 }
 
 void Mesh::Draw(std::shared_ptr<Shader> shader) const {
-	material.SendMaterialToShader(shader);
 	Renderer::Instance().Draw(VAO);
+}
+
+unsigned int Mesh::GetMaterialIndex() const {
+	return materialIndex;
 }

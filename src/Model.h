@@ -26,14 +26,18 @@ public:
     }
 
     void Draw(std::shared_ptr<Shader> shader) {
-        for (int i = 0; i < meshes.size(); i++)
+        for (int i = 0; i < meshes.size(); i++) {
+            materials[meshes[i].GetMaterialIndex()].SendMaterialToShader(shader);
             meshes[i].Draw(shader);
+        }
     }
 
 private:
-    std::vector<std::shared_ptr<Texture>> textures;
     std::vector<Mesh> meshes;
+    std::vector<std::shared_ptr<Texture>> textures;
+    std::vector<Material> materials;
     std::map<std::string, unsigned int> texturesDictionary;
+
     std::string directory;
     bool flip;
 
@@ -53,17 +57,20 @@ private:
 
     void ProcessScene(const aiScene* scene) {
         meshes.reserve(scene->mNumMeshes);
-        textures.reserve(scene->mNumMaterials);
+        textures.reserve(scene->mNumTextures);
+        materials.reserve(scene->mNumMaterials);
 
         for(int i = 0; i < scene->mNumMeshes; i++) {
             const aiMesh* mesh = scene->mMeshes[i];
-            CreateMeshAndMaterial(mesh, scene);
+            LoadMesh(mesh, scene);
         }
+
+        LoadMaterials(scene);
     }
 
-    void CreateMeshAndMaterial(const aiMesh* mesh, const aiScene* scene) {
+    void LoadMesh(const aiMesh* mesh, const aiScene* scene) {
         std::vector<Vertex> vertices;
-        std::vector<GLuint> indices;
+        std::vector<GLuint> indices(mesh->mNumFaces * 3);
 
         vertices.reserve(mesh->mNumVertices);
 
@@ -90,26 +97,32 @@ private:
         };
 
         aiFace face;
+        int index = 0;
+
         for (int i = 0; i < mesh->mNumFaces; i++) {
             face = mesh->mFaces[i];
 
             for (int j = 0; j < face.mNumIndices; j++)
-                indices.push_back(face.mIndices[j]);
+                indices[index++] = face.mIndices[j];
         }
 
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        meshes.push_back(Mesh(vertices, indices, mesh->mMaterialIndex));
+    }
 
-        float shininess;
-        material->Get(AI_MATKEY_SHININESS, shininess);
+    void LoadMaterials(const aiScene* scene) {
+        for (int i = 0; i < scene->mNumMaterials; i++) {
+            aiMaterial* material = scene->mMaterials[i];
 
-        //std::cout << material->GetTextureCount(aiTextureType_DIFFUSE) << "\n";
+            float shininess;
+            material->Get(AI_MATKEY_SHININESS, shininess);
 
-        std::vector<std::shared_ptr<Texture>> diffuseMaps = LoadTextures(material, aiTextureType_DIFFUSE);
-        std::vector<std::shared_ptr<Texture>> specularMaps = LoadTextures(material, aiTextureType_SPECULAR);
-        std::vector<std::shared_ptr<Texture>> normalMaps = LoadTextures(material, aiTextureType_NORMALS);
-        std::vector<std::shared_ptr<Texture>> heightMaps = LoadTextures(material, aiTextureType_HEIGHT);
+            std::vector<std::shared_ptr<Texture>> diffuseMaps = LoadTextures(material, aiTextureType_DIFFUSE);
+            std::vector<std::shared_ptr<Texture>> specularMaps = LoadTextures(material, aiTextureType_SPECULAR);
+            std::vector<std::shared_ptr<Texture>> normalMaps = LoadTextures(material, aiTextureType_NORMALS);
+            std::vector<std::shared_ptr<Texture>> heightMaps = LoadTextures(material, aiTextureType_HEIGHT);
 
-        meshes.push_back(Mesh(vertices, indices, Material(diffuseMaps, specularMaps, normalMaps, heightMaps, shininess)));
+            materials.emplace_back(Material(diffuseMaps, specularMaps, normalMaps, heightMaps, shininess));
+        }
     }
 
     std::vector<std::shared_ptr<Texture>> LoadTextures(aiMaterial* material, aiTextureType type) {

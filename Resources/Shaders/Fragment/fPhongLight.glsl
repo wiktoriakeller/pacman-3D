@@ -28,7 +28,7 @@ void main() {
 	vec3 ambient = uLight.ambient * uMaterial.ambientColor;
 	
 	//diffuse component
-	vec3 surfaceNormal = normalize(normal);
+	vec3 surfaceNormal = normal;
 	vec3 lightDirection = normalize(uLight.position - fragmentPosition);
 	float diffuseStrength = max(dot(surfaceNormal, lightDirection), 0.0);
 	vec3 diffuse = uLight.diffuse * (diffuseStrength * uMaterial.diffuseColor);

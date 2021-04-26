@@ -125,25 +125,28 @@ private:
     }
 
     std::vector<unsigned int>& LoadTextures(const aiMaterial* material, aiTextureType type) {
-        std::vector<unsigned int> maps(material->GetTextureCount(type));
+        std::vector<unsigned int> maps;
 
-        aiString texturePath;
-        std::string path;   
-        int index = 0;
+        if (material->GetTextureCount(type) > 0) {
+            maps.resize(material->GetTextureCount(type));
+            aiString texturePath;
+            std::string path;
+            int index = 0;
 
-        for (int i = 0; i < material->GetTextureCount(type); i++) {
-            material->GetTexture(type, i, &texturePath);
-            path = directory + "/" + texturePath.C_Str();
+            for (int i = 0; i < material->GetTextureCount(type); i++) {
+                material->GetTexture(type, i, &texturePath);
+                path = directory + "/" + texturePath.C_Str();
 
-            //texture has been already loaded
-            if (texturesDictionary.find(path) != texturesDictionary.end()) {
-                maps[index++] = texturesDictionary[path];
-            }
-            else {
-                std::cout << "new texture: " << path << "\n";
-                textures.emplace_back(std::make_shared<Texture>(path, flip));
-                maps[index++] = textures.size() - 1;
-                texturesDictionary[path] = textures.size() - 1;
+                //texture has been already loaded
+                if (texturesDictionary.find(path) != texturesDictionary.end()) {
+                    maps[index++] = texturesDictionary[path];
+                }
+                else {
+                    std::cout << "new texture: " << path << "\n";
+                    textures.emplace_back(std::make_shared<Texture>(path, flip));
+                    maps[index++] = textures.size() - 1;
+                    texturesDictionary[path] = textures.size() - 1;
+                }
             }
         }
 

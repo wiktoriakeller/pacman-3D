@@ -1,15 +1,14 @@
 #include "Mesh.h"
 
-Vertex::Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords, glm::vec3 tangent, glm::vec3 bitangent) :
+Vertex::Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& textureCoords,
+	const glm::vec3& tangent, const glm::vec3& bitangent) :
 	Position(position),
 	Normal(normal),
 	TextureCoords(textureCoords),
 	Tangent(tangent),
 	Bitangent(bitangent) { }
 
-Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, unsigned int materialIndex) :
-	vertices(vertices),
-	indices(indices),
+Mesh::Mesh(Vertex* vertex, const unsigned int& verticesSize, GLuint* index, const unsigned int& indicesSize, unsigned int materialIndex) :
 	materialIndex(materialIndex) {
 	VAO = std::make_shared<VertexArray>();
 
@@ -21,10 +20,10 @@ Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, unsigned
 		{AttributeDataType::Float3, 3}	//Bitangent;  
 	};
 		
-	std::shared_ptr<VertexBuffer> VBO = std::make_shared<VertexBuffer>(&vertices[0], vertices.size() * sizeof(Vertex), GL_STATIC_DRAW, layout);
+	std::shared_ptr<VertexBuffer> VBO = std::make_shared<VertexBuffer>(vertex, verticesSize * sizeof(Vertex), GL_STATIC_DRAW, layout);
 	VAO->AddVertexBuffer(std::move(VBO));
 
-	std::shared_ptr<IndexBuffer> IBO = std::make_shared<IndexBuffer>(&indices[0], indices.size(), GL_STATIC_DRAW);
+	std::shared_ptr<IndexBuffer> IBO = std::make_shared<IndexBuffer>(index, indicesSize, GL_STATIC_DRAW);
 	VAO->SetIndexBuffer(std::move(IBO));
 }
 

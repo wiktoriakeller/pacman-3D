@@ -10,7 +10,7 @@ VertexArray::~VertexArray() {
 
 void VertexArray::AddVertexBuffer(std::shared_ptr<VertexBuffer> vertexBuffer) {
 	Bind();
-	VBO.push_back(vertexBuffer);
+	VBO.emplace_back(std::move(vertexBuffer));
 	VBO[VBO.size() - 1]->Bind();
 	VBO[VBO.size() - 1]->EnableLayout();
 }

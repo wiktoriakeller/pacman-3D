@@ -73,7 +73,6 @@ private:
         std::vector<GLuint> indices(mesh->mNumFaces * 3);
 
         vertices.reserve(mesh->mNumVertices);
-
         const aiVector3D zero(0.0f, 0.0f, 0.0f);
 
         for (int i = 0; i < mesh->mNumVertices; i++) {
@@ -103,12 +102,14 @@ private:
                 indices[index++] = face.mIndices[j];
         }
 
-        meshes.emplace_back(Mesh(vertices, indices, mesh->mMaterialIndex));
+        meshes.emplace_back(Mesh(&vertices[0], vertices.size(), &indices[0], indices.size(), mesh->mMaterialIndex));
     }
 
     void LoadMaterials(const aiScene* scene) {
+        aiMaterial* material;
+        
         for (int i = 0; i < scene->mNumMaterials; i++) {
-            aiMaterial* material = scene->mMaterials[i];
+            material = scene->mMaterials[i];
 
             float shininess;
             material->Get(AI_MATKEY_SHININESS, shininess);
@@ -122,15 +123,16 @@ private:
         }
     }
 
-    std::vector<std::shared_ptr<Texture>> LoadTextures(aiMaterial* material, aiTextureType type) {
+    std::vector<std::shared_ptr<Texture>> LoadTextures(const aiMaterial* material, aiTextureType type) {
         std::vector<std::shared_ptr<Texture>> maps;
         maps.reserve(material->GetTextureCount(type));
 
-        for (int i = 0; i < material->GetTextureCount(type); i++) {
-            aiString texturePath;
-            material->GetTexture(type, i, &texturePath);
+        aiString texturePath;
+        std::string path;
 
-            std::string path = directory + "/" + texturePath.C_Str();
+        for (int i = 0; i < material->GetTextureCount(type); i++) {
+            material->GetTexture(type, i, &texturePath);
+            path = directory + "/" + texturePath.C_Str();
 
             //texture has been already loaded
             if (texturesDictionary.find(path) != texturesDictionary.end()) {

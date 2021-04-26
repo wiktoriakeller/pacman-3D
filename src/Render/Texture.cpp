@@ -21,7 +21,6 @@ void Texture::LoadFromFile(const std::string& filePath, bool flip) {
 	unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &channelsNumber, 0);
 
 	if (data) {
-
 		if (channelsNumber == 1) {
 			format = GL_RED;
 		}

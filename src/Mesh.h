@@ -19,20 +19,18 @@ struct Vertex
     glm::vec3 Tangent;
     glm::vec3 Bitangent;
 
-    Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords,
-        glm::vec3 tangent, glm::vec3 bitangent);
+    Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& textureCoords,
+        const glm::vec3& tangent, const glm::vec3& bitangent);
 };
 
 class Mesh 
 {
 public:
-    Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices, unsigned int materialIndex);
+    Mesh(Vertex* vertex, const unsigned int& verticesSize, GLuint* index, const unsigned int& indicesSize, unsigned int materialIndex);
     void Draw(std::shared_ptr<Shader> shader) const;
     unsigned int GetMaterialIndex() const;
 
 private:
-    std::vector<Vertex> vertices;
-    std::vector<GLuint> indices;
     std::shared_ptr<VertexArray> VAO;
     unsigned int materialIndex;
 };

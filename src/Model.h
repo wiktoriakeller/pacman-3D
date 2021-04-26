@@ -86,14 +86,11 @@ private:
             const aiVector3D* bitangent = mesh->HasTangentsAndBitangents() ?
                 &(mesh->mBitangents[i]) : &zero;
 
-            Vertex vertex(glm::vec3(position->x, position->y, position->z),
+            vertices.emplace_back(Vertex(glm::vec3(position->x, position->y, position->z),
                 glm::vec3(normal->x, normal->y, normal->z),
                 glm::vec2(textureCoords->x, textureCoords->y),
                 glm::vec3(tangent->x, tangent->y, tangent->z),
-                glm::vec3(bitangent->x, bitangent->y, bitangent->z));
-
-            vertices.push_back(vertex);
-
+                glm::vec3(bitangent->x, bitangent->y, bitangent->z)));
         };
 
         aiFace face;
@@ -106,7 +103,7 @@ private:
                 indices[index++] = face.mIndices[j];
         }
 
-        meshes.push_back(Mesh(vertices, indices, mesh->mMaterialIndex));
+        meshes.emplace_back(Mesh(vertices, indices, mesh->mMaterialIndex));
     }
 
     void LoadMaterials(const aiScene* scene) {
@@ -127,6 +124,8 @@ private:
 
     std::vector<std::shared_ptr<Texture>> LoadTextures(aiMaterial* material, aiTextureType type) {
         std::vector<std::shared_ptr<Texture>> maps;
+        maps.reserve(material->GetTextureCount(type));
+
         for (int i = 0; i < material->GetTextureCount(type); i++) {
             aiString texturePath;
             material->GetTexture(type, i, &texturePath);
@@ -135,12 +134,12 @@ private:
 
             //texture has been already loaded
             if (texturesDictionary.find(path) != texturesDictionary.end()) {
-                maps.push_back(textures[texturesDictionary[path]]);
+                maps.emplace_back(textures[texturesDictionary[path]]);
             }
             else {
-                std::cout << "new texture "<< path << "\n";
+                std::cout << "new texture: " << path << "\n";
                 textures.emplace_back(std::make_shared<Texture>(path, flip));
-                maps.push_back(textures[textures.size() - 1]);
+                maps.emplace_back(textures[textures.size() - 1]);
                 texturesDictionary[path] = textures.size() - 1;
             }
         }

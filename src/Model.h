@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "Mesh.h"
+#include "Material.h"
 #include "Render/Texture.h"
 #include "Render/Shader.h"
 
@@ -27,7 +28,7 @@ public:
 
     void Draw(std::shared_ptr<Shader> shader) {
         for (int i = 0; i < meshes.size(); i++) {
-            materials[meshes[i].GetMaterialIndex()].SendMaterialToShader(shader);
+            SendMaterialToShader(shader, meshes[i].GetMaterialIndex());
             meshes[i].Draw(shader);
         }
     }
@@ -114,21 +115,21 @@ private:
             float shininess;
             material->Get(AI_MATKEY_SHININESS, shininess);
 
-            std::vector<std::shared_ptr<Texture>> diffuseMaps = LoadTextures(material, aiTextureType_DIFFUSE);
-            std::vector<std::shared_ptr<Texture>> specularMaps = LoadTextures(material, aiTextureType_SPECULAR);
-            std::vector<std::shared_ptr<Texture>> normalMaps = LoadTextures(material, aiTextureType_NORMALS);
-            std::vector<std::shared_ptr<Texture>> heightMaps = LoadTextures(material, aiTextureType_HEIGHT);
+            const std::vector<unsigned int> diffuseMaps = LoadTextures(material, aiTextureType_DIFFUSE);
+            const std::vector<unsigned int> specularMaps = LoadTextures(material, aiTextureType_SPECULAR);
+            const std::vector<unsigned int> normalMaps = LoadTextures(material, aiTextureType_NORMALS);
+            const std::vector<unsigned int> heightMaps = LoadTextures(material, aiTextureType_HEIGHT);
 
             materials.emplace_back(Material(diffuseMaps, specularMaps, normalMaps, heightMaps, shininess));
         }
     }
 
-    std::vector<std::shared_ptr<Texture>> LoadTextures(const aiMaterial* material, aiTextureType type) {
-        std::vector<std::shared_ptr<Texture>> maps;
-        maps.reserve(material->GetTextureCount(type));
+    std::vector<unsigned int>& LoadTextures(const aiMaterial* material, aiTextureType type) {
+        std::vector<unsigned int> maps(material->GetTextureCount(type));
 
         aiString texturePath;
-        std::string path;
+        std::string path;   
+        int index = 0;
 
         for (int i = 0; i < material->GetTextureCount(type); i++) {
             material->GetTexture(type, i, &texturePath);
@@ -136,16 +137,41 @@ private:
 
             //texture has been already loaded
             if (texturesDictionary.find(path) != texturesDictionary.end()) {
-                maps.emplace_back(textures[texturesDictionary[path]]);
+                maps[index++] = texturesDictionary[path];
             }
             else {
                 std::cout << "new texture: " << path << "\n";
                 textures.emplace_back(std::make_shared<Texture>(path, flip));
-                maps.emplace_back(textures[textures.size() - 1]);
+                maps[index++] = textures.size() - 1;
                 texturesDictionary[path] = textures.size() - 1;
             }
         }
 
         return maps;
+    }
+
+    void SendMaterialToShader(const std::shared_ptr<Shader>& shader, const unsigned int& materialIndex) const {
+        int index = 0;
+
+        SendMaps(shader, materials[materialIndex].diffuseMaps, "uMaterial.diffuseMap", index);
+        SendMaps(shader, materials[materialIndex].specularMaps, "uMaterial.normalMap", index);
+        SendMaps(shader, materials[materialIndex].normalMaps, "uMaterial.specularMap", index);
+        SendMaps(shader, materials[materialIndex].heightMaps, "uMaterial.heightMap", index);
+
+        shader->SetUniform("uMaterial.shininess", materials[materialIndex].shininess);
+    }
+
+    void SendMaps(const std::shared_ptr<Shader>& shader, const std::vector<unsigned int>& maps, const std::string& name, int& index) const {
+        unsigned int textureIndex;
+
+        for (int i = 0; i < maps.size(); i++) {
+            shader->SetUniform(name + std::to_string(i + 1), index);
+
+            if (shader->GetUniformLocation(name + std::to_string(i + 1)) != -1) {
+                textureIndex = maps[i];
+                textures[textureIndex]->Bind(index);
+                index++;
+            }
+        }
     }
 };

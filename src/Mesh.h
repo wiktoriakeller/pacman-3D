@@ -9,19 +9,7 @@
 #include "Render/BufferLayout.h"
 #include "Render/Renderer.h"
 #include "Render/Shader.h"
-#include "Material.h"
-
-struct Vertex 
-{
-    glm::vec3 Position;
-    glm::vec3 Normal;
-    glm::vec2 TextureCoords;
-    glm::vec3 Tangent;
-    glm::vec3 Bitangent;
-
-    Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& textureCoords,
-        const glm::vec3& tangent, const glm::vec3& bitangent);
-};
+#include "Vertex.h"
 
 class Mesh 
 {

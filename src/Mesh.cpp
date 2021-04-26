@@ -1,13 +1,5 @@
 #include "Mesh.h"
 
-Vertex::Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& textureCoords,
-	const glm::vec3& tangent, const glm::vec3& bitangent) :
-	Position(position),
-	Normal(normal),
-	TextureCoords(textureCoords),
-	Tangent(tangent),
-	Bitangent(bitangent) { }
-
 Mesh::Mesh(Vertex* vertex, const unsigned int& verticesSize, GLuint* index, const unsigned int& indicesSize, unsigned int materialIndex) :
 	materialIndex(materialIndex) {
 	VAO = std::make_shared<VertexArray>();

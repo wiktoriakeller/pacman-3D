@@ -148,7 +148,6 @@
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Render\BufferLayout.cpp" />
     <ClCompile Include="src\Render\IndexBuffer.cpp" />
     <ClCompile Include="src\Render\Renderer.cpp" />
@@ -168,6 +167,7 @@
     <ClInclude Include="src\Render\Texture.h" />
     <ClInclude Include="src\Render\VertexArray.h" />
     <ClInclude Include="src\Render\VertexBuffer.h" />
+    <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Fragment\fBasic.glsl" />

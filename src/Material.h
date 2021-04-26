@@ -1,24 +1,21 @@
 #pragma once
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
-#include <memory>
 #include <vector>
 
-#include "Render/Shader.h"
-#include "Render/Texture.h"
-
-class Material
+struct Material
 {
-public:
-	Material(std::vector<std::shared_ptr<Texture>>& diffuseTextures, std::vector<std::shared_ptr<Texture>>& specularTextures,
-		std::vector<std::shared_ptr<Texture>>& normalTextures, std::vector<std::shared_ptr<Texture>>& heightTextures, float shininess);
+	Material(const std::vector<unsigned int>& diffuseTextures, const std::vector<unsigned int>& specularTextures,
+		const std::vector<unsigned int>& normalTextures, const std::vector<unsigned int>& heightTextures, float shininess) :
+		diffuseMaps(diffuseTextures),
+		specularMaps(specularTextures),
+		normalMaps(normalTextures),
+		heightMaps(heightTextures),
+		shininess(shininess) { }
 
-	void SendMaterialToShader(std::shared_ptr<Shader> shader) const;
-
-private:
-	std::vector<std::shared_ptr<Texture>> diffuseMaps;
-	std::vector<std::shared_ptr<Texture>> specularMaps;
-	std::vector<std::shared_ptr<Texture>> normalMaps;
-	std::vector<std::shared_ptr<Texture>> heightMaps;
+	std::vector<unsigned int> diffuseMaps;
+	std::vector<unsigned int> specularMaps;
+	std::vector<unsigned int> normalMaps;
+	std::vector<unsigned int> heightMaps;
     float shininess;
 };

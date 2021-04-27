@@ -29,14 +29,13 @@ void main() {
 	vec3 ambient = uLight.ambient * texture(uMaterial.diffuseMap1, texturePosition).rgb;
 	
 	//diffuse component
-	vec3 surfaceNormal = normal;
 	vec3 lightDirection = normalize(uLight.position - fragmentPosition);
-	float diffuseStrength = max(dot(surfaceNormal, lightDirection), 0.0);
+	float diffuseStrength = max(dot(normal, lightDirection), 0.0);
 	vec3 diffuse = uLight.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, texturePosition).rgb;
 
 	//specular component
 	vec3 viewDirection = normalize(uViewPosition - fragmentPosition);
-	vec3 reflectedLightDirection = reflect(-lightDirection, surfaceNormal);
+	vec3 reflectedLightDirection = reflect(-lightDirection, normal);
 	float specularStrength = pow(max(dot(viewDirection, reflectedLightDirection), 0.0), uMaterial.shininess);
 	vec3 specular = uLight.specular * specularStrength * texture(uMaterial.specularMap1, texturePosition).rgb;
 

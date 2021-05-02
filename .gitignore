@@ -364,3 +364,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Resources/levelGenerator.py
+/Resources/level.txt
+*.blend
+*.blend1
+*.mtl
+/Resources/Maze.h

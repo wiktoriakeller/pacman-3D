@@ -4,6 +4,7 @@
 struct Material {
 	sampler2D diffuseMap1;
 	sampler2D specularMap1;
+	sampler2D normalMap1;
 	float shininess;
 };
 
@@ -29,8 +30,8 @@ struct PointLight {
 };
 
 in vec3 fragmentPosition;
-in vec3 normal;
 in vec2 textureCoord;
+in mat3 TBN;
 
 uniform Material uMaterial;
 uniform DirectionalLight uDirLight;
@@ -40,23 +41,28 @@ uniform vec3 uViewPosition;
 out vec4 fragmentColor;
 
 //functions
-vec3 CalculateDirLight(vec3 viewDir);
-vec3 CalculatePointLight(PointLight light, vec3 viewDir);
+vec3 CalculateDirLight(vec3 viewDir, vec3 normal);
+vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal);
 
 void main() {
+	//calculating normal vector
+	vec3 normal = texture(uMaterial.normalMap1, textureCoord).rgb;
+	normal = normal * 2.0 - 1.0; //transforming from [0, 1] to [-1, 1]
+	normal = normalize(TBN * normal);
+
     vec3 result = vec3(0.0, 0.0, 0.0);
 	vec3 viewDir = normalize(uViewPosition - fragmentPosition);
-	
-	result += CalculateDirLight(viewDir);
+
+	result += CalculateDirLight(viewDir, normal);
 
 	for(int i = 0; i < NR_POINT_LIGHTS; i++) {
-		result += CalculatePointLight(uPointLights[i], viewDir);
+		result += CalculatePointLight(uPointLights[i], viewDir, normal);
 	}
 
 	fragmentColor = vec4(result, 1.0);
 }
 
-vec3 CalculateDirLight(vec3 viewDir) {
+vec3 CalculateDirLight(vec3 viewDir, vec3 normal) {
     vec3 lightDir = normalize(-uDirLight.direction);
 
 	//ambient component
@@ -74,7 +80,7 @@ vec3 CalculateDirLight(vec3 viewDir) {
 	return (ambient + diffuse + specular);
 }
 
-vec3 CalculatePointLight(PointLight light, vec3 viewDir) {
+vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal) {
     vec3 lightDir = normalize(light.position - fragmentPosition);
 
 	//ambient component

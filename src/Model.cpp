@@ -21,7 +21,8 @@ void Model::Draw(std::shared_ptr<Shader> shader) {
 void Model::LoadModel(const std::string& path) {
     Assimp::Importer importer;
 
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | 
+        aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::cout << "ASSIMP error " << importer.GetErrorString() << "\n";
@@ -116,5 +117,34 @@ void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type) 
                 texturesDictionary[path] = textures.size() - 1;
             }
         }
+    }
+}
+
+void Model::CalculateTangentAndBitangent(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices) {
+    for (int i = 0; i < indices.size(); i += 3) {
+        Vertex& v0 = vertices[indices[i]];
+        Vertex& v1 = vertices[indices[i + 1]];
+        Vertex& v2 = vertices[indices[i + 2]];
+
+        glm::vec3 edge1 = v1.Position - v0.Position;
+        glm::vec3 edge2 = v2.Position - v0.Position;
+
+        float deltaU1 = v1.TextureCoords.x - v0.TextureCoords.y; //u1 - u0
+        float deltaV1 = v1.TextureCoords.y - v0.TextureCoords.y; //v1 - v0
+        float deltaU2 = v2.TextureCoords.x - v0.TextureCoords.x; //u2 - u0
+        float deltaV2 = v2.TextureCoords.y - v0.TextureCoords.y; //v2 - v0
+
+        //inverse matrix factor
+        float f = 1.0f / (deltaU1 * deltaV2 - deltaU2 * deltaV1);
+
+        //calculating tangent vector
+        v0.Tangent.x = f * (deltaV2 * edge1.x - deltaV1 * edge2.x);
+        v1.Tangent.y = f * (deltaV2 * edge1.y - deltaV1 * edge2.y);
+        v1.Tangent.z = f * (deltaV2 * edge1.z - deltaV1 * edge2.z);
+
+        //calculating bitangent vector
+        v0.Bitangent.x = f * (-deltaU2 * edge1.x + deltaU1 * edge2.x);
+        v1.Bitangent.y = f * (-deltaU2 * edge1.y + deltaU1 * edge2.y);
+        v1.Bitangent.z = f * (-deltaU2 * edge1.z + deltaU1 * edge2.z);
     }
 }

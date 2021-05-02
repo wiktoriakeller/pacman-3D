@@ -38,4 +38,5 @@ private:
     void LoadMesh(const aiMesh* mesh, const aiScene* scene);
     void LoadMaterials(const aiScene* scene);
     void LoadTextures(const aiMaterial* material, const aiTextureType& type);
+    void CalculateTangentAndBitangent(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices);
 };

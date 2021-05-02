@@ -2,10 +2,9 @@
 
 unsigned int PointLight::numberOfPointLights = 0;
 
-PointLight::PointLight(glm::vec3 color, float intensity, glm::vec3 ambient, 
-	glm::vec3 diffuse, glm::vec3 specular, glm::vec3 position, 
+PointLight::PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, glm::vec3 position, 
 	float constant, float linear, float quadratic) :
-	Light(color, intensity, ambient, diffuse, specular), 
+	Light(ambient, diffuse, specular), 
 	position(position),
 	constant(constant),
 	linear(linear),

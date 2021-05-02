@@ -43,7 +43,7 @@ int main() {
     init(window);
     glewInit();
 
-    Renderer::Instance().SetClearColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.2f));
+    Renderer::Instance().SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 0.1f));
 
     std::shared_ptr<Shader> lightSourceShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightSource.glsl",
         "Resources/Shaders/Fragment/fLightSource.glsl");
@@ -122,20 +122,16 @@ int main() {
     lightVAO->AddVertexBuffer(std::move(lightVBO));
     lightVAO->SetIndexBuffer(std::move(lightIBO));
 
-    DirectionalLight dirLight(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, glm::vec3(0.2f, 0.2f, 0.2f),
-        glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.2f));
+    DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(-0.2f, -1.0f, -0.2f));
 
-    PointLight pointLight(glm::vec3(0.882f, 0.278f, 0.690f), 1.0f, glm::vec3(0.8f, 0.8f, 0.8f),
-        glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-2.5f, 0.0f, -1.0f),
-        1.0f, 0.14, 0.07);
+    PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.6f) * 0.1f, glm::vec3(0.2f, 0.2f, 0.6f), glm::vec3(0.2f, 0.2f, 0.6f), glm::vec3(-2.5f, 0.0f, -1.0f),
+        1.0f, 0.09, 0.032);
 
     float deltaTime;
     float oldTimeSinceStart = glfwGetTime();
     float timeSinceStart = 0.0f;
 
     Model backpack("Resources/Models/backpack/backpack.obj", false);
-    glm::vec3 pointLightPos = glm::vec3(0.0f);
-    float translationX = 0.3f;
 
     while (!glfwWindowShouldClose(window)) {
         timeSinceStart = (float) glfwGetTime();
@@ -155,24 +151,13 @@ int main() {
 
         //light
         glm::mat4 lightSourceModel = glm::mat4(1.0f);
-
-        if (pointLightPos.x >= 2.5f) {
-            pointLightPos.x = 2.5f;
-            translationX = -0.3f;
-        }
-        else if (pointLightPos.x <= -2.5f) {
-            pointLightPos.x = -2.5f;
-            translationX = 0.3f;
-        }
-
-        pointLightPos.x += translationX * deltaTime;
-
-        lightSourceModel = glm::translate(lightSourceModel, pointLightPos);
+        glm::vec3 position = glm::vec3(cos(glfwGetTime()) * 2.0f, 0.0f, sin(glfwGetTime()) * 2.0f);
+        lightSourceModel = glm::translate(lightSourceModel, position);
         lightSourceModel = glm::scale(lightSourceModel, glm::vec3(0.4f));
-        pointLight.SetPosition(pointLightPos);
+        pointLight.SetPosition(position);
 
         lightSourceShader->Use();
-        lightSourceShader->SetUniform("uLightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        lightSourceShader->SetUniform("uLightColor", glm::vec3(0.2f, 0.2f, 0.6f));
         lightSourceShader->SetUniform("uView", view);
         lightSourceShader->SetUniform("uProjection", projection);
         lightSourceShader->SetUniform("uModel", lightSourceModel);
@@ -182,8 +167,7 @@ int main() {
 
         //object
         glm::mat4 backpackModel = glm::mat4(1.0f);
-        backpackModel = glm::translate(backpackModel, glm::vec3(2.5f, 0.0f, 0.0f));
-        backpackModel = glm::rotate(backpackModel, glm::radians(-120.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        backpackModel = glm::rotate(backpackModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(backpackModel)));
         
         lightShader->Use();

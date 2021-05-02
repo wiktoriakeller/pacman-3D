@@ -122,9 +122,9 @@ int main() {
     lightVAO->AddVertexBuffer(std::move(lightVBO));
     lightVAO->SetIndexBuffer(std::move(lightIBO));
 
-    DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(-0.2f, -1.0f, -0.2f));
+    DirectionalLight dirLight(glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(-0.2f, -1.0f, -0.2f));
 
-    PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.6f) * 0.1f, glm::vec3(0.2f, 0.2f, 0.6f), glm::vec3(0.2f, 0.2f, 0.6f), glm::vec3(-2.5f, 0.0f, -1.0f),
+    PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.2f) * 0.1f, glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-2.5f, 0.0f, -1.0f),
         1.0f, 0.09, 0.032);
 
     float deltaTime;
@@ -157,7 +157,7 @@ int main() {
         pointLight.SetPosition(position);
 
         lightSourceShader->Use();
-        lightSourceShader->SetUniform("uLightColor", glm::vec3(0.2f, 0.2f, 0.6f));
+        lightSourceShader->SetUniform("uLightColor", pointLight.GetDiffuse());
         lightSourceShader->SetUniform("uView", view);
         lightSourceShader->SetUniform("uProjection", projection);
         lightSourceShader->SetUniform("uModel", lightSourceModel);

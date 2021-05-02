@@ -8,14 +8,13 @@
 class Light
 {
 public:
-	Light(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
-		ambient(ambient),
-		diffuse(diffuse),
-		specular(specular) {};
-
-	virtual ~Light() {};
-
+	Light(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+	virtual ~Light();
 	virtual void SendToShader(std::shared_ptr<Shader> shader) = 0;
+
+	glm::vec3 GetAmbient() const;
+	glm::vec3 GetDiffuse() const;
+	glm::vec3 GetSpecular() const;
 
 protected:
 	glm::vec3 ambient;

@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Light\Light.cpp" />
     <ClCompile Include="src\Light\PointLight.cpp" />
     <ClCompile Include="src\Light\DirectionalLight.cpp" />
     <ClCompile Include="src\Material.cpp" />

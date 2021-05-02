@@ -14,8 +14,9 @@ out vec3 normal;
 out vec2 textureCoord;
 
 void main() {
-	gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
-	fragmentPosition = vec3(uModel * vec4(aPosition, 1.0));
+	vec4 worldMatrix = uModel * vec4(aPosition, 1.0);
+	gl_Position = uProjection * uView * worldMatrix;
+	fragmentPosition = vec3(worldMatrix);
 	normal = normalize(uNormalMatrix * aNormal);
 	textureCoord = aTextureCoord;
 }

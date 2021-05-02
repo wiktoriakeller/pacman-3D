@@ -9,12 +9,12 @@ void Model::Draw(std::shared_ptr<Shader> shader) {
     unsigned int materialIndex;
 
     for (int i = 0; i < meshes.size(); i++) {
-        materialIndex = meshes[i].GetMaterialIndex();
+        materialIndex = meshes[i]->GetMaterialIndex();
         
         if (materialIndex >= 0)
-            SendMaterialToShader(shader, materialIndex);
+            materials[materialIndex]->SendMaterialToShader(shader, textures);
 
-        meshes[i].Draw(shader);
+        meshes[i]->Draw();
     }
 }
 
@@ -46,10 +46,9 @@ void Model::ProcessScene(const aiScene* scene) {
 }
 
 void Model::LoadMesh(const aiMesh* mesh, const aiScene* scene) {
-    std::vector<Vertex> vertices;
+    std::vector<Vertex> vertices(mesh->mNumVertices);
     std::vector<GLuint> indices(mesh->mNumFaces * 3);
 
-    vertices.reserve(mesh->mNumVertices);
     const aiVector3D zero(0.0f, 0.0f, 0.0f);
 
     for (int i = 0; i < mesh->mNumVertices; i++) {
@@ -62,11 +61,11 @@ void Model::LoadMesh(const aiMesh* mesh, const aiScene* scene) {
         const aiVector3D* bitangent = mesh->HasTangentsAndBitangents() ?
             &(mesh->mBitangents[i]) : &zero;
 
-        vertices.emplace_back(Vertex(glm::vec3(position->x, position->y, position->z),
-            glm::vec3(normal->x, normal->y, normal->z),
-            glm::vec2(textureCoords->x, textureCoords->y),
-            glm::vec3(tangent->x, tangent->y, tangent->z),
-            glm::vec3(bitangent->x, bitangent->y, bitangent->z)));
+        vertices[i].Position = glm::vec3(position->x, position->y, position->z);
+        vertices[i].Normal = glm::vec3(normal->x, normal->y, normal->z);
+        vertices[i].TextureCoords = glm::vec2(textureCoords->x, textureCoords->y);
+        vertices[i].Tangent = glm::vec3(tangent->x, tangent->y, tangent->z);
+        vertices[i].Bitangent = glm::vec3(bitangent->x, bitangent->y, bitangent->z);
     };
 
     aiFace face;
@@ -79,7 +78,7 @@ void Model::LoadMesh(const aiMesh* mesh, const aiScene* scene) {
             indices[index++] = face.mIndices[j];
     }
 
-    meshes.emplace_back(Mesh(&vertices[0], vertices.size(), &indices[0], indices.size(), mesh->mMaterialIndex));
+    meshes.emplace_back(std::make_unique<Mesh>(&vertices[0], vertices.size(), &indices[0], indices.size(), mesh->mMaterialIndex));
 }
 
 void Model::LoadMaterials(const aiScene* scene) {
@@ -91,64 +90,31 @@ void Model::LoadMaterials(const aiScene* scene) {
         float shininess;
         material->Get(AI_MATKEY_SHININESS, shininess);
 
-        std::vector<unsigned int> diffuseMaps(LoadTextures(material, aiTextureType_DIFFUSE));
-        std::vector<unsigned int> specularMaps(LoadTextures(material, aiTextureType_SPECULAR));
-        std::vector<unsigned int> normalMaps(LoadTextures(material, aiTextureType_HEIGHT));
-        std::vector<unsigned int> heightMaps(LoadTextures(material, aiTextureType_AMBIENT));
-
-        materials.emplace_back(Material(diffuseMaps, specularMaps, normalMaps, heightMaps, shininess));
+        materials.emplace_back(std::make_unique<Material>(Material(shininess)));
+        LoadTextures(material, aiTextureType_DIFFUSE);
+        LoadTextures(material, aiTextureType_SPECULAR);
+        LoadTextures(material, aiTextureType_HEIGHT);
     }
 }
 
-std::vector<unsigned int> Model::LoadTextures(const aiMaterial* material, const aiTextureType& type) {
-    std::vector<unsigned int> maps;
-
+void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type) {
     if (material->GetTextureCount(type) > 0) {
-        maps.resize(material->GetTextureCount(type));
         aiString texturePath;
         std::string path;
-        int index = 0;
 
         for (int i = 0; i < material->GetTextureCount(type); i++) {
             material->GetTexture(type, i, &texturePath);
             path = directory + "/" + texturePath.C_Str();
 
             if (texturesDictionary.find(path) != texturesDictionary.end()) {
-                maps[index++] = texturesDictionary[path];
+                materials[materials.size() - 1]->AddNewMapIndex(texturesDictionary[path], type);
             }
             else {
                 std::cout << "New texture: " << path << "\n";
-                textures.emplace_back(std::make_shared<Texture>(path, flip));
-                maps[index++] = textures.size() - 1;
+                textures.emplace_back(std::make_unique<Texture>(path, flip));
+                materials[materials.size() - 1]->AddNewMapIndex(textures.size() - 1, type);
                 texturesDictionary[path] = textures.size() - 1;
             }
-        }
-    }
-
-    return maps;
-}
-
-void Model::SendMaterialToShader(const std::shared_ptr<Shader>& shader, const unsigned int& materialIndex) const {
-    int index = 0;
-
-    SendMaps(shader, materials[materialIndex].diffuseMaps, "uMaterial.diffuseMap", index);
-    SendMaps(shader, materials[materialIndex].normalMaps, "uMaterial.normalMap", index);
-    SendMaps(shader, materials[materialIndex].specularMaps, "uMaterial.specularMap", index);
-    SendMaps(shader, materials[materialIndex].heightMaps, "uMaterial.heightMap", index);
-
-    shader->SetUniform("uMaterial.shininess", materials[materialIndex].shininess);
-}
-
-void Model::SendMaps(const std::shared_ptr<Shader>& shader, const std::vector<unsigned int>& maps, const std::string& name, int& index) const {
-    unsigned int textureIndex;
-
-    for (int i = 0; i < maps.size(); i++) {
-        shader->SetUniform(name + std::to_string(i + 1), index);
-
-        if (shader->GetUniformLocation(name + std::to_string(i + 1)) != -1) {
-            textureIndex = maps[i];
-            textures[textureIndex]->Bind(index);
-            index++;
         }
     }
 }

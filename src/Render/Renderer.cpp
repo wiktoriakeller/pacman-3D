@@ -8,7 +8,6 @@ void Renderer::Clear() const {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::Draw(std::shared_ptr<VertexArray> VAO) const {
-	VAO->Bind();
-	glDrawElements(GL_TRIANGLES, VAO->GetIBOCount(), GL_UNSIGNED_INT, nullptr);
+void Renderer::Draw(GLsizei IBOcount) const {
+	glDrawElements(GL_TRIANGLES, IBOcount, GL_UNSIGNED_INT, nullptr);
 }

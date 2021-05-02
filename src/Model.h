@@ -25,9 +25,9 @@ public:
     void Draw(std::shared_ptr<Shader> shader);
 
 private:
-    std::vector<Mesh> meshes;
-    std::vector<std::shared_ptr<Texture>> textures;
-    std::vector<Material> materials;
+    std::vector<std::unique_ptr<Mesh>> meshes;
+    std::vector<std::unique_ptr<Texture>> textures;
+    std::vector<std::unique_ptr<Material>> materials;
     std::map<std::string, unsigned int> texturesDictionary;
 
     std::string directory;
@@ -37,7 +37,5 @@ private:
     void ProcessScene(const aiScene* scene);
     void LoadMesh(const aiMesh* mesh, const aiScene* scene);
     void LoadMaterials(const aiScene* scene);
-    std::vector<unsigned int> LoadTextures(const aiMaterial* material, const aiTextureType& type);
-    void SendMaterialToShader(const std::shared_ptr<Shader>& shader, const unsigned int& materialIndex) const;
-    void SendMaps(const std::shared_ptr<Shader>& shader, const std::vector<unsigned int>& maps, const std::string& name, int& index) const;
+    void LoadTextures(const aiMaterial* material, const aiTextureType& type);
 };

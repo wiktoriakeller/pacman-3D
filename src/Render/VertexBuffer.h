@@ -5,7 +5,7 @@
 class VertexBuffer
 {
 public:
-	VertexBuffer(const void* data, GLsizeiptr size, GLenum usage, BufferLayout& bufferLayout);
+	VertexBuffer(const void* data, GLsizeiptr size, GLenum usage, const BufferLayout& bufferLayout);
 	~VertexBuffer();
 
 	VertexBuffer(const VertexBuffer&) = delete;

@@ -14,7 +14,7 @@ public:
 
 	void SetClearColor(const glm::vec4& color) const;
 	void Clear() const;
-	void Draw(std::shared_ptr<VertexArray> VAO) const;
+	void Draw(GLsizei IBOcount) const;
 
 private:
 	Renderer() {};

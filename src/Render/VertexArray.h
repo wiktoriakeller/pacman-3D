@@ -11,8 +11,8 @@ public:
 	VertexArray();
 	~VertexArray();
 
-	void AddVertexBuffer(std::shared_ptr<VertexBuffer> vertexBuffer);
-	void SetIndexBuffer(std::shared_ptr<IndexBuffer> elementBuffer);
+	void AddVertexBuffer(std::unique_ptr<VertexBuffer> vertexBuffer);
+	void SetIndexBuffer(std::unique_ptr<IndexBuffer> elementBuffer);
 	unsigned int GetIBOCount() const;
 	void Bind() const;
 	void Unbind() const;
@@ -20,6 +20,6 @@ public:
 private:
 	GLuint bufferID;
 
-	std::vector<std::shared_ptr<VertexBuffer>> VBO;
-	std::shared_ptr<IndexBuffer> IBO;
+	std::vector<std::unique_ptr<VertexBuffer>> VBO;
+	std::unique_ptr<IndexBuffer> IBO;
 };

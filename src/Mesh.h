@@ -14,11 +14,12 @@
 class Mesh 
 {
 public:
-    Mesh(Vertex* vertex, const unsigned int& verticesSize, GLuint* index, const unsigned int& indicesSize, unsigned int materialIndex);
-    void Draw(std::shared_ptr<Shader> shader) const;
+    Mesh(Vertex* vertex, unsigned int verticesSize, GLuint* index, unsigned int indicesSize, unsigned int materialIndex);
+    void Draw() const;
     unsigned int GetMaterialIndex() const;
+    void SetMaterialIndex(unsigned int newMaterialIndex);
 
 private:
-    std::shared_ptr<VertexArray> VAO;
+    std::unique_ptr<VertexArray> VAO;
     unsigned int materialIndex;
 };

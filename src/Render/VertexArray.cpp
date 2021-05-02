@@ -2,22 +2,23 @@
 
 VertexArray::VertexArray() {
 	glGenVertexArrays(1, &bufferID);
+	IBO.reset();
 }
 
 VertexArray::~VertexArray() {
 	glDeleteVertexArrays(1, &bufferID);
 }
 
-void VertexArray::AddVertexBuffer(std::shared_ptr<VertexBuffer> vertexBuffer) {
+void VertexArray::AddVertexBuffer(std::unique_ptr<VertexBuffer> vertexBuffer) {
 	Bind();
 	VBO.emplace_back(std::move(vertexBuffer));
 	VBO[VBO.size() - 1]->Bind();
 	VBO[VBO.size() - 1]->EnableLayout();
 }
 
-void VertexArray::SetIndexBuffer(std::shared_ptr<IndexBuffer> indexBuffer) {
+void VertexArray::SetIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer) {
 	Bind();
-	IBO = indexBuffer;
+	IBO = std::move(indexBuffer);
 	IBO->Bind();
 }
 

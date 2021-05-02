@@ -115,17 +115,17 @@ int main() {
     };
 
     //light source
-    std::shared_ptr<VertexBuffer> lightVBO = std::make_shared<VertexBuffer>(vertices, verticesCount * sizeof(GLfloat), GL_STATIC_DRAW, layout);
-    std::shared_ptr<IndexBuffer> lightIBO = std::make_shared<IndexBuffer>(indices, indicesCount, GL_STATIC_DRAW);
+    std::unique_ptr<VertexBuffer> lightVBO = std::make_unique<VertexBuffer>(vertices, verticesCount * sizeof(GLfloat), GL_STATIC_DRAW, layout);
+    std::unique_ptr<IndexBuffer> lightIBO = std::make_unique<IndexBuffer>(indices, indicesCount, GL_STATIC_DRAW);
 
-    std::shared_ptr<VertexArray> lightVAO = std::make_shared<VertexArray>();
-    lightVAO->AddVertexBuffer(lightVBO);
-    lightVAO->SetIndexBuffer(lightIBO);
+    std::unique_ptr<VertexArray> lightVAO = std::make_unique<VertexArray>();
+    lightVAO->AddVertexBuffer(std::move(lightVBO));
+    lightVAO->SetIndexBuffer(std::move(lightIBO));
 
-    DirectionalLight dirLight(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, glm::vec3(0.1f, 0.1f, 0.1f),
-        glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(-0.2f, -1.0f, -0.2f));
+    DirectionalLight dirLight(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, glm::vec3(0.2f, 0.2f, 0.2f),
+        glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.2f));
 
-    PointLight pointLight(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, glm::vec3(0.8f, 0.8f, 0.8f),
+    PointLight pointLight(glm::vec3(0.882f, 0.278f, 0.690f), 1.0f, glm::vec3(0.8f, 0.8f, 0.8f),
         glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-2.5f, 0.0f, -1.0f),
         1.0f, 0.14, 0.07);
 
@@ -177,7 +177,8 @@ int main() {
         lightSourceShader->SetUniform("uProjection", projection);
         lightSourceShader->SetUniform("uModel", lightSourceModel);
         
-        Renderer::Instance().Draw(lightVAO);
+        lightVAO->Bind();
+        Renderer::Instance().Draw(lightVAO->GetIBOCount());
 
         //object
         glm::mat4 backpackModel = glm::mat4(1.0f);

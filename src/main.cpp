@@ -28,6 +28,7 @@ int main() {
     if (!glfwInit())
         return -1;
     
+    glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -144,7 +145,7 @@ int main() {
         projection = glm::perspective(glm::radians(60.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
         glm::mat4 view = glm::lookAt(
-            glm::vec3(0.0f, 0.0f, -5.0f),
+            glm::vec3(0.0f, 0.0f, -3.5f),
             glm::vec3(0.0f, 0.0f, -1.0f),
             glm::vec3(0.0f, 1.0f, 0.0f)
         );
@@ -193,6 +194,8 @@ int main() {
 void init(GLFWwindow* window) {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {

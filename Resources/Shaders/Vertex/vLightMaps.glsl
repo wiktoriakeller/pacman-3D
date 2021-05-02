@@ -22,7 +22,8 @@ void main() {
 	textureCoord = aTextureCoord;
 
 	vec3 T = normalize(uNormalMatrix * aTangent);
-	vec3 B = normalize(uNormalMatrix * aBitangent);
 	vec3 N = normalize(uNormalMatrix * aNormal);
+	T = normalize(T - dot(T, N) * N);
+	vec3 B = cross(N, T);
 	TBN = mat3(T, B, N);
 }

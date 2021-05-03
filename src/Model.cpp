@@ -5,6 +5,24 @@ Model::Model(const std::string& path, bool flipTextures) {
     LoadModel(path);
 }
 
+Model::Model(const std::string& path, std::vector<std::unique_ptr<Material>> meshMaterials, bool flipTextures) {
+    flip = flipTextures;
+
+    for (int i = 0; i < meshMaterials.size(); i++) {
+        materials.emplace_back(std::move(meshMaterials[i]));
+
+        if (materials[i]->GetMeshIndex() != -1) {
+            meshToMaterial[materials[i]->GetMeshIndex()] = i;
+        }
+       
+        if (materials[i]->GetAssimpMaterialIndex() != -1) {
+            assimpMaterialIndexToMaterial[materials[i]->GetAssimpMaterialIndex()] = i;
+        }
+    }
+
+    LoadModel(path);
+}
+
 void Model::Draw(std::shared_ptr<Shader> shader) {
     unsigned int materialIndex;
 
@@ -12,9 +30,12 @@ void Model::Draw(std::shared_ptr<Shader> shader) {
         materialIndex = meshes[i]->GetMaterialIndex();
         
         if (materialIndex >= 0)
-            materials[materialIndex]->SendMaterialToShader(shader, textures);
+            materials[materialIndex]->SendToShader(shader, textures);
 
         meshes[i]->Draw();
+
+        if (materialIndex >= 0)
+            materials[materialIndex]->UnbindMaterial(textures);
     }
 }
 
@@ -40,13 +61,13 @@ void Model::ProcessScene(const aiScene* scene) {
 
     for (int i = 0; i < scene->mNumMeshes; i++) {
         const aiMesh* mesh = scene->mMeshes[i];
-        LoadMesh(mesh, scene);
+        LoadMesh(mesh, scene, i);
     }
 
     LoadMaterials(scene);
 }
 
-void Model::LoadMesh(const aiMesh* mesh, const aiScene* scene) {
+void Model::LoadMesh(const aiMesh* mesh, const aiScene* scene, int meshIndex) {
     std::vector<Vertex> vertices(mesh->mNumVertices);
     std::vector<GLuint> indices(mesh->mNumFaces * 3);
 
@@ -69,17 +90,29 @@ void Model::LoadMesh(const aiMesh* mesh, const aiScene* scene) {
         vertices[i].Bitangent = glm::vec3(bitangent->x, bitangent->y, bitangent->z);
     };
 
-    aiFace face;
-    int index = 0;
+    aiFace* face;
+    int g = 0;
 
     for (int i = 0; i < mesh->mNumFaces; i++) {
-        face = mesh->mFaces[i];
+        face = &(mesh->mFaces[i]);
 
-        for (int j = 0; j < face.mNumIndices; j++)
-            indices[index++] = face.mIndices[j];
+        for (int j = 0; j < face->mNumIndices; j++)
+            indices[g++] = face->mIndices[j];
     }
 
-    meshes.emplace_back(std::make_unique<Mesh>(&vertices[0], vertices.size(), &indices[0], indices.size(), mesh->mMaterialIndex));
+    unsigned int materialIndex = -1;
+
+    if (meshToMaterial.find(meshIndex) != meshToMaterial.end()) {
+        materialIndex = meshToMaterial[meshIndex];
+    }
+    else if (assimpMaterialIndexToMaterial.find(mesh->mMaterialIndex) != assimpMaterialIndexToMaterial.end()) {
+        materialIndex = assimpMaterialIndexToMaterial[mesh->mMaterialIndex];
+    }
+    else {
+        materialIndex = mesh->mMaterialIndex;
+    }
+
+    meshes.emplace_back(std::make_unique<Mesh>(&vertices[0], vertices.size(), &indices[0], indices.size(), materialIndex));
 }
 
 void Model::LoadMaterials(const aiScene* scene) {
@@ -91,14 +124,23 @@ void Model::LoadMaterials(const aiScene* scene) {
         float shininess;
         material->Get(AI_MATKEY_SHININESS, shininess);
 
-        materials.emplace_back(std::make_unique<Material>(Material(shininess)));
-        LoadTextures(material, aiTextureType_DIFFUSE);
-        LoadTextures(material, aiTextureType_SPECULAR);
-        LoadTextures(material, aiTextureType_HEIGHT);
+        int matIndex = -1;
+
+        if (assimpMaterialIndexToMaterial.find(i) != assimpMaterialIndexToMaterial.end()) {
+            matIndex = assimpMaterialIndexToMaterial[i];
+        }
+        else {
+            materials.emplace_back(std::make_unique<Material>(Material(shininess)));
+            matIndex = materials.size() - 1;
+        }
+        
+        LoadTextures(material, aiTextureType_DIFFUSE, matIndex);
+        LoadTextures(material, aiTextureType_SPECULAR, matIndex);
+        LoadTextures(material, aiTextureType_HEIGHT, matIndex);
     }
 }
 
-void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type) {
+void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type, int matIndex) {
     if (material->GetTextureCount(type) > 0) {
         aiString texturePath;
         std::string path;
@@ -108,12 +150,12 @@ void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type) 
             path = directory + "/" + texturePath.C_Str();
 
             if (texturesDictionary.find(path) != texturesDictionary.end()) {
-                materials[materials.size() - 1]->AddNewMapIndex(texturesDictionary[path], type);
+                materials[matIndex]->AddNewMapIndex(texturesDictionary[path], type);
             }
             else {
                 std::cout << "New texture: " << path << "\n";
                 textures.emplace_back(std::make_unique<Texture>(path, flip));
-                materials[materials.size() - 1]->AddNewMapIndex(textures.size() - 1, type);
+                materials[matIndex]->AddNewMapIndex(textures.size() - 1, type);
                 texturesDictionary[path] = textures.size() - 1;
             }
         }

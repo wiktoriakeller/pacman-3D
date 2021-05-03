@@ -1,7 +1,8 @@
 #include "Mesh.h"
 
-Mesh::Mesh(Vertex* vertex, unsigned int verticesSize, GLuint* index, unsigned int indicesSize, unsigned int materialIndex) :
-	materialIndex(materialIndex) {
+Mesh::Mesh(Vertex* vertex, unsigned int verticesSize, GLuint* index, unsigned int indicesSize, unsigned int matIndex) :
+	materialIndex(matIndex) {
+	
 	VAO = std::make_unique<VertexArray>();
 
 	BufferLayout layout = {
@@ -11,7 +12,7 @@ Mesh::Mesh(Vertex* vertex, unsigned int verticesSize, GLuint* index, unsigned in
 		{AttributeDataType::Float3, 3},	//Tangent;
 		{AttributeDataType::Float3, 3}	//Bitangent;  
 	};
-		
+
 	std::unique_ptr<VertexBuffer> VBO = std::make_unique<VertexBuffer>(vertex, verticesSize * sizeof(Vertex), GL_STATIC_DRAW, layout);
 	VAO->AddVertexBuffer(std::move(VBO));
 

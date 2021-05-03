@@ -11,10 +11,10 @@
 #include "Render/Shader.h"
 #include "Vertex.h"
 
-class Mesh 
+class Mesh
 {
 public:
-    Mesh(Vertex* vertex, unsigned int verticesSize, GLuint* index, unsigned int indicesSize, unsigned int materialIndex);
+    Mesh(Vertex* vertex, unsigned int verticesSize, GLuint* index, unsigned int indicesSize, unsigned int matIndex);
     void Draw() const;
     unsigned int GetMaterialIndex() const;
     void SetMaterialIndex(unsigned int newMaterialIndex);

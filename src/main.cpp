@@ -56,9 +56,9 @@ int main() {
     std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightMaps.glsl",
         "Resources/Shaders/Fragment/fLightMaps.glsl");
 
-    DirectionalLight dirLight(glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(-0.2f, -1.0f, -0.2f));
+    DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(-0.2f, -1.0f, -0.2f));
 
-    PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.2f) * 0.2f, glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-2.5f, 0.0f, -1.0f),
+    PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.2f) * 0.2f, glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-2.5f, 0.0f, -1.0f),
         1.0f, 0.09, 0.032);
 
     float deltaTime;
@@ -67,10 +67,13 @@ int main() {
 
     Model mazeModel("Resources/maze.obj", true);
     glm::mat4 mazeModelMatrix = glm::mat4(1.0f);
+
     Model playerModel("Resources/pacman.obj", true);
     glm::mat4 playerModelMatrix = glm::mat4(1.0f);
 
     Camera camera;
+    lightShader->Use();
+    dirLight.SendToShader(lightShader);
 
     while (!glfwWindowShouldClose(window)) {
         timeSinceStart = (float) glfwGetTime();
@@ -89,9 +92,8 @@ int main() {
         playerModelMatrix = glm::translate(playerModelMatrix, move * deltaTime);
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(playerModelMatrix)));
         
-        pointLight.SetPosition(playerModelMatrix[3]);
-        lightShader->Use();
-        dirLight.SendToShader(lightShader);
+        pointLight.SetPosition(glm::vec3(cos(glfwGetTime()) * 2.0f + playerModelMatrix[3][0], playerModelMatrix[3][1], 
+            sin(glfwGetTime()) * 2.0f + playerModelMatrix[3][2]));
         pointLight.SendToShader(lightShader);
 
         lightShader->SetUniform("uView", view);
@@ -108,7 +110,6 @@ int main() {
 
         mazeModel.Draw(lightShader);
 
-
         glfwSwapBuffers(window);
         glfwPollEvents();
         glfwSetKeyCallback(window, keyboardInput);
@@ -122,7 +123,6 @@ void init(GLFWwindow* window) {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
-
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -132,8 +132,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void keyboardInput(GLFWwindow* window, int key, int scancode, int action, int mods) {
     float speed = 4;
 
-
-        move = glm::vec3(0, 0, 0);
+    move = glm::vec3(0, 0, 0);
     if (action == GLFW_PRESS or action == GLFW_REPEAT) {
         switch (key) {
         case GLFW_KEY_ESCAPE:

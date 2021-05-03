@@ -14,6 +14,7 @@ uniform mat3 uNormalMatrix;
 out vec3 fragmentPosition;
 out vec2 textureCoord;
 out mat3 TBN;
+out vec3 surfaceNormal;
 
 void main() {
 	vec4 worldSpace = uModel * vec4(aPosition, 1.0);
@@ -26,4 +27,5 @@ void main() {
 	T = normalize(T - dot(T, N) * N);
 	vec3 B = cross(N, T);
 	TBN = mat3(T, B, N);
+	surfaceNormal = N;
 }

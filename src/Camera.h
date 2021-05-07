@@ -1,18 +1,16 @@
 #pragma once
 #include <GL/glew.h>
-#include <GLM/glm.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
+#include "Entity.h"
 
 class Camera
 {
-	glm::vec3 Position;
-	glm::vec3 Target;
-	glm::vec3 Up;
-	glm::vec3 PositionOffset;
-
 public:
-	glm::vec3 GetPosition();
-	Camera();
+	Camera(std::shared_ptr<Entity> target);
+	void SendToShader(std::shared_ptr<Shader> shader);
 	glm::mat4 GetView();
-	void LookAt(glm::mat4 model);
+
+private:
+	std::shared_ptr<Entity> targetObject;
+	glm::vec3 up;
+	glm::vec3 positionOffset;
 };

@@ -23,7 +23,6 @@
 void init(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void keyboardInput(GLFWwindow* window, int key, int scancode, int action, int mods);
-
 glm::vec3 move;
 
 int main() {
@@ -45,35 +44,36 @@ int main() {
     }
 
     glfwMakeContextCurrent(window);
-    init(window);
     glewInit();
 
+    init(window);
     Renderer::Instance().SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 0.1f));
-
-    std::shared_ptr<Shader> lightSourceShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightSource.glsl",
-        "Resources/Shaders/Fragment/fLightSource.glsl");
 
     std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightMaps.glsl",
         "Resources/Shaders/Fragment/fLightMaps.glsl");
 
     DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(-0.2f, -1.0f, -0.2f));
 
-    PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.2f) * 0.2f, glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-2.5f, 0.0f, -1.0f),
+    PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.2f) * 0.2f, glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
         1.0f, 0.09, 0.032);
+
+    std::shared_ptr<Model> mazeModel = std::make_shared<Model>("Resources/maze.obj", true);
+    std::shared_ptr<Model> pacmanModel = std::make_shared<Model>("Resources/pacman.obj", true);
+
+    std::shared_ptr<Entity> player = std::make_shared<Entity>(pacmanModel);
+    std::shared_ptr<Entity> maze = std::make_shared<Entity>(mazeModel);
+
+    Camera camera(player);
+    lightShader->Use();
+    dirLight.SendToShader(lightShader);
+
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(60.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    lightShader->SetUniform("uProjection", projection);
 
     float deltaTime;
     float oldTimeSinceStart = glfwGetTime();
     float timeSinceStart = 0.0f;
-
-    Model mazeModel("Resources/maze.obj", true);
-    glm::mat4 mazeModelMatrix = glm::mat4(1.0f);
-
-    Model playerModel("Resources/pacman.obj", true);
-    glm::mat4 playerModelMatrix = glm::mat4(1.0f);
-
-    Camera camera;
-    lightShader->Use();
-    dirLight.SendToShader(lightShader);
 
     while (!glfwWindowShouldClose(window)) {
         timeSinceStart = (float) glfwGetTime();
@@ -82,37 +82,19 @@ int main() {
 
         Renderer::Instance().Clear();
 
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(60.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        player->Translate(move * deltaTime);
+       
+        camera.SendToShader(lightShader);
 
-        camera.LookAt(playerModelMatrix);
-        glm::mat4 view = camera.GetView();
-
-        //object
-        playerModelMatrix = glm::translate(playerModelMatrix, move * deltaTime);
-        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(playerModelMatrix)));
-        
-        pointLight.SetPosition(glm::vec3(cos(glfwGetTime()) * 2.0f + playerModelMatrix[3][0], playerModelMatrix[3][1], 
-            sin(glfwGetTime()) * 2.0f + playerModelMatrix[3][2]));
+        pointLight.SetPosition(glm::vec3(cos(glfwGetTime()) * 2.0f + player->GetPosition().x, 
+            player->GetPosition().y, sin(glfwGetTime()) * 2.0f + player->GetPosition().z));
         pointLight.SendToShader(lightShader);
 
-        lightShader->SetUniform("uView", view);
-        lightShader->SetUniform("uProjection", projection);
-        lightShader->SetUniform("uModel", playerModelMatrix);
-        lightShader->SetUniform("uNormalMatrix", normalMatrix);
-        lightShader->SetUniform("uViewPosition", camera.GetPosition());
-
-        playerModel.Draw(lightShader);
-
-        normalMatrix = glm::transpose(glm::inverse(glm::mat3(mazeModelMatrix)));
-        lightShader->SetUniform("uModel", mazeModelMatrix);
-        lightShader->SetUniform("uNormalMatrix", normalMatrix);
-
-        mazeModel.Draw(lightShader);
+        player->Draw(lightShader);
+        maze->Draw(lightShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-        glfwSetKeyCallback(window, keyboardInput);
     }
 
     glfwTerminate();
@@ -120,9 +102,11 @@ int main() {
 }
 
 void init(GLFWwindow* window) {
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    glEnable(GL_FRAMEBUFFER_SRGB);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetKeyCallback(window, keyboardInput);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -131,8 +115,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 void keyboardInput(GLFWwindow* window, int key, int scancode, int action, int mods) {
     float speed = 4;
-
     move = glm::vec3(0, 0, 0);
+    
     if (action == GLFW_PRESS or action == GLFW_REPEAT) {
         switch (key) {
         case GLFW_KEY_ESCAPE:

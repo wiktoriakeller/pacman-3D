@@ -10,7 +10,7 @@ Mesh::Mesh(Vertex* vertex, unsigned int verticesSize, GLuint* index, unsigned in
 		{AttributeDataType::Float3, 3},	//Normal;
 		{AttributeDataType::Float2, 2},	//TexCoords;
 		{AttributeDataType::Float3, 3},	//Tangent;
-		{AttributeDataType::Float3, 3}	//Bitangent;  
+		{AttributeDataType::Float3, 3}	//Bitangent;
 	};
 
 	std::unique_ptr<VertexBuffer> VBO = std::make_unique<VertexBuffer>(vertex, verticesSize * sizeof(Vertex), GL_STATIC_DRAW, layout);

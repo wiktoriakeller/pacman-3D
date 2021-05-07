@@ -153,7 +153,7 @@ void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type, 
                 materials[matIndex]->AddNewMapIndex(texturesDictionary[path], type);
             }
             else {
-                std::cout << "New texture: " << path << "\n";
+                std::cout << "New texture loaded: " << path << "\n";
                 textures.emplace_back(std::make_unique<Texture>(path, flip));
                 materials[matIndex]->AddNewMapIndex(textures.size() - 1, type);
                 texturesDictionary[path] = textures.size() - 1;

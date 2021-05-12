@@ -3,7 +3,7 @@
 Camera::Camera(std::shared_ptr<Entity> target) {
 	targetObject = target;
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
-	positionOffset = glm::vec3(0.0f, 5.0f, -3.0f);
+	positionOffset = glm::vec3(0.0f, 10.0f, -3.0f);
 }
 
 glm::mat4 Camera::GetView() {

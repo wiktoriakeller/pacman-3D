@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Pacman.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Light\Light.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="src\Render\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Pacman.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Light\PointLight.h" />

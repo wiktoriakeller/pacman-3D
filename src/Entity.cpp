@@ -16,6 +16,12 @@ glm::vec3 Entity::GetPosition() {
 	return modelMatrix[3];
 }
 
+void Entity::SetPosition(glm::vec3 position) {
+	modelMatrix[3].x = position.x;
+	modelMatrix[3].y = position.y;
+	modelMatrix[3].z = position.z;
+}
+
 void Entity::Translate(glm::vec3 translation) {
 	modelMatrix = glm::translate(modelMatrix, translation);
 	UpdateNormalMatrix();

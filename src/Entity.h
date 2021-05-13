@@ -13,6 +13,7 @@ public:
 	Entity(std::shared_ptr<Model> objectModel);
 	void Draw(std::shared_ptr<Shader> shader);
 	glm::vec3 GetPosition();
+	void SetPosition(glm::vec3 position);
 	void Translate(glm::vec3 translation);
 	void Rotate(float angle, glm::vec3 direction);
 	void Scale(glm::vec3 factor);

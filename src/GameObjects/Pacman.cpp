@@ -1,9 +1,7 @@
 #include "Pacman.h"
 
-#include <iostream>
-
-Pacman::Pacman(std::shared_ptr<Model> model) : Entity(model) {
-	speed = 4.0;
+Pacman::Pacman(std::unique_ptr<Model> model) : Entity(std::move(model)) {
+	speed = 5.0;
 	nextX = 17;
 	nextZ = 17;
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -72,19 +70,18 @@ void Pacman::ReverseDirection() {
 }
 
 void Pacman::SnapToGrid() {
-	float snapDistance =  0.1;
 	glm::vec3 nextPosition = World::Instance().GetPosition(nextX, nextZ);
 	glm::vec3 currentPosition = GetPosition();
 
 	if(currentDirection.x != 0) {
-		if(abs(nextPosition.x - currentPosition.x) < snapDistance) {
+		if(abs(nextPosition.x - currentPosition.x) < SNAP_DISTANCE) {
 			SetPosition(nextPosition);
 			EvaluateMove();
 		}
 	}
 	
 	if(currentDirection.z != 0) {
-		if(abs(nextPosition.z - currentPosition.z) < snapDistance) {
+		if(abs(nextPosition.z - currentPosition.z) < SNAP_DISTANCE) {
 			SetPosition(nextPosition);
 			EvaluateMove();
 		}
@@ -108,6 +105,16 @@ void Pacman::EvaluateMove() {
 	else if (CanMakeMove(nextX + currentDirection.x, nextZ + currentDirection.z)) {
 		nextX += currentDirection.x;
 		nextZ += currentDirection.z;
+	}
+	else if (!CanMakeMove(nextX + currentDirection.x, nextZ + currentDirection.z) && World::Instance().GetMapElement(nextX, nextZ) == MapElement::Tunnel) {
+		if (nextX == World::Instance().TUNNEL_LEFT_POS.x) {
+			SetPosition(World::Instance().GetPosition(World::Instance().TUNNEL_RIGHT_POS.x, World::Instance().TUNNEL_RIGHT_POS.y));
+			nextX = World::Instance().TUNNEL_RIGHT_POS.x + 1;
+		}
+		else {
+			SetPosition(World::Instance().GetPosition(World::Instance().TUNNEL_LEFT_POS.x, World::Instance().TUNNEL_LEFT_POS.y));
+			nextX = World::Instance().TUNNEL_LEFT_POS.x - 1;
+		}
 	}
 	else {
 		currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);

@@ -7,6 +7,7 @@ MapElement World::NumberToMapElement(int number) {
     case 1: return MapElement::Wall;
     case 2: return MapElement::Point;
     case 3: return MapElement::Power;
+    case 4: return MapElement::Tunnel;
     }
 }
 

@@ -12,8 +12,10 @@
 #include "GameObjects/Pacman.h"
 #include "Camera.h"
 
+const int WINDOW_WIDTH = 800;
+const int WINDOW_HEIGHT = 600;
+
 void init(GLFWwindow* window);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main() {
     GLFWwindow* window;
@@ -25,8 +27,9 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    window = glfwCreateWindow(800, 600, "Pacman", nullptr, nullptr);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Pacman", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();
@@ -37,25 +40,21 @@ int main() {
     glewInit();
     init(window);
 
-    Renderer::Instance().SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 0.1f));
-
     std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightMaps.glsl",
         "Resources/Shaders/Fragment/fLightMaps.glsl");
 
     DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(-0.2f, -1.0f, -0.2f));
-
     PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.2f) * 0.2f, glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
         1.0f, 0.09, 0.032);
 
-    std::shared_ptr<Model> mazeModel = std::make_shared<Model>("Resources/maze.obj", true);
-    std::shared_ptr<Model> pacmanModel = std::make_shared<Model>("Resources/pacman.obj", true);
+    std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/maze.obj", true);
+    std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/pacman.obj", true);
 
-    std::shared_ptr<Entity> player = std::make_shared<Pacman>(pacmanModel);
-    std::shared_ptr<Entity> point = std::make_shared<Entity>(pacmanModel);
-    point->Scale(glm::vec3(0.3, 0.3, 0.3));
-    std::shared_ptr<Entity> maze = std::make_shared<Entity>(mazeModel);
+    std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel));
+    std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel));
 
     Camera camera(player);
+
     lightShader->Use();
     dirLight.SendToShader(lightShader);
 
@@ -82,6 +81,7 @@ int main() {
             player->GetPosition().y, sin(glfwGetTime()) * 2.0f + player->GetPosition().z));
         pointLight.SendToShader(lightShader);
 
+        /*
         for (int y = 0; y < World::HEIGHT; y++) {
             for (int x = 0; x < World::WIDTH; x++) {
                 if (World::Instance().GetMapElement(x, y) == MapElement::Point || World::Instance().GetMapElement(x, y) == MapElement::Power) {
@@ -90,6 +90,7 @@ int main() {
                 }
             }
         }
+        */
 
         player->Draw(lightShader);
         maze->Draw(lightShader);
@@ -106,12 +107,8 @@ void init(GLFWwindow* window) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_FRAMEBUFFER_SRGB);
-    glfwSetWindowAspectRatio(window, 8, 6);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetWindowAspectRatio(window, WINDOW_WIDTH, WINDOW_HEIGHT);
     KeyInput::SetupKeyInputs(window);
     World::Instance().CalculatePositions();
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
+    Renderer::Instance().SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 0.1f));
 }

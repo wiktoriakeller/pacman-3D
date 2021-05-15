@@ -10,8 +10,8 @@
 class Entity
 {
 public:
-	Entity(std::shared_ptr<Model> objectModel);
-	void Draw(std::shared_ptr<Shader> shader);
+	Entity(std::unique_ptr<Model> objectModel);
+	virtual void Draw(std::shared_ptr<Shader> shader);
 	glm::vec3 GetPosition();
 	void SetPosition(glm::vec3 position);
 	void Translate(glm::vec3 translation);
@@ -22,7 +22,7 @@ public:
 private:
 	glm::mat4 modelMatrix;
 	glm::mat3 normalMatrix;
-	std::shared_ptr<Model> model;
+	std::unique_ptr<Model> model;
 
 	void UpdateNormalMatrix();
 };

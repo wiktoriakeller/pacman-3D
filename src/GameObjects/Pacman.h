@@ -6,10 +6,11 @@
 class Pacman : public Entity
 {
 public:
-	Pacman(std::shared_ptr<Model> model);
+	Pacman(std::unique_ptr<Model> model);
 	void Update(float deltaTime) override;
 
 private:
+	const float SNAP_DISTANCE = 0.2f;
 	bool stopped;
 	float speed;
 	int nextX;

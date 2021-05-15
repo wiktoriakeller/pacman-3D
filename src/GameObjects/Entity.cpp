@@ -1,7 +1,7 @@
 #include "Entity.h"
 
-Entity::Entity(std::shared_ptr<Model> objectModel) {
-	model = objectModel;
+Entity::Entity(std::unique_ptr<Model> objectModel) {
+	model = std::move(objectModel);
 	modelMatrix = glm::mat4(1.0f);
 	UpdateNormalMatrix();
 }

@@ -40,3 +40,5 @@ void Entity::Scale(glm::vec3 factor) {
 void Entity::UpdateNormalMatrix() {
 	normalMatrix = glm::transpose(glm::inverse(glm::mat3(modelMatrix)));
 }
+
+void Entity::Update(float deltaTime) { }

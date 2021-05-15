@@ -5,69 +5,15 @@
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
-#include <assimp/Importer.hpp>
 
-#include "Render/Shader.h"
-#include "Render/VertexBuffer.h"
-#include "Render/IndexBuffer.h"
-#include "Render/BufferLayout.h"
-#include "Render/VertexArray.h"
-#include "Render/Renderer.h"
-#include "Render/Texture.h"
-#include "Material.h"
 #include "Model.h"
 #include "Light/PointLight.h"
 #include "Light/DirectionalLight.h"
+#include "GameObjects/Pacman.h"
 #include "Camera.h"
 
 void init(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void keyboardInput(GLFWwindow* window, int key, int scancode, int action, int mods);
-glm::vec3 move;
-
-enum class MapObject {
-    None = 0, Wall, Point, Power     
-};
-
-float mazeScale = 1.23;
-float xoff = 0.5;
-float yoff = -1.35;
-const int width = 28;
-const int height = 31;
-
-int map[height][width] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1,
-    1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1,
-    1, 3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1,
-    1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1,
-    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1,
-    1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1,
-    1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1,
-    1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 1, 2, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1,
-    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1,
-    1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1,
-    1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1,
-    1, 3, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 3, 1,
-    1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1,
-    1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1,
-    1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1,
-    1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1,
-    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-};
 
 int main() {
     GLFWwindow* window;
@@ -89,8 +35,8 @@ int main() {
 
     glfwMakeContextCurrent(window);
     glewInit();
-
     init(window);
+
     Renderer::Instance().SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 0.1f));
 
     std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightMaps.glsl",
@@ -104,7 +50,7 @@ int main() {
     std::shared_ptr<Model> mazeModel = std::make_shared<Model>("Resources/maze.obj", true);
     std::shared_ptr<Model> pacmanModel = std::make_shared<Model>("Resources/pacman.obj", true);
 
-    std::shared_ptr<Entity> player = std::make_shared<Entity>(pacmanModel);
+    std::shared_ptr<Entity> player = std::make_shared<Pacman>(pacmanModel);
     std::shared_ptr<Entity> point = std::make_shared<Entity>(pacmanModel);
     point->Scale(glm::vec3(0.3, 0.3, 0.3));
     std::shared_ptr<Entity> maze = std::make_shared<Entity>(mazeModel);
@@ -121,33 +67,25 @@ int main() {
     float oldTimeSinceStart = glfwGetTime();
     float timeSinceStart = 0.0f;
 
-    glm::vec3 positionMap[height][width];
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            positionMap[y][x] = glm::vec3((x - width / 2 + xoff) * mazeScale, 0.5, (y - height / 2 + yoff) * mazeScale);
-        }
-    }
-
     while (!glfwWindowShouldClose(window)) {
         timeSinceStart = (float) glfwGetTime();
         deltaTime = timeSinceStart - oldTimeSinceStart;
         oldTimeSinceStart = timeSinceStart;
-
-        Renderer::Instance().Clear();
-
-        player->Translate(4.0f * move * deltaTime);
        
+        player->Update(deltaTime);
+
+        //drawing
+        Renderer::Instance().Clear();
         camera.SendToShader(lightShader);
 
         pointLight.SetPosition(glm::vec3(cos(glfwGetTime()) * 2.0f + player->GetPosition().x, 
             player->GetPosition().y, sin(glfwGetTime()) * 2.0f + player->GetPosition().z));
         pointLight.SendToShader(lightShader);
 
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (map[y][x] == 2 || map[y][x] == 3) {
-                    point->SetPosition(positionMap[y][x]);
+        for (int y = 0; y < World::HEIGHT; y++) {
+            for (int x = 0; x < World::WIDTH; x++) {
+                if (World::Instance().GetMapElement(x, y) == MapElement::Point || World::Instance().GetMapElement(x, y) == MapElement::Power) {
+                    point->SetPosition(World::Instance().GetPosition(x, y));
                     point->Draw(lightShader);
                 }
             }
@@ -170,34 +108,10 @@ void init(GLFWwindow* window) {
     glEnable(GL_FRAMEBUFFER_SRGB);
     glfwSetWindowAspectRatio(window, 8, 6);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetKeyCallback(window, keyboardInput);
+    KeyInput::SetupKeyInputs(window);
+    World::Instance().CalculatePositions();
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
-}
-
-void keyboardInput(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (action == GLFW_PRESS or action == GLFW_REPEAT) {
-        move = glm::vec3(0, 0, 0);
-        switch (key) {
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, true);
-            break;
-        case GLFW_KEY_A:
-            move.x = 1;
-            break;
-        case GLFW_KEY_D:
-            move.x = -1;
-            break;
-        case GLFW_KEY_W:
-            move.z = 1;
-            break;
-        case GLFW_KEY_S:
-            move.z = -1;
-            break;
-        default:
-            break;
-        }
-    }
 }

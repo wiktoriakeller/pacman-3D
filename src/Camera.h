@@ -1,6 +1,6 @@
 #pragma once
 #include <GL/glew.h>
-#include "Entity.h"
+#include "GameObjects/Entity.h"
 
 class Camera
 {

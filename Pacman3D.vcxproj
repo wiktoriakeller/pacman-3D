@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameObjects\Points.cpp" />
     <ClCompile Include="src\Input\KeyInput.cpp" />
     <ClCompile Include="src\GameObjects\Pacman.cpp" />
     <ClCompile Include="src\GameObjects\Entity.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="src\GameObjects\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GameObjects\Points.h" />
     <ClInclude Include="src\Input\KeyInput.h" />
     <ClInclude Include="src\GameObjects\Pacman.h" />
     <ClInclude Include="src\GameObjects\Entity.h" />

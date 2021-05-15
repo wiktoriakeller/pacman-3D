@@ -19,10 +19,10 @@ public:
 	void Scale(glm::vec3 factor);
 	virtual void Update(float deltaTime);
 
-private:
+protected:
+	std::unique_ptr<Model> model;
 	glm::mat4 modelMatrix;
 	glm::mat3 normalMatrix;
-	std::unique_ptr<Model> model;
 
 	void UpdateNormalMatrix();
 };

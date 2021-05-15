@@ -7,6 +7,7 @@ Pacman::Pacman(std::unique_ptr<Model> model) : Entity(std::move(model)) {
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	stopped = true;
+	Scale(glm::vec3(0.8f, 0.8f, 0.8f));
 	SetPosition(World::Instance().GetPosition(nextX, nextZ));
 }
 

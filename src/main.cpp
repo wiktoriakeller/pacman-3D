@@ -10,6 +10,7 @@
 #include "Light/PointLight.h"
 #include "Light/DirectionalLight.h"
 #include "GameObjects/Pacman.h"
+#include "GameObjects/Points.h"
 #include "Camera.h"
 
 const int WINDOW_WIDTH = 800;
@@ -47,11 +48,13 @@ int main() {
     PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.2f) * 0.2f, glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
         1.0f, 0.09, 0.032);
 
-    std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/maze.obj", true);
-    std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/pacman.obj", true);
+    std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/Models/maze.obj", true);
+    std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/Models/pacman.obj", true);
+    std::unique_ptr<Model> pointModel = std::make_unique<Model>("Resources/Models/point.obj", true);
 
     std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel));
     std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel));
+    std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel));
 
     Camera camera(player);
 
@@ -81,17 +84,7 @@ int main() {
             player->GetPosition().y, sin(glfwGetTime()) * 2.0f + player->GetPosition().z));
         pointLight.SendToShader(lightShader);
 
-        /*
-        for (int y = 0; y < World::HEIGHT; y++) {
-            for (int x = 0; x < World::WIDTH; x++) {
-                if (World::Instance().GetMapElement(x, y) == MapElement::Point || World::Instance().GetMapElement(x, y) == MapElement::Power) {
-                    point->SetPosition(World::Instance().GetPosition(x, y));
-                    point->Draw(lightShader);
-                }
-            }
-        }
-        */
-
+        points->Draw(lightShader);
         player->Draw(lightShader);
         maze->Draw(lightShader);
 
@@ -110,5 +103,5 @@ void init(GLFWwindow* window) {
     glfwSetWindowAspectRatio(window, WINDOW_WIDTH, WINDOW_HEIGHT);
     KeyInput::SetupKeyInputs(window);
     World::Instance().CalculatePositions();
-    Renderer::Instance().SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 0.1f));
+    Renderer::Instance().SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }

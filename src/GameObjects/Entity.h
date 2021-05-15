@@ -16,6 +16,7 @@ public:
 	void SetPosition(glm::vec3 position);
 	void Translate(glm::vec3 translation);
 	void Rotate(float angle, glm::vec3 direction);
+	void SetScale(glm::vec3 factor);
 	void Scale(glm::vec3 factor);
 	virtual void Update(float deltaTime);
 

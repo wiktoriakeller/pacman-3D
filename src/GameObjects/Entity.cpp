@@ -32,6 +32,12 @@ void Entity::Rotate(float angle, glm::vec3 direction) {
 	UpdateNormalMatrix();
 }
 
+void Entity::SetScale(glm::vec3 factor) {
+	modelMatrix[0].x = factor.x;
+	modelMatrix[1].y = factor.y;
+	modelMatrix[2].z = factor.z;
+}
+
 void Entity::Scale(glm::vec3 factor) {
 	modelMatrix = glm::scale(modelMatrix, factor);
 	UpdateNormalMatrix();

@@ -7,7 +7,8 @@ Camera::Camera(std::shared_ptr<Entity> target) {
 }
 
 glm::mat4 Camera::GetView() {
-	return glm::lookAt(targetObject->GetPosition() + positionOffset, targetObject->GetPosition(), up);
+	glm::vec3 targetPosition(std::clamp(targetObject->GetPosition().x, -10.0f, 10.0f), 0.5, std::clamp(targetObject->GetPosition().z, -16.0f, 13.0f));
+	return glm::lookAt(targetPosition + positionOffset, targetPosition, up);
 }
 
 void Camera::SendToShader(std::shared_ptr<Shader> shader) {

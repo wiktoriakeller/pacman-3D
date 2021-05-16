@@ -13,8 +13,8 @@
 #include "GameObjects/Points.h"
 #include "Camera.h"
 
-const int WINDOW_WIDTH = 1280;
-const int WINDOW_HEIGHT = 1024;
+const int WINDOW_WIDTH = 800;
+const int WINDOW_HEIGHT = 600;
 
 void init(GLFWwindow* window);
 
@@ -44,8 +44,8 @@ int main() {
     std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightMaps.glsl",
         "Resources/Shaders/Fragment/fLightMaps.glsl");
 
-    DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(-0.2f, -1.0f, -0.2f));
-    PointLight pointLight(glm::vec3(0.2f, 0.2f, 0.2f) * 0.2f, glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+    DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(-0.2f, -1.0f, -0.2f));
+    PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f) * 0.2f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
         1.0f, 0.09, 0.032);
 
     std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/Models/maze.obj", true);
@@ -62,7 +62,7 @@ int main() {
     dirLight.SendToShader(lightShader);
 
     glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(60.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(60.0f), (float) WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
     lightShader->SetUniform("uProjection", projection);
 
     float deltaTime;
@@ -80,8 +80,7 @@ int main() {
         Renderer::Instance().Clear();
         camera.SendToShader(lightShader);
 
-        pointLight.SetPosition(glm::vec3(cos(glfwGetTime()) * 2.0f + player->GetPosition().x, 
-            player->GetPosition().y, sin(glfwGetTime()) * 2.0f + player->GetPosition().z));
+        pointLight.SetPosition(player->GetPosition().x, player->GetPosition().y + 0.5f, player->GetPosition().z);
         pointLight.SendToShader(lightShader);
 
         points->Draw(lightShader);

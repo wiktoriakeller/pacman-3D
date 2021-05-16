@@ -8,6 +8,7 @@ public:
 		float constant, float linear, float quadratic);
 	void SendToShader(std::shared_ptr<Shader> shader) override;
 	void SetPosition(glm::vec3 newPosition);
+	void SetPosition(float x, float y, float z);
 	glm::vec3 GetPosition() const;
 	unsigned int GetNumberOfPointLights() const;
 

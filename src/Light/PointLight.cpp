@@ -28,6 +28,10 @@ void PointLight::SetPosition(glm::vec3 newPosition) {
 	position = newPosition;
 }
 
+void PointLight::SetPosition(float x, float y, float z) {
+	position = glm::vec3(x, y, z);
+}
+
 glm::vec3 PointLight::GetPosition() const {
 	return position;
 }

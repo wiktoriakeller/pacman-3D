@@ -5,9 +5,14 @@
 class Points : public Entity
 { 
 public:
+	const unsigned int POINT_SCORE = 10;
+	const unsigned int POWER_SCORE = 50;
+
 	Points(std::unique_ptr<Model> model);
 	void Draw(std::shared_ptr<Shader> shader) override;
+	void AddPoints(MapElement element);
+	static unsigned int GetScore();
 
 private:
-
+	static unsigned int score;
 };

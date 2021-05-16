@@ -52,10 +52,13 @@ int main() {
     std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/Models/pacman.obj", true);
     std::unique_ptr<Model> pointModel = std::make_unique<Model>("Resources/Models/point.obj", true);
 
-    std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel));
     std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel));
     std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel));
 
+    std::shared_ptr<Points> pointsCast = std::dynamic_pointer_cast<Points>(points);
+    std::function<void(MapElement)> pointsAdder = [pointsCast](MapElement element) { pointsCast->AddPoints(element); };
+    
+    std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel), pointsAdder);
     Camera camera(player);
 
     lightShader->Use();

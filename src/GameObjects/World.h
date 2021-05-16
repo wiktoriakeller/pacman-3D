@@ -18,17 +18,17 @@ public:
         return instance;
     }
 
-    bool IsPositionValid(int x, int y);
+    bool IsPositionValid(int x, int y) const;
     MapElement NumberToMapElement(int number);
     void CalculatePositions();
-    glm::vec3 GetPosition(int x, int y);
+    glm::vec3 GetPosition(int x, int y) const;
     MapElement GetMapElement(int x, int y);
     void SetMapElement(int x, int y, MapElement element);
-
+    
 private:
-    float mazeScale = 1.23;
-    float xoff = 0.5;
-    float yoff = -1.35;
+    const float MAZE_SCALE = 1.23;
+    const float XOFF = 0.5;
+    const float YOFF = -1.35;
 
     glm::vec3 positionMap[HEIGHT][WIDTH];
     int map[HEIGHT][WIDTH] = {

@@ -1,5 +1,7 @@
 #include "Points.h"
 
+unsigned int Points::score = 0;
+
 Points::Points(std::unique_ptr<Model> model) : Entity(std::move(model)) { 
     Scale(glm::vec3(0.25f, 0.25f, 0.25f));
 }
@@ -23,4 +25,17 @@ void Points::Draw(std::shared_ptr<Shader> shader) {
             }
         }
     }
+}
+
+void Points::AddPoints(MapElement element) {
+    if (element == MapElement::Point) {
+        score += POINT_SCORE;
+    }
+    else if (element == MapElement::Power) {
+        score += POWER_SCORE;
+    }
+}
+
+unsigned int Points::GetScore() {
+    return score;
 }

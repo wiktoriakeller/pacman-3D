@@ -1,6 +1,7 @@
 #include "Pacman.h"
 
-Pacman::Pacman(std::unique_ptr<Model> model) : Entity(std::move(model)) {
+Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement)> pointsAdder) : Entity(std::move(model)) {
+	addPoints = pointsAdder;
 	speed = 5.0;
 	nextX = 17;
 	nextZ = 17;
@@ -23,16 +24,16 @@ void Pacman::HandleInput() {
 	switch (KeyInput::PressedKey)
 	{
 	case 'A':
-		wantedDirection.x = 1;
-		break;
-	case 'D':
 		wantedDirection.x = -1;
 		break;
+	case 'D':
+		wantedDirection.x = 1;
+		break;
 	case 'W':
-		wantedDirection.z = 1;
+		wantedDirection.z = -1;
 		break;
 	case 'S':
-		wantedDirection.z = -1;
+		wantedDirection.z = 1;
 		break;
 	}
 
@@ -77,6 +78,7 @@ void Pacman::SnapToGrid() {
 	if(currentDirection.x != 0) {
 		if(abs(nextPosition.x - currentPosition.x) < SNAP_DISTANCE) {
 			SetPosition(nextPosition);
+			EvaluatePoints();
 			EvaluateMove();
 		}
 	}
@@ -84,8 +86,18 @@ void Pacman::SnapToGrid() {
 	if(currentDirection.z != 0) {
 		if(abs(nextPosition.z - currentPosition.z) < SNAP_DISTANCE) {
 			SetPosition(nextPosition);
+			EvaluatePoints();
 			EvaluateMove();
 		}
+	}
+}
+
+void Pacman::EvaluatePoints() const {
+	MapElement element = World::Instance().GetMapElement(nextX, nextZ);
+
+	if (element == MapElement::Point || element == MapElement::Power) {
+		addPoints(element);
+		World::Instance().SetMapElement(nextX, nextZ, MapElement::None);
 	}
 }
 

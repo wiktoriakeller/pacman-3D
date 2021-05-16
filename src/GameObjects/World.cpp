@@ -14,24 +14,24 @@ MapElement World::NumberToMapElement(int number) {
 void World::CalculatePositions() {
     for (int y = 0; y < HEIGHT; y++) {
         for (int x = 0; x < WIDTH; x++) {
-            positionMap[y][x] = glm::vec3((x - WIDTH / 2 + xoff) * mazeScale, 0.5, (y - HEIGHT / 2 + yoff) * mazeScale);
+            positionMap[y][x] = glm::vec3((x - WIDTH / 2 + XOFF) * MAZE_SCALE, 0.5, (y - HEIGHT / 2 + YOFF) * MAZE_SCALE);
         }
     }
 }
 
-glm::vec3 World::GetPosition(int x, int y){
+glm::vec3 World::GetPosition(int x, int y) const {
     return positionMap[y][x];
 }
 
-MapElement World::GetMapElement(int x, int y){
+MapElement World::GetMapElement(int x, int y) {
     return NumberToMapElement(map[y][x]);
 }
 
-void World::SetMapElement(int x, int y, MapElement element){
+void World::SetMapElement(int x, int y, MapElement element) {
     map[y][x] = (int) element;
 }
 
-bool World::IsPositionValid(int x, int y) {
+bool World::IsPositionValid(int x, int y) const {
     if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
         return true;
     }

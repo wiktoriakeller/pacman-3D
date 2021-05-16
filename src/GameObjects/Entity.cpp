@@ -12,7 +12,7 @@ void Entity::Draw(std::shared_ptr<Shader> shader) {
 	model->Draw(shader);
 }
 
-glm::vec3 Entity::GetPosition() {
+glm::vec3 Entity::GetPosition() const {
 	return modelMatrix[3];
 }
 

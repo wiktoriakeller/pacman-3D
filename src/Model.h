@@ -22,7 +22,6 @@ class Model
 {
 public:
     Model(const std::string& path, bool flipTextures = true);
-    Model(const std::string& path, std::vector<std::unique_ptr<Material>> meshMaterials, bool flipTextures = true);
     void Draw(std::shared_ptr<Shader> shader);
 
 private:
@@ -30,8 +29,6 @@ private:
     std::vector<std::unique_ptr<Texture>> textures;
     std::vector<std::unique_ptr<Material>> materials;
     std::map<std::string, unsigned int> texturesDictionary;
-    std::map<int, int> meshToMaterial;
-    std::map<int, int> assimpMaterialIndexToMaterial;
 
     std::string directory;
     bool flip;
@@ -40,6 +37,5 @@ private:
     void ProcessScene(const aiScene* scene);
     void LoadMesh(const aiMesh* mesh, const aiScene* scene, int index);
     void LoadMaterials(const aiScene* scene);
-    void LoadTextures(const aiMaterial* material, const aiTextureType& type, int matIndex);
-    void CalculateTangentAndBitangent(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices);
+    void LoadTextures(const aiMaterial* material, const aiTextureType& type);
 };

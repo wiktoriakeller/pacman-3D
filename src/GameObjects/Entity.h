@@ -12,7 +12,7 @@ class Entity
 public:
 	Entity(std::unique_ptr<Model> objectModel);
 	virtual void Draw(std::shared_ptr<Shader> shader);
-	glm::vec3 GetPosition();
+	glm::vec3 GetPosition() const;
 	void SetPosition(glm::vec3 position);
 	void Translate(glm::vec3 translation);
 	void Rotate(float angle, glm::vec3 direction);

@@ -13,8 +13,8 @@
 #include "GameObjects/Points.h"
 #include "Camera.h"
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+const int WINDOW_WIDTH = 1280;
+const int WINDOW_HEIGHT = 1024;
 
 void init(GLFWwindow* window);
 

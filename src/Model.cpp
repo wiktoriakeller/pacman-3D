@@ -5,24 +5,6 @@ Model::Model(const std::string& path, bool flipTextures) {
     LoadModel(path);
 }
 
-Model::Model(const std::string& path, std::vector<std::unique_ptr<Material>> meshMaterials, bool flipTextures) {
-    flip = flipTextures;
-
-    for (int i = 0; i < meshMaterials.size(); i++) {
-        materials.emplace_back(std::move(meshMaterials[i]));
-
-        if (materials[i]->GetMeshIndex() != -1) {
-            meshToMaterial[materials[i]->GetMeshIndex()] = i;
-        }
-       
-        if (materials[i]->GetAssimpMaterialIndex() != -1) {
-            assimpMaterialIndexToMaterial[materials[i]->GetAssimpMaterialIndex()] = i;
-        }
-    }
-
-    LoadModel(path);
-}
-
 void Model::Draw(std::shared_ptr<Shader> shader) {
     unsigned int materialIndex;
 
@@ -100,19 +82,7 @@ void Model::LoadMesh(const aiMesh* mesh, const aiScene* scene, int meshIndex) {
             indices[g++] = face->mIndices[j];
     }
 
-    unsigned int materialIndex = -1;
-
-    if (meshToMaterial.find(meshIndex) != meshToMaterial.end()) {
-        materialIndex = meshToMaterial[meshIndex];
-    }
-    else if (assimpMaterialIndexToMaterial.find(mesh->mMaterialIndex) != assimpMaterialIndexToMaterial.end()) {
-        materialIndex = assimpMaterialIndexToMaterial[mesh->mMaterialIndex];
-    }
-    else {
-        materialIndex = mesh->mMaterialIndex;
-    }
-
-    meshes.emplace_back(std::make_unique<Mesh>(&vertices[0], vertices.size(), &indices[0], indices.size(), materialIndex));
+    meshes.emplace_back(std::make_unique<Mesh>(&vertices[0], vertices.size(), &indices[0], indices.size(), mesh->mMaterialIndex));
 }
 
 void Model::LoadMaterials(const aiScene* scene) {
@@ -124,23 +94,15 @@ void Model::LoadMaterials(const aiScene* scene) {
         float shininess;
         material->Get(AI_MATKEY_SHININESS, shininess);
 
-        int matIndex = -1;
+        materials.emplace_back(std::make_unique<Material>(Material(shininess)));
 
-        if (assimpMaterialIndexToMaterial.find(i) != assimpMaterialIndexToMaterial.end()) {
-            matIndex = assimpMaterialIndexToMaterial[i];
-        }
-        else {
-            materials.emplace_back(std::make_unique<Material>(Material(shininess)));
-            matIndex = materials.size() - 1;
-        }
-        
-        LoadTextures(material, aiTextureType_DIFFUSE, matIndex);
-        LoadTextures(material, aiTextureType_SPECULAR, matIndex);
-        LoadTextures(material, aiTextureType_HEIGHT, matIndex);
+        LoadTextures(material, aiTextureType_DIFFUSE);
+        LoadTextures(material, aiTextureType_SPECULAR);
+        LoadTextures(material, aiTextureType_HEIGHT);
     }
 }
 
-void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type, int matIndex) {
+void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type) {
     if (material->GetTextureCount(type) > 0) {
         aiString texturePath;
         std::string path;
@@ -150,43 +112,14 @@ void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type, 
             path = directory + "/" + texturePath.C_Str();
 
             if (texturesDictionary.find(path) != texturesDictionary.end()) {
-                materials[matIndex]->AddNewMapIndex(texturesDictionary[path], type);
+                materials[materials.size() - 1]->AddNewMapIndex(texturesDictionary[path], type);
             }
             else {
                 std::cout << "New texture loaded: " << path << "\n";
                 textures.emplace_back(std::make_unique<Texture>(path, flip));
-                materials[matIndex]->AddNewMapIndex(textures.size() - 1, type);
+                materials[materials.size() - 1]->AddNewMapIndex(textures.size() - 1, type);
                 texturesDictionary[path] = textures.size() - 1;
             }
         }
-    }
-}
-
-void Model::CalculateTangentAndBitangent(std::vector<unsigned int>& indices, std::vector<Vertex>& vertices) {
-    for (int i = 0; i < indices.size(); i += 3) {
-        Vertex& v0 = vertices[indices[i]];
-        Vertex& v1 = vertices[indices[i + 1]];
-        Vertex& v2 = vertices[indices[i + 2]];
-
-        glm::vec3 edge1 = v1.Position - v0.Position;
-        glm::vec3 edge2 = v2.Position - v0.Position;
-
-        float deltaU1 = v1.TextureCoords.x - v0.TextureCoords.y; //u1 - u0
-        float deltaV1 = v1.TextureCoords.y - v0.TextureCoords.y; //v1 - v0
-        float deltaU2 = v2.TextureCoords.x - v0.TextureCoords.x; //u2 - u0
-        float deltaV2 = v2.TextureCoords.y - v0.TextureCoords.y; //v2 - v0
-
-        //inverse matrix factor
-        float f = 1.0f / (deltaU1 * deltaV2 - deltaU2 * deltaV1);
-
-        //calculating tangent vector
-        v0.Tangent.x = f * (deltaV2 * edge1.x - deltaV1 * edge2.x);
-        v1.Tangent.y = f * (deltaV2 * edge1.y - deltaV1 * edge2.y);
-        v1.Tangent.z = f * (deltaV2 * edge1.z - deltaV1 * edge2.z);
-
-        //calculating bitangent vector
-        v0.Bitangent.x = f * (-deltaU2 * edge1.x + deltaU1 * edge2.x);
-        v1.Bitangent.y = f * (-deltaU2 * edge1.y + deltaU1 * edge2.y);
-        v1.Bitangent.z = f * (-deltaU2 * edge1.z + deltaU1 * edge2.z);
     }
 }

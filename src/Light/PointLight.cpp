@@ -12,10 +12,6 @@ PointLight::PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular,
 		index = numberOfPointLights++;
 	}
 
-PointLight::~PointLight() { 
-	numberOfPointLights--;
-}
-
 void PointLight::SendToShader(std::shared_ptr<Shader> shader) {
 	const std::string name = "uPointLights[" + std::to_string(index) + "].";
 

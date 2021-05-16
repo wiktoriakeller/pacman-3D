@@ -2,11 +2,7 @@
 #define NR_POINT_LIGHTS 1
 
 struct Material {
-	vec3 diffuseColor;
-	vec3 specularColor;
-
-	bool useDiffuseMap;
-	bool useSpecMap;
+	bool useSpecularMap;
 	bool useNormalMap;
 
 	sampler2D diffuseMap1;
@@ -85,32 +81,17 @@ vec3 CalculateDirLight(vec3 viewDir, vec3 normal) {
 	vec3 specular = vec3(0.0, 0.0, 0.0);
 
 	//ambient component
-	if(uMaterial.useDiffuseMap) {
-		ambient = uDirLight.ambient * texture(uMaterial.diffuseMap1, textureCoord).rgb;
-	} 
-	else {
-		ambient = uDirLight.ambient * uMaterial.diffuseColor;
-	}
+	ambient = uDirLight.ambient * texture(uMaterial.diffuseMap1, textureCoord).rgb;
 
 	//diffuse component
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
-	
-	if(uMaterial.useDiffuseMap) {
-		diffuse = uDirLight.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, textureCoord).rgb;
-	}
-	else {
-		diffuse = uDirLight.diffuse * diffuseStrength * uMaterial.diffuseColor;
-	}
+	diffuse = uDirLight.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, textureCoord).rgb;
     
 	//specular component
-	vec3 reflectedLight = reflect(-lightDir, normal);
-	float specularStrength = pow(max(dot(viewDir, reflectedLight), 0.0), uMaterial.shininess);
-	
-	if(uMaterial.useSpecMap) {
+	if (uMaterial.useSpecularMap) {
+		vec3 reflectedLight = reflect(-lightDir, normal);
+		float specularStrength = pow(max(dot(viewDir, reflectedLight), 0.0), uMaterial.shininess);
 		specular = uDirLight.specular * specularStrength * texture(uMaterial.specularMap1, textureCoord).rgb;
-	}
-	else {
-		specular = uDirLight.specular * specularStrength * uMaterial.specularColor;
 	}
 
 	return (ambient + diffuse + specular);
@@ -124,38 +105,22 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal) {
 	vec3 specular = vec3(0.0, 0.0, 0.0);
 
 	//ambient component
-	if(uMaterial.useDiffuseMap) {
-		ambient = light.ambient * texture(uMaterial.diffuseMap1, textureCoord).rgb;
-	}
-	else{
-		ambient = light.ambient * uMaterial.diffuseColor;
-	}
+	ambient = light.ambient * texture(uMaterial.diffuseMap1, textureCoord).rgb;
 
 	//diffuse component
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
-	
-	if(uMaterial.useDiffuseMap) {
-		diffuse = light.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, textureCoord).rgb;
-	}
-	else {
-		diffuse = light.diffuse * diffuseStrength * uMaterial.diffuseColor;
-	}
+	diffuse = light.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, textureCoord).rgb;
     
 	//specular component
-	vec3 reflectedLight = reflect(-lightDir, normal);
-	float specularStrength = pow(max(dot(viewDir, reflectedLight), 0.0), uMaterial.shininess);
-	
-	if(uMaterial.useSpecMap) {
+	if (uMaterial.useSpecularMap) {
+		vec3 reflectedLight = reflect(-lightDir, normal);
+		float specularStrength = pow(max(dot(viewDir, reflectedLight), 0.0), uMaterial.shininess);
 		specular = light.specular * specularStrength * texture(uMaterial.specularMap1, textureCoord).rgb;
-	}
-	else {
-		specular = light.specular * specularStrength * uMaterial.specularColor;
 	}
 
 	//calculating attentuation
 	float dist = length(light.position - fragmentPosition);
-	float attentuation = 1.0 / (light.constant + light.linear * dist
-		+ light.quadratic * (dist * dist));
+	float attentuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
 
 	ambient *= attentuation;
 	diffuse *= attentuation;

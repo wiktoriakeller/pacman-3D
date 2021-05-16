@@ -5,8 +5,6 @@ Light::Light(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) :
 	diffuse(diffuse),
 	specular(specular) { }
 
-Light::~Light() { }
-
 glm::vec3 Light::GetAmbient() const {
 	return ambient;
 }

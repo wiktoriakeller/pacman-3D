@@ -3,8 +3,6 @@
 DirectionalLight::DirectionalLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, glm::vec3 direction) :
 	Light(ambient, diffuse, specular), direction(direction) { }
 
-DirectionalLight::~DirectionalLight() { }
-
 void DirectionalLight::SendToShader(std::shared_ptr<Shader> shader) {
 	shader->SetUniform("uDirLight.direction", direction);
 	shader->SetUniform("uDirLight.ambient", ambient);

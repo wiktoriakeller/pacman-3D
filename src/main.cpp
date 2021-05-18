@@ -42,12 +42,12 @@ int main() {
     glewInit();
     init(window);
 
-    std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vLightMaps.glsl",
-        "Resources/Shaders/Fragment/fLightMaps.glsl");
+    std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vBlinnPhong.glsl", 
+        "Resources/Shaders/Fragment/fBlinnPhong.glsl");
 
-    DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(-0.2f, -1.0f, -0.2f));
+    DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.2f));
     PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f) * 0.2f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-        1.0f, 0.09, 0.032);
+        1.0f, 0.07, 0.017);
 
     std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/Models/maze.obj", true);
     std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/Models/pacman.obj", true);
@@ -71,6 +71,7 @@ int main() {
     std::shared_ptr<Entity> pinky = std::make_shared<Ghost>(std::move(pinkyModel), 17, 14, 30, -1.75f);
         
     std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
+    
     Camera camera(player);
 
     lightShader->Use();
@@ -101,7 +102,7 @@ int main() {
         for (int i = 0; i < entities.size(); i++) {
             entities[i]->Draw(lightShader);
         }
-        
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

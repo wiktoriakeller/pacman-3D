@@ -1,21 +1,46 @@
 #include "Material.h"
 
 Material::Material(float shininess) : 
-    shininess(shininess) { }
+    shininess(shininess),
+    diffuseColor(glm::vec3(0.0f, 0.0f, 0.0f)),
+    specularColor(glm::vec3(0.0f, 0.0f, 0.0f)) {
+    useDiffuseColor = false;
+    useSpecularColor = false;
+}
+
+Material::Material(glm::vec3 specularCol, float shininess) :
+    diffuseColor(glm::vec3(0.0f, 0.0f, 0.0f)),
+    specularColor(specularCol),
+    shininess(shininess) {
+    useDiffuseColor = false;
+    useSpecularColor = true;
+}
+
+Material::Material(glm::vec3 diffuseCol, glm::vec3 specularCol, float shininess) :
+    diffuseColor(diffuseCol),
+    specularColor(specularCol),
+    shininess(shininess) {
+    useDiffuseColor = true;
+    useSpecularColor = true;
+}
 
 void Material::SendToShader(std::shared_ptr<Shader> shader, const std::vector<std::unique_ptr<Texture>>& textures) const {
     int index = 0;
 
-    if (diffuseMaps.size() > 0) {
+    shader->SetUniform("uMaterial.useDiffuseColor", useDiffuseColor);
+    if (diffuseMaps.size() > 0 && !useDiffuseColor) {
         SendMaps(shader, diffuseMaps, "uMaterial.diffuseMap", index, textures);
     }
-
-    if (specularMaps.size() > 0) {
-        shader->SetUniform("uMaterial.useNormalMap", true);
-        SendMaps(shader, diffuseMaps, "uMaterial.specularMap", index, textures);
+    else if (useDiffuseColor) {
+        shader->SetUniform("uMaterial.diffuseColor", diffuseColor);
     }
-    else {
-        shader->SetUniform("uMaterial.useNormalMap", false);
+
+    shader->SetUniform("uMaterial.useSpecularColor", useSpecularColor);
+    if (specularMaps.size() > 0 && !useSpecularColor) {
+        SendMaps(shader, specularMaps, "uMaterial.specularMap", index, textures);
+    }
+    else if (useSpecularColor) {
+        shader->SetUniform("uMaterial.specularMap", specularColor);
     }
 
     if (normalMaps.size() > 0) {
@@ -30,11 +55,11 @@ void Material::SendToShader(std::shared_ptr<Shader> shader, const std::vector<st
 }
 
 void Material::UnbindMaterial(const std::vector<std::unique_ptr<Texture>>& textures) const {
-    if (diffuseMaps.size() > 0) {
+    if (diffuseMaps.size() > 0 && !useDiffuseColor) {
         UnbindMaps(diffuseMaps, "uMaterial.diffuseMap", textures);
     }
 
-    if (specularMaps.size() > 0) {
+    if (specularMaps.size() > 0 && !useSpecularColor) {
         UnbindMaps(diffuseMaps, "uMaterial.specularMap", textures);
     }
 
@@ -57,6 +82,22 @@ void Material::AddNewMapIndex(unsigned int index, const aiTextureType& type) {
 
 void Material::SetShininess(float newShininess) {
     shininess = newShininess;
+}
+
+void Material::SetDiffuseColor(glm::vec3 color) {
+    diffuseColor = color;
+}
+
+void Material::SetSpecularColor(glm::vec3 color) {
+    specularColor = color;
+}
+
+void Material::UseDiffuseColor(bool use) {
+    useDiffuseColor = use;
+}
+
+void Material::UseSpecularColor(bool use) {
+    useSpecularColor = use;
 }
 
 void Material::SendMaps(std::shared_ptr<Shader> shader, const std::vector<unsigned int>& maps, const std::string& name, int& index,

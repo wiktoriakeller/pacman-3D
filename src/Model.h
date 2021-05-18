@@ -23,6 +23,10 @@ class Model
 public:
     Model(const std::string& path, bool flipTextures = true);
     void Draw(std::shared_ptr<Shader> shader);
+    void SetMeshMaterial(Material& newMaterial, unsigned int materialIndex);
+    void ChangeMeshMaterialShininess(unsigned int materialIndex, float shininess);
+    void ChangeMeshMaterialSpecular(unsigned int materialIndex, glm::vec3 specularColor);
+    void ChangeMeshMaterialDiffuse(unsigned int materialIndex, glm::vec3 diffuseColor);
 
 private:
     std::vector<std::unique_ptr<Mesh>> meshes;

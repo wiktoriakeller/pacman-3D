@@ -159,5 +159,7 @@
     <None Include="Resources\Shaders\Vertex\vBasic.glsl" />
     <None Include="Resources\Shaders\Vertex\vLightSource.glsl" />
     <None Include="Resources\Shaders\Vertex\vPhongLight.glsl" />
+    <None Include="Resources\Shaders\Fragment\fBlinnPhong.glsl" />
+    <None Include="Resources\Shaders\Vertex\vBlinnPhong.glsl" />
   </ItemGroup>
 </Project>

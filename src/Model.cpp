@@ -10,7 +10,7 @@ void Model::Draw(std::shared_ptr<Shader> shader) {
 
     for (int i = 0; i < meshes.size(); i++) {
         materialIndex = meshes[i]->GetMaterialIndex();
-        
+
         if (materialIndex >= 0)
             materials[materialIndex]->SendToShader(shader, textures);
 
@@ -122,4 +122,22 @@ void Model::LoadTextures(const aiMaterial* material, const aiTextureType& type) 
             }
         }
     }
+}
+
+void Model::SetMeshMaterial(Material& newMaterial, unsigned int materialIndex) {
+    materials[materialIndex] = std::make_unique<Material>(newMaterial);
+}
+
+void Model::ChangeMeshMaterialShininess(unsigned int materialIndex, float shininess) {
+    materials[materialIndex]->SetShininess(shininess);
+}
+
+void Model::ChangeMeshMaterialSpecular(unsigned int materialIndex, glm::vec3 specularColor) {
+    materials[materialIndex]->SetSpecularColor(specularColor);
+    materials[materialIndex]->UseSpecularColor(true);
+}
+
+void Model::ChangeMeshMaterialDiffuse(unsigned int materialIndex, glm::vec3 diffuseColor) {
+    materials[materialIndex]->SetDiffuseColor(diffuseColor);
+    materials[materialIndex]->UseDiffuseColor(true);
 }

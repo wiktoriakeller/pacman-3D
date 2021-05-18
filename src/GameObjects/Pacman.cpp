@@ -1,13 +1,14 @@
 #include "Pacman.h"
 
-Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement)> pointsAdder) : Entity(std::move(model)) {
+Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement)> pointsAdder) : Moveable(std::move(model)) {
 	addPoints = pointsAdder;
-	speed = 5.0;
-	nextX = 17;
-	nextZ = 17;
+	speed = 6.0;
+	nextX = 14;
+	nextZ = 23;
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	stopped = true;
+	Rotate(-30, glm::vec3(1.0f, 0.0f, 0.0f));
 	Scale(glm::vec3(0.8f, 0.8f, 0.8f));
 	SetPosition(World::Instance().GetPosition(nextX, nextZ));
 }
@@ -47,49 +48,28 @@ void Pacman::EvaluateDirection() {
 	if (currentDirection == -wantedDirection && currentDirection != glm::vec3(0.0f, 0.0f, 0.0f)) {
 		ReverseDirection();
 	}
-	else {
-		SnapToGrid();
+	else if(SnapToGrid()) {
+		EvaluatePoints();
+		EvaluateMove();
 	}
 }
 
 void Pacman::ReverseDirection() {
 	if (currentDirection.x > 0 && CanMakeMove(nextX - 1 + wantedDirection.x, nextZ + wantedDirection.z)) {
-		currentDirection = wantedDirection;
 		nextX = nextX - 1 + wantedDirection.x;
 	}
 	else if (currentDirection.x < 0 && CanMakeMove(nextX + 1 + wantedDirection.x, nextZ + wantedDirection.z)) {
-		currentDirection = wantedDirection;
 		nextX = nextX + 1 + wantedDirection.x;
 	}
 	else if (currentDirection.z > 0 && CanMakeMove(nextX + wantedDirection.x, nextZ - 1 + wantedDirection.z)) {
-		currentDirection = wantedDirection;
 		nextZ = nextZ - 1 + wantedDirection.z;
 	}
 	else if (currentDirection.z < 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + 1 + wantedDirection.z)) {
-		currentDirection = wantedDirection;
 		nextZ = nextZ + 1 + wantedDirection.z;
 	}
-}
 
-void Pacman::SnapToGrid() {
-	glm::vec3 nextPosition = World::Instance().GetPosition(nextX, nextZ);
-	glm::vec3 currentPosition = GetPosition();
-
-	if(currentDirection.x != 0) {
-		if(abs(nextPosition.x - currentPosition.x) < SNAP_DISTANCE) {
-			SetPosition(nextPosition);
-			EvaluatePoints();
-			EvaluateMove();
-		}
-	}
-	
-	if(currentDirection.z != 0) {
-		if(abs(nextPosition.z - currentPosition.z) < SNAP_DISTANCE) {
-			SetPosition(nextPosition);
-			EvaluatePoints();
-			EvaluateMove();
-		}
-	}
+	currentDirection = wantedDirection;
+	shouldRotate = true;
 }
 
 void Pacman::EvaluatePoints() const {
@@ -114,27 +94,17 @@ void Pacman::EvaluateMove() {
 		currentDirection = wantedDirection;
 		nextX += currentDirection.x;
 		nextZ += currentDirection.z;
+		shouldRotate = true;
 	}
 	else if (CanMakeMove(nextX + currentDirection.x, nextZ + currentDirection.z)) {
 		nextX += currentDirection.x;
 		nextZ += currentDirection.z;
 	}
-	else if (!CanMakeMove(nextX + currentDirection.x, nextZ + currentDirection.z) && World::Instance().GetMapElement(nextX, nextZ) == MapElement::Tunnel) {
-		if (nextX == World::Instance().TUNNEL_LEFT_POS.x) {
-			SetPosition(World::Instance().GetPosition(World::Instance().TUNNEL_RIGHT_POS.x, World::Instance().TUNNEL_RIGHT_POS.y));
-			nextX = World::Instance().TUNNEL_RIGHT_POS.x + 1;
-		}
-		else {
-			SetPosition(World::Instance().GetPosition(World::Instance().TUNNEL_LEFT_POS.x, World::Instance().TUNNEL_LEFT_POS.y));
-			nextX = World::Instance().TUNNEL_LEFT_POS.x - 1;
-		}
+	else if (World::Instance().GetMapElement(nextX, nextZ) == MapElement::Tunnel) {
+		CrossTunnel();
 	}
 	else {
 		currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 		stopped = true;
 	}
-}
-
-void Pacman::Move(float deltaTime) {
-	Translate(currentDirection * deltaTime * speed);
 }

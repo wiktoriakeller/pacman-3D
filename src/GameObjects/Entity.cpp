@@ -1,7 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(std::unique_ptr<Model> objectModel) {
-	model = std::move(objectModel);
+Entity::Entity(std::unique_ptr<Model> model) : model(std::move(model)) {
 	modelMatrix = glm::mat4(1.0f);
 	UpdateNormalMatrix();
 }
@@ -27,8 +26,12 @@ void Entity::Translate(glm::vec3 translation) {
 	UpdateNormalMatrix();
 }
 
-void Entity::Rotate(float angle, glm::vec3 direction) {
-	modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), direction);
+void Entity::Rotate(float angle, glm::vec3 direction, bool castToRadians) {
+	if(castToRadians) {
+		angle = glm::radians(angle);
+	}
+
+	modelMatrix = glm::rotate(modelMatrix, angle, direction);
 	UpdateNormalMatrix();
 }
 

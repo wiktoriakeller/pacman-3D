@@ -11,6 +11,7 @@
 #include "Light/DirectionalLight.h"
 #include "GameObjects/Pacman.h"
 #include "GameObjects/Points.h"
+#include "GameObjects/Ghost.h"
 #include "Camera.h"
 
 const int WINDOW_WIDTH = 800;
@@ -51,6 +52,10 @@ int main() {
     std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/Models/maze.obj", true);
     std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/Models/pacman.obj", true);
     std::unique_ptr<Model> pointModel = std::make_unique<Model>("Resources/Models/point.obj", true);
+    std::unique_ptr<Model> blinkyModel = std::make_unique<Model>("Resources/Models/Blinky.obj", true);
+    std::unique_ptr<Model> clydeModel = std::make_unique<Model>("Resources/Models/Clyde.obj", true);
+    std::unique_ptr<Model> inkyModel = std::make_unique<Model>("Resources/Models/Inky.obj", true);
+    std::unique_ptr<Model> pinkyModel = std::make_unique<Model>("Resources/Models/Pinky.obj", true);
 
     std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel));
     std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel));
@@ -59,6 +64,13 @@ int main() {
     std::function<void(MapElement)> pointsAdder = [pointsCast](MapElement element) { pointsCast->AddPoints(element); };
     
     std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel), pointsAdder);
+
+    std::shared_ptr<Entity> blinky = std::make_shared<Ghost>(std::move(blinkyModel), 14, 11, 0, 0.0f);
+    std::shared_ptr<Entity> clyde = std::make_shared<Ghost>(std::move(clydeModel), 13, 14, 10, -1.75f);
+    std::shared_ptr<Entity> inky = std::make_shared<Ghost>(std::move(inkyModel), 15, 14, 20, -1.75f);
+    std::shared_ptr<Entity> pinky = std::make_shared<Ghost>(std::move(pinkyModel), 17, 14, 30, -1.75f);
+        
+    std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
     Camera camera(player);
 
     lightShader->Use();
@@ -86,10 +98,10 @@ int main() {
         pointLight.SetPosition(player->GetPosition().x, player->GetPosition().y + 0.5f, player->GetPosition().z);
         pointLight.SendToShader(lightShader);
 
-        points->Draw(lightShader);
-        player->Draw(lightShader);
-        maze->Draw(lightShader);
-
+        for (int i = 0; i < entities.size(); i++) {
+            entities[i]->Draw(lightShader);
+        }
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

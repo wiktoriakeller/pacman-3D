@@ -35,6 +35,7 @@ bld/
 Dependencies/
 Resources/Textures/
 Resources/Models/
+Resources/Fonts/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

@@ -29,6 +29,10 @@ void VertexBuffer::SetBufferLayout(const BufferLayout& bufferLayout) {
     layout = bufferLayout;
 }
 
+void VertexBuffer::ChangeData(unsigned int size, const void* data) {
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+}
+
 void VertexBuffer::EnableLayout() const {
     layout.EnableElements();
 }

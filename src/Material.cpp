@@ -40,7 +40,7 @@ void Material::SendToShader(std::shared_ptr<Shader> shader, const std::vector<st
         SendMaps(shader, specularMaps, "uMaterial.specularMap", index, textures);
     }
     else if (useSpecularColor) {
-        shader->SetUniform("uMaterial.specularMap", specularColor);
+        shader->SetUniform("uMaterial.specularColor", specularColor);
     }
 
     if (normalMaps.size() > 0) {

@@ -78,13 +78,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLM\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\STB_IMAGE\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2019;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLM\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\FREETYPE\include;$(SolutionDir)Dependencies\STB_IMAGE\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2019;$(SolutionDir)Dependencies\FREETYPE\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLM\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\STB_IMAGE\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2019;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLM\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\FREETYPE\include;$(SolutionDir)Dependencies\STB_IMAGE\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2019;$(SolutionDir)Dependencies\FREETYPE\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,7 +125,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;glew32s.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;glew32s.lib;glfw3.lib;opengl32.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,10 +143,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;glew32s.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;glew32s.lib;glfw3.lib;opengl32.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\UI\Character.cpp" />
+    <ClCompile Include="src\Render\Framebuffer.cpp" />
     <ClCompile Include="src\GameObjects\Ghost.cpp" />
     <ClCompile Include="src\GameObjects\Moveable.cpp" />
     <ClCompile Include="src\GameObjects\Points.cpp" />
@@ -169,8 +171,11 @@
     <ClCompile Include="src\Render\VertexArray.cpp" />
     <ClCompile Include="src\Render\VertexBuffer.cpp" />
     <ClCompile Include="src\GameObjects\World.cpp" />
+    <ClCompile Include="src\UI\Text.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\UI\Character.h" />
+    <ClInclude Include="src\Render\Framebuffer.h" />
     <ClInclude Include="src\GameObjects\Ghost.h" />
     <ClInclude Include="src\GameObjects\Moveable.h" />
     <ClInclude Include="src\GameObjects\Points.h" />
@@ -193,6 +198,7 @@
     <ClInclude Include="src\Render\VertexBuffer.h" />
     <ClInclude Include="src\Vertex.h" />
     <ClInclude Include="src\GameObjects\World.h" />
+    <ClInclude Include="src\UI\Text.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Fragment\fBasic.glsl" />
@@ -200,11 +206,13 @@
     <None Include="Resources\Shaders\Fragment\fLightMaps.glsl" />
     <None Include="Resources\Shaders\Fragment\fLightSource.glsl" />
     <None Include="Resources\Shaders\Fragment\fPhongLight.glsl" />
+    <None Include="Resources\Shaders\Fragment\fText.glsl" />
     <None Include="Resources\Shaders\Vertex\vBasic.glsl" />
     <None Include="Resources\Shaders\Vertex\vBlinnPhong.glsl" />
     <None Include="Resources\Shaders\Vertex\vLightMaps.glsl" />
     <None Include="Resources\Shaders\Vertex\vLightSource.glsl" />
     <None Include="Resources\Shaders\Vertex\vPhongLight.glsl" />
+    <None Include="Resources\Shaders\Vertex\vText.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

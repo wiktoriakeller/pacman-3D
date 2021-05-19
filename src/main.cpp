@@ -13,6 +13,7 @@
 #include "GameObjects/Points.h"
 #include "GameObjects/Ghost.h"
 #include "Camera.h"
+#include "UI/Text.h"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -44,10 +45,12 @@ int main() {
 
     std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vBlinnPhong.glsl", 
         "Resources/Shaders/Fragment/fBlinnPhong.glsl");
+    std::shared_ptr<Shader> textShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vText.glsl",
+        "Resources/Shaders/Fragment/fText.glsl");
 
-    DirectionalLight dirLight(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.2f));
-    PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f) * 0.2f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-        1.0f, 0.07, 0.017);
+    DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-0.2f, -1.0f, -0.2f));
+    PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+        1.0f, 0.09, 0.032);
 
     std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/Models/maze.obj", true);
     std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/Models/pacman.obj", true);
@@ -56,6 +59,11 @@ int main() {
     std::unique_ptr<Model> clydeModel = std::make_unique<Model>("Resources/Models/Clyde.obj", true);
     std::unique_ptr<Model> inkyModel = std::make_unique<Model>("Resources/Models/Inky.obj", true);
     std::unique_ptr<Model> pinkyModel = std::make_unique<Model>("Resources/Models/Pinky.obj", true);
+
+    mazeModel->ChangeMeshMaterialShininess(1, 32.0f);
+    mazeModel->ChangeMeshMaterialSpecular(1, glm::vec3(0.5f, 0.5f, 0.5f));
+    blinkyModel->ChangeMeshMaterialShininess(1, 128.0f);
+    blinkyModel->ChangeMeshMaterialSpecular(1, glm::vec3(1.0f, 1.0f, 1.0f));
 
     std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel));
     std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel));
@@ -73,13 +81,7 @@ int main() {
     std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
     
     Camera camera(player);
-
-    lightShader->Use();
-    dirLight.SendToShader(lightShader);
-
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(60.0f), (float) WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-    lightShader->SetUniform("uProjection", projection);
+    Text text("Resources/Fonts/arial.ttf", 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), 48.0f);
 
     float deltaTime;
     float oldTimeSinceStart = glfwGetTime();
@@ -94,14 +96,25 @@ int main() {
 
         //drawing
         Renderer::Instance().Clear();
+        lightShader->Use();
+        dirLight.SendToShader(lightShader);
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(60.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+        lightShader->SetUniform("uProjection", projection);
+
         camera.SendToShader(lightShader);
 
-        pointLight.SetPosition(player->GetPosition().x, player->GetPosition().y + 0.5f, player->GetPosition().z);
+        pointLight.SetPosition(player->GetPosition().x, player->GetPosition().y - 0.5f, player->GetPosition().z);
         pointLight.SendToShader(lightShader);
 
         for (int i = 0; i < entities.size(); i++) {
             entities[i]->Draw(lightShader);
         }
+
+        projection = glm::ortho(0.0f, (float) WINDOW_WIDTH, 0.0f, (float) WINDOW_HEIGHT);
+        textShader->Use();
+        textShader->SetUniform("uProjection", projection);
+        text.Draw(textShader, "xdd", 400, 300);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -115,6 +128,8 @@ void init(GLFWwindow* window) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_FRAMEBUFFER_SRGB);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glfwSetWindowAspectRatio(window, WINDOW_WIDTH, WINDOW_HEIGHT);
     KeyInput::SetupKeyInputs(window);
     World::Instance().CalculatePositions();

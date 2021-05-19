@@ -12,6 +12,8 @@ public:
 	~VertexArray();
 
 	void AddVertexBuffer(std::unique_ptr<VertexBuffer> vertexBuffer);
+	void ChangeVBOData(unsigned int VBOindex, unsigned int size, const void* data);
+	void BindVBO(unsigned int VBOindex);
 	void SetIndexBuffer(std::unique_ptr<IndexBuffer> elementBuffer);
 	unsigned int GetIBOCount() const;
 	void Bind() const;

@@ -15,6 +15,7 @@ public:
 	VertexBuffer& operator=(VertexBuffer&& other) noexcept;
 
 	void SetBufferLayout(const BufferLayout& bufferLayout);
+	void ChangeData(unsigned int size, const void* data);
 	void EnableLayout() const;
 	void DisableLayout() const;
 	void Bind() const;

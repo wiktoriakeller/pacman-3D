@@ -80,8 +80,8 @@ int main() {
         
     std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
     
-    Camera camera(player);
-    Text text("Resources/Fonts/arial.ttf", 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), 48.0f);
+    Camera camera(player, WINDOW_WIDTH, WINDOW_HEIGHT);
+    Text text("Resources/Fonts/arial.ttf", 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT, 48.0f);
 
     float deltaTime;
     float oldTimeSinceStart = glfwGetTime();
@@ -96,14 +96,10 @@ int main() {
 
         //drawing
         Renderer::Instance().Clear();
+
         lightShader->Use();
-        dirLight.SendToShader(lightShader);
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(60.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-        lightShader->SetUniform("uProjection", projection);
-
         camera.SendToShader(lightShader);
-
+        dirLight.SendToShader(lightShader);
         pointLight.SetPosition(player->GetPosition().x, player->GetPosition().y - 0.5f, player->GetPosition().z);
         pointLight.SendToShader(lightShader);
 
@@ -111,9 +107,7 @@ int main() {
             entities[i]->Draw(lightShader);
         }
 
-        projection = glm::ortho(0.0f, (float) WINDOW_WIDTH, 0.0f, (float) WINDOW_HEIGHT);
         textShader->Use();
-        textShader->SetUniform("uProjection", projection);
         text.Draw(textShader, "xdd", 400, 300);
 
         glfwSwapBuffers(window);

@@ -6,7 +6,7 @@
 class Camera
 {
 public:
-	Camera(std::shared_ptr<Entity> target);
+	Camera(std::shared_ptr<Entity> target, unsigned int windowWidth, unsigned int windowHeight);
 	void SendToShader(std::shared_ptr<Shader> shader);
 	glm::mat4 GetView();
 
@@ -14,4 +14,5 @@ private:
 	std::shared_ptr<Entity> targetObject;
 	glm::vec3 up;
 	glm::vec3 positionOffset;
+	glm::mat4 projection;
 };

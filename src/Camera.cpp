@@ -1,9 +1,10 @@
 #include "Camera.h"
 
-Camera::Camera(std::shared_ptr<Entity> target) {
+Camera::Camera(std::shared_ptr<Entity> target, unsigned int windowWidth, unsigned int windowHeight) {
 	targetObject = target;
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
 	positionOffset = glm::vec3(0.0f, 12.0f, 4.0f);
+	projection = glm::perspective(glm::radians(60.0f), (float)windowWidth / windowHeight, 0.1f, 100.0f);
 }
 
 glm::mat4 Camera::GetView() {
@@ -14,4 +15,5 @@ glm::mat4 Camera::GetView() {
 void Camera::SendToShader(std::shared_ptr<Shader> shader) {
 	shader->SetUniform("uView", GetView());
 	shader->SetUniform("uViewPosition", targetObject->GetPosition() + positionOffset);
+	shader->SetUniform("uProjection", projection);
 }

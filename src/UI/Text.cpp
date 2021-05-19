@@ -1,6 +1,7 @@
 #include "Text.h"
 
-Text::Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, unsigned int height, unsigned int width) :
+Text::Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, 
+	unsigned int windowWidth, unsigned int windowHeight, unsigned int height, unsigned int width) :
 	fontScale(fontScale), fontColor(fontColor), width(width), height(height) {
 	
 	if (FT_Init_FreeType(&ftLibrary)) {
@@ -38,10 +39,13 @@ Text::Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, uns
 	std::unique_ptr<IndexBuffer> IBO = std::make_unique<IndexBuffer>(indices, 6, GL_STATIC_DRAW);
 	VAO->SetIndexBuffer(std::move(IBO));
 	VAO->Unbind();
+
+	projection = glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight);
 }
 
 void Text::Draw(std::shared_ptr<Shader> shader, const std::string text, float x, float y) {
 	shader->SetUniform("uTextColor", fontColor);
+	shader->SetUniform("uProjection", projection);
 	unsigned char c;
 
 	for (int i = 0; i < text.size(); i++) {
@@ -101,4 +105,6 @@ void Text::LoadCharacters() {
 			face->glyph->bitmap.buffer);
 		characters[c] = std::move(character);
 	}
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }

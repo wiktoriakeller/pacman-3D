@@ -9,6 +9,8 @@
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 #include <unordered_map>
+#include <map>
+#include <memory>
 
 class Shader
 {
@@ -34,3 +36,5 @@ private:
 	GLuint LoadShader(GLenum shaderType, const std::string& filePath);
 	void LinkProgram(GLuint vertexShader, GLuint fragmentShader, GLuint geometryShader);
 };
+
+inline std::map<std::string, std::shared_ptr<Shader>> shaderMap;

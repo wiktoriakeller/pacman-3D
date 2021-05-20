@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\UI\Sprite.cpp" />
     <ClCompile Include="src\UI\Character.cpp" />
     <ClCompile Include="src\Render\Framebuffer.cpp" />
     <ClCompile Include="src\GameObjects\Ghost.cpp" />
@@ -172,8 +173,10 @@
     <ClCompile Include="src\Render\VertexBuffer.cpp" />
     <ClCompile Include="src\GameObjects\World.cpp" />
     <ClCompile Include="src\UI\Text.cpp" />
+    <ClCompile Include="src\UI\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\UI\Sprite.h" />
     <ClInclude Include="src\UI\Character.h" />
     <ClInclude Include="src\Render\Framebuffer.h" />
     <ClInclude Include="src\GameObjects\Ghost.h" />
@@ -199,6 +202,7 @@
     <ClInclude Include="src\Vertex.h" />
     <ClInclude Include="src\GameObjects\World.h" />
     <ClInclude Include="src\UI\Text.h" />
+    <ClInclude Include="src\UI\UI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Fragment\fBasic.glsl" />
@@ -206,12 +210,14 @@
     <None Include="Resources\Shaders\Fragment\fLightMaps.glsl" />
     <None Include="Resources\Shaders\Fragment\fLightSource.glsl" />
     <None Include="Resources\Shaders\Fragment\fPhongLight.glsl" />
+    <None Include="Resources\Shaders\Fragment\fSprite.glsl" />
     <None Include="Resources\Shaders\Fragment\fText.glsl" />
     <None Include="Resources\Shaders\Vertex\vBasic.glsl" />
     <None Include="Resources\Shaders\Vertex\vBlinnPhong.glsl" />
     <None Include="Resources\Shaders\Vertex\vLightMaps.glsl" />
     <None Include="Resources\Shaders\Vertex\vLightSource.glsl" />
     <None Include="Resources\Shaders\Vertex\vPhongLight.glsl" />
+    <None Include="Resources\Shaders\Vertex\vSprite.glsl" />
     <None Include="Resources\Shaders\Vertex\vText.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

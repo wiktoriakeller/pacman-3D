@@ -90,6 +90,12 @@
     <ClCompile Include="src\UI\Character.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="src\UI\UI.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Sprite.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Material.h">
@@ -167,6 +173,12 @@
     <ClInclude Include="src\UI\Character.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="src\UI\UI.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Sprite.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Fragment\fBasic.glsl" />
@@ -181,5 +193,7 @@
     <None Include="Resources\Shaders\Vertex\vBlinnPhong.glsl" />
     <None Include="Resources\Shaders\Fragment\fText.glsl" />
     <None Include="Resources\Shaders\Vertex\vText.glsl" />
+    <None Include="Resources\Shaders\Fragment\fSprite.glsl" />
+    <None Include="Resources\Shaders\Vertex\vSprite.glsl" />
   </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@
 #include "GameObjects/Points.h"
 #include "GameObjects/Ghost.h"
 #include "Camera.h"
-#include "UI/Text.h"
+#include "UI/UI.h"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -43,10 +43,12 @@ int main() {
     glewInit();
     init(window);
 
-    std::shared_ptr<Shader> lightShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vBlinnPhong.glsl", 
-        "Resources/Shaders/Fragment/fBlinnPhong.glsl");
-    std::shared_ptr<Shader> textShader = std::make_shared<Shader>("Resources/Shaders/Vertex/vText.glsl",
+    shaderMap["lightShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vBlinnPhong.glsl",
+        "Resources/Shaders/Fragment/fBlinnPhong.glsl");;
+    shaderMap["textShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vText.glsl",
         "Resources/Shaders/Fragment/fText.glsl");
+    shaderMap["spriteShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vSprite.glsl",
+        "Resources/Shaders/Fragment/fSprite.glsl");
 
     DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-0.2f, -1.0f, -0.2f));
     PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -81,7 +83,7 @@ int main() {
     std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
     
     Camera camera(player, WINDOW_WIDTH, WINDOW_HEIGHT);
-    Text text("Resources/Fonts/arial.ttf", 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), WINDOW_WIDTH, WINDOW_HEIGHT, 48.0f);
+    UI ui(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     float deltaTime;
     float oldTimeSinceStart = glfwGetTime();
@@ -97,18 +99,17 @@ int main() {
         //drawing
         Renderer::Instance().Clear();
 
-        lightShader->Use();
-        camera.SendToShader(lightShader);
-        dirLight.SendToShader(lightShader);
+        shaderMap["lightShader"]->Use();
+        camera.SendToShader(shaderMap["lightShader"]);
+        dirLight.SendToShader(shaderMap["lightShader"]);
         pointLight.SetPosition(player->GetPosition().x, player->GetPosition().y - 0.5f, player->GetPosition().z);
-        pointLight.SendToShader(lightShader);
+        pointLight.SendToShader(shaderMap["lightShader"]);
 
         for (int i = 0; i < entities.size(); i++) {
-            entities[i]->Draw(lightShader);
+            entities[i]->Draw(shaderMap["lightShader"]);
         }
 
-        textShader->Use();
-        text.Draw(textShader, "xdd", 400, 300);
+        ui.Draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

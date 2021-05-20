@@ -17,8 +17,7 @@ class Text
 {
 public:
 	const int CHAR_NUM = 128;
-	Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, unsigned int windowWidth, unsigned int windowHeight,
-		unsigned int height, unsigned int width = 0);
+	Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, unsigned int height, unsigned int width = 0);
 	void Draw(std::shared_ptr<Shader> shader, const std::string text, float x, float y);
 	void SetFontScale(float scale);
 	void SetFontColor(glm::vec3 color);
@@ -32,7 +31,6 @@ private:
 	unsigned int height;
 	float fontScale;
 	glm::vec3 fontColor;
-	glm::mat4 projection;
 
 	void LoadCharacters();
 };

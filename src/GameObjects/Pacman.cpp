@@ -1,5 +1,7 @@
 #include "Pacman.h"
 
+unsigned int Pacman::lives = 2;
+
 Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement)> pointsAdder) : Moveable(std::move(model)) {
 	addPoints = pointsAdder;
 	speed = 6.0;
@@ -17,6 +19,10 @@ void Pacman::Update(float deltaTime) {
 	HandleInput();
 	EvaluateDirection();
 	Move(deltaTime);
+}
+
+unsigned int Pacman::GetLives() {
+	return lives;
 }
 
 void Pacman::HandleInput() {

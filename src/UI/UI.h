@@ -4,21 +4,20 @@
 #include "../GameObjects/Points.h"
 #include "../GameObjects/Pacman.h"
 #include "../Render/Shader.h"
+#include "../Game.h"
 
 class UI
 {
 public:
-	UI(unsigned int windowWidth, unsigned int windowHeight);
-	void Draw();
+	UI();
+	void Draw() const;
 
 private:
 	const float OFFSET = 15.0f;
-	unsigned int windowWidth;
-	unsigned int windowHeight;
 	glm::mat4 projection;
 	std::unique_ptr<Text> textRenderer;
 	std::unique_ptr<Sprite> pacmanLive;
 
-	void DrawScoreAndLevel();
-	void DrawHealth();
+	void DrawScoreAndLevel() const;
+	void DrawHealth() const;
 };

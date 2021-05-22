@@ -1,12 +1,14 @@
 #pragma once
 #include <GL/glew.h>
 #include <algorithm>
+
 #include "GameObjects/Entity.h"
+#include "Game.h"
 
 class Camera
 {
 public:
-	Camera(std::shared_ptr<Entity> target, unsigned int windowWidth, unsigned int windowHeight);
+	Camera(std::shared_ptr<Entity> target);
 	void SendToShader(std::shared_ptr<Shader> shader);
 	glm::mat4 GetView();
 

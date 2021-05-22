@@ -8,11 +8,12 @@
 #include "IndexBuffer.h"
 #include "Shader.h"
 #include "Renderer.h"
+#include "../Game.h"
 
 class Framebuffer
 {
 public:
-	Framebuffer(unsigned int windowWidth, unsigned int windowHeight);
+	Framebuffer();
 	~Framebuffer();
 	void Bind() const;
 	void Unbind() const;
@@ -23,6 +24,4 @@ private:
 	GLuint colorTextureID;
 	GLuint renderBufferID;
 	std::unique_ptr<VertexArray> VAO;
-	unsigned int windowWidth;
-	unsigned int windowHeight;
 };

@@ -1,13 +1,13 @@
 #include "Framebuffer.h"
 
-Framebuffer::Framebuffer(unsigned int windowWidth, unsigned int windowHeight) : windowWidth(windowWidth), windowHeight(windowHeight) {
+Framebuffer::Framebuffer() {
 	glGenFramebuffers(1, &frameBufferID);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 
 	//generating color texture
 	glGenTextures(1, &colorTextureID);
 	glBindTexture(GL_TEXTURE_2D, colorTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -18,7 +18,7 @@ Framebuffer::Framebuffer(unsigned int windowWidth, unsigned int windowHeight) : 
 	//creating rendering buffer
 	glGenRenderbuffers(1, &renderBufferID);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferID);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowWidth, windowHeight);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	//attaching render buffer to framebuffer

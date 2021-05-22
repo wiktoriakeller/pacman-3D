@@ -16,9 +16,7 @@
 #include "GameObjects/Ghosts/Inky.h"
 #include "Camera.h"
 #include "UI/UI.h"
-
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+#include "Game.h"
 
 void init(GLFWwindow* window);
 
@@ -34,7 +32,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Pacman", nullptr, nullptr);
+    window = glfwCreateWindow(Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, "Pacman", nullptr, nullptr);
 
     if (!window) {
         glfwTerminate();
@@ -81,15 +79,16 @@ int main() {
 
     std::shared_ptr<Entity> blinky = std::make_shared<Blinky>(std::move(blinkyModel), std::dynamic_pointer_cast<Moveable>(player));
     std::shared_ptr<Entity> clyde = std::make_shared<Clyde>(std::move(clydeModel), std::dynamic_pointer_cast<Moveable>(player));
-    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), std::dynamic_pointer_cast<Moveable>(player), std::dynamic_pointer_cast<Moveable>(blinky));
+    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), std::dynamic_pointer_cast<Moveable>(player), 
+        std::dynamic_pointer_cast<Moveable>(blinky));
     std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), std::dynamic_pointer_cast<Moveable>(player));
 
     std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
     
-    std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>(WINDOW_WIDTH, WINDOW_HEIGHT);
+    std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>();
 
-    Camera camera(player, WINDOW_WIDTH, WINDOW_HEIGHT);
-    UI ui(WINDOW_WIDTH, WINDOW_HEIGHT);
+    Camera camera(player);
+    UI ui;
 
     float deltaTime;
     float oldTimeSinceStart = glfwGetTime();
@@ -138,7 +137,7 @@ void init(GLFWwindow* window) {
     glEnable(GL_FRAMEBUFFER_SRGB);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glfwSetWindowAspectRatio(window, WINDOW_WIDTH, WINDOW_HEIGHT);
+    glfwSetWindowAspectRatio(window, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT);
     KeyInput::SetupKeyInputs(window);
     World::Instance().CalculatePositions();
     Renderer::Instance().SetClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));

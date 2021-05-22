@@ -31,7 +31,6 @@ Text::Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, uns
 		0, 2, 3
 	};
 
-	//quad needs 6 vertices of 4 floats
 	std::unique_ptr<VertexBuffer> VBO = std::make_unique<VertexBuffer>(nullptr, sizeof(GLfloat) * 4 * 4, GL_DYNAMIC_DRAW, layout);
 	VAO->AddVertexBuffer(std::move(VBO));
 
@@ -40,30 +39,39 @@ Text::Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, uns
 	VAO->Unbind();
 }
 
-void Text::Draw(std::shared_ptr<Shader> shader, const std::string text, float x, float y) {
+void Text::Draw(std::shared_ptr<Shader> shader, const std::string& text, float x, float y) {
 	shader->SetUniform("uTextColor", fontColor);
+	
 	unsigned char c;
+	glm::ivec2 size;
+	glm::ivec2 bearing;
+	unsigned int advance;
+	float xpos;
+	float ypos;
+	float width;
+	float height;
 
 	for (int i = 0; i < text.size(); i++) {
 		c = text[i];
 
-		glm::ivec2 size = characters[c]->GetSize();
-		glm::ivec2 bearing = characters[c]->GetBearing();
-		unsigned int advance = characters[c]->GetAdvance();
+		size = characters[c]->GetSize();
+		bearing = characters[c]->GetBearing();
+		advance = characters[c]->GetAdvance();
 
-		float xpos = x + bearing.x * fontScale;
-		float ypos = y - (size.y - bearing.y) * fontScale;
+		xpos = x + bearing.x * fontScale;
+		ypos = y - (size.y - bearing.y) * fontScale;
 
-		float width = size.x * fontScale;
-		float height = size.y * fontScale;
+		width = size.x * fontScale;
+		height = size.y * fontScale;
 
-		//position, tex coords
-		GLfloat vertices[4][4] = {
-			{xpos, ypos + height, 0.0f, 0.0f},
-			{xpos, ypos, 0.0f, 1.0f},
-			{xpos + width, ypos, 1.0f, 1.0f},
-			{xpos + width, ypos + height, 1.0f, 0.0f},
-		};
+		vertices[0][0] = xpos;
+		vertices[0][1] = ypos + height;
+		vertices[1][0] = xpos;
+		vertices[1][1] = ypos;
+		vertices[2][0] = xpos + width;
+		vertices[2][1] = ypos;
+		vertices[3][0] = xpos + width;
+		vertices[3][1] = ypos + height;
 
 		characters[c]->Bind(0);
 		VAO->BindVBO(0);
@@ -73,7 +81,6 @@ void Text::Draw(std::shared_ptr<Shader> shader, const std::string text, float x,
 		x += (advance >> 6) * fontScale;
 	}
 
-	VAO->Unbind();
 	characters[0]->Unbind();
 }
 
@@ -88,7 +95,7 @@ void Text::SetFontColor(glm::vec3 color) {
 void Text::LoadCharacters() {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	for (unsigned char c = 0; c < CHAR_NUM; c++) {
+	for (unsigned char c = 32; c <= 122; c++) {
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 			std::cout << "Failed to load Glyph: " << c << "\n";
 			continue;
@@ -100,6 +107,16 @@ void Text::LoadCharacters() {
 			face->glyph->advance.x,
 			face->glyph->bitmap.buffer);
 		characters[c] = std::move(character);
+
+		if (c == 32) {
+			c = 47;
+		}
+		else if (c == 58) {
+			c = 64;
+		}
+		else if (c == 90) {
+			c = 96;
+		}
 	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);

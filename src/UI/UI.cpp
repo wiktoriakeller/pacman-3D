@@ -9,7 +9,7 @@ UI::UI(unsigned int windowWidth, unsigned int windowHeight) : windowWidth(window
 
 void UI::Draw() {
 	DrawHealth();
-	DrawScore();
+	DrawScoreAndLevel();
 }
 
 void UI::DrawHealth() {
@@ -24,8 +24,9 @@ void UI::DrawHealth() {
 	}
 }
 
-void UI::DrawScore() {
+void UI::DrawScoreAndLevel() {
 	shaderMap["textShader"]->Use();
 	shaderMap["textShader"]->SetUniform("uProjection", projection);
 	textRenderer->Draw(shaderMap["textShader"], "Score: " + std::to_string(Points::GetScore()), OFFSET, OFFSET);
+	textRenderer->Draw(shaderMap["textShader"], "Level: 0", OFFSET, OFFSET + 2 * OFFSET);
 }

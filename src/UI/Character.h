@@ -16,7 +16,7 @@ public:
 private:
 	GLuint textureID;
 	glm::ivec2 size; //size of glyph
-	glm::ivec2 bearing; //offset from vaseline to left / top of glyph
+	glm::ivec2 bearing; //offset from baseline to left / top of glyph
 	unsigned int advance; //offset to advance to next glyph;
 
 	void LoadCharacter(unsigned char* character);

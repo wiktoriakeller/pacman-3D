@@ -19,6 +19,6 @@ private:
 	std::unique_ptr<Text> textRenderer;
 	std::unique_ptr<Sprite> pacmanLive;
 
-	void DrawScore();
+	void DrawScoreAndLevel();
 	void DrawHealth();
 };

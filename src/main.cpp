@@ -1,11 +1,10 @@
 #define GLEW_STATIC
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 
+#include "Render/Framebuffer.h"
 #include "Model.h"
 #include "Light/PointLight.h"
 #include "Light/DirectionalLight.h"
@@ -49,6 +48,8 @@ int main() {
         "Resources/Shaders/Fragment/fText.glsl");
     shaderMap["spriteShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vSprite.glsl",
         "Resources/Shaders/Fragment/fSprite.glsl");
+    shaderMap["screenShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vScreenShader.glsl",
+        "Resources/Shaders/Fragment/fScreenShader.glsl");
 
     DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-0.2f, -1.0f, -0.2f));
     PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -82,6 +83,8 @@ int main() {
         
     std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
     
+    std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>(WINDOW_WIDTH, WINDOW_HEIGHT);
+
     Camera camera(player, WINDOW_WIDTH, WINDOW_HEIGHT);
     UI ui(WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -97,6 +100,7 @@ int main() {
         player->Update(deltaTime);
 
         //drawing
+        frameBuffer->Bind();
         Renderer::Instance().Clear();
 
         shaderMap["lightShader"]->Use();
@@ -109,6 +113,10 @@ int main() {
             entities[i]->Draw(shaderMap["lightShader"]);
         }
 
+        frameBuffer->Unbind();
+        frameBuffer->Draw();
+       
+        Renderer::Instance().ClearDepth();
         ui.Draw();
 
         glfwSwapBuffers(window);

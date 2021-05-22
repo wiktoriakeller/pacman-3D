@@ -14,6 +14,8 @@ public:
 
 	void SetClearColor(const glm::vec4& color) const;
 	void Clear() const;
+	void ClearColor() const;
+	void ClearDepth() const;
 	void Draw(GLsizei IBOcount) const;
 
 private:

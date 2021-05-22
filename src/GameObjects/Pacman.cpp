@@ -6,7 +6,7 @@ Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement)> poi
 	addPoints = pointsAdder;
 	speed = 6.0;
 	nextX = 14;
-	nextZ = 23;
+	nextZ = 26;
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	stopped = true;
@@ -85,14 +85,6 @@ void Pacman::EvaluatePoints() const {
 		addPoints(element);
 		World::Instance().SetMapElement(nextX, nextZ, MapElement::None);
 	}
-}
-
-bool Pacman::CanMakeMove(int x, int z) {
-	if (World::Instance().IsPositionValid(x, z) && World::Instance().GetMapElement(x, z) != MapElement::Wall) {
-		return true;
-	}
-
-	return false;
 }
 
 void Pacman::EvaluateMove() {

@@ -63,3 +63,22 @@ void Moveable::CrossTunnel() {
 		nextX = World::Instance().TUNNEL_LEFT_POS.x - 1;
 	}
 }
+
+glm::vec3 Moveable::GetCurrentDirection() const {
+	return currentDirection;
+}
+
+glm::vec3 Moveable::GetCoordinates() const {
+	return glm::vec3(nextX, 0.0f, nextZ);
+}
+
+bool Moveable::CanMakeMove(int x, int z) const {
+	if (World::Instance().IsPositionValid(x, z) && World::Instance().GetMapElement(x, z) != MapElement::Wall) {
+		return true;
+	}
+	return false;
+}
+
+bool Moveable::CanMakeMove(glm::vec3 coordinates) const {
+	return CanMakeMove(coordinates.x, coordinates.z);
+}

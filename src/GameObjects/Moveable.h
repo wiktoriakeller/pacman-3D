@@ -10,6 +10,8 @@ public:
 	bool SnapToGrid();
 	void Move(float deltaTime);
 	void CrossTunnel();
+	glm::vec3 GetCurrentDirection() const;
+	glm::vec3 GetCoordinates() const;
 
 protected:
 	const float SNAP_DISTANCE = 0.09f;
@@ -19,6 +21,8 @@ protected:
 	int nextX;
 	int nextZ;
 	bool shouldRotate;
+	bool CanMakeMove(int x, int z) const;
+	bool CanMakeMove(glm::vec3 coordinates) const;
 
 private:
 	int currentRotation;

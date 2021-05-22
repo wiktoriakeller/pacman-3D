@@ -17,6 +17,14 @@ void World::CalculatePositions() {
             positionMap[y][x] = glm::vec3((x - WIDTH / 2 + XOFF) * MAZE_SCALE, 0.5, (y - HEIGHT / 2 + YOFF) * MAZE_SCALE);
         }
     }
+    WorldCenter = (positionMap[17][WIDTH / 2 - 1] + positionMap[17][WIDTH / 2]) / 2.0f;
+}
+
+bool World::ArePositionsEqual(glm::vec3 position1, glm::vec3 position2) const {
+    if (abs(position1.x - position2.x) > EPSILON || abs(position1.z - position2.z) > EPSILON) {
+        return false;
+    }
+    return true;
 }
 
 glm::vec3 World::GetPosition(int x, int y) const {
@@ -35,6 +43,5 @@ bool World::IsPositionValid(int x, int y) const {
     if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
         return true;
     }
-
     return false;
 }

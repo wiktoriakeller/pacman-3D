@@ -10,7 +10,10 @@
 #include "Light/DirectionalLight.h"
 #include "GameObjects/Pacman.h"
 #include "GameObjects/Points.h"
-#include "GameObjects/Ghost.h"
+#include "GameObjects/Ghosts/Blinky.h"
+#include "GameObjects/Ghosts/Pinky.h"
+#include "GameObjects/Ghosts/Clyde.h"
+#include "GameObjects/Ghosts/Inky.h"
 #include "Camera.h"
 #include "UI/UI.h"
 
@@ -76,11 +79,11 @@ int main() {
     
     std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel), pointsAdder);
 
-    std::shared_ptr<Entity> blinky = std::make_shared<Ghost>(std::move(blinkyModel), 14, 11, 0, 0.0f);
-    std::shared_ptr<Entity> clyde = std::make_shared<Ghost>(std::move(clydeModel), 13, 14, 10, -1.75f);
-    std::shared_ptr<Entity> inky = std::make_shared<Ghost>(std::move(inkyModel), 15, 14, 20, -1.75f);
-    std::shared_ptr<Entity> pinky = std::make_shared<Ghost>(std::move(pinkyModel), 17, 14, 30, -1.75f);
-        
+    std::shared_ptr<Entity> blinky = std::make_shared<Blinky>(std::move(blinkyModel), std::dynamic_pointer_cast<Moveable>(player));
+    std::shared_ptr<Entity> clyde = std::make_shared<Clyde>(std::move(clydeModel), std::dynamic_pointer_cast<Moveable>(player));
+    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), std::dynamic_pointer_cast<Moveable>(player), std::dynamic_pointer_cast<Moveable>(blinky));
+    std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), std::dynamic_pointer_cast<Moveable>(player));
+
     std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
     
     std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -97,7 +100,9 @@ int main() {
         deltaTime = timeSinceStart - oldTimeSinceStart;
         oldTimeSinceStart = timeSinceStart;
        
-        player->Update(deltaTime);
+        for (int i = 0; i < entities.size(); i++) {
+            entities[i]->Update(deltaTime);
+        }
 
         //drawing
         frameBuffer->Bind();

@@ -20,7 +20,6 @@ private:
 
 	void EvaluatePoints() const;
 	void EvaluateDirection();
-	bool CanMakeMove(int x, int z);
 	void ReverseDirection();
 	void EvaluateMove();
 	void HandleInput();

@@ -18,7 +18,6 @@ void Ghost::Update(float deltaTime) {
 }
 
 void Ghost::HandleMovement(float deltaTime) {
-	
 	switch (currentState) {
 	case State::House:
 		break;
@@ -32,11 +31,12 @@ void Ghost::HandleMovement(float deltaTime) {
 			PickPath(false);
 		}
 		break;
-
 	}
+
 	if (World::Instance().GetMapElement(nextX, nextZ) == MapElement::Tunnel) {
 		CrossTunnel();
 	}
+
 	Move(deltaTime);
 }
 
@@ -159,8 +159,6 @@ void Ghost::TargetCorner() {
 	targetX = cornerX;
 	targetZ = cornerZ;
 }
-
-void Ghost::PickTarget() {}
 
 void Ghost::Reset() {
 	SetPosition(startPosition);

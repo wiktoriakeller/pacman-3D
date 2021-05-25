@@ -1,12 +1,11 @@
 #include "Pacman.h"
 
-unsigned int Pacman::lives = 2;
-
 Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder) : Moveable(std::move(model)) {
 	addPoints = pointsAdder;
 	speed = 6.0;
 	startX = 14;
 	startZ = 26;
+	lives = 2;
 	nextX = startX;
 	nextZ = startZ;
 	startPosition = World::Instance().GetPosition(nextX, nextZ);
@@ -24,10 +23,6 @@ void Pacman::Update(float deltaTime) {
 	Move(deltaTime);
 }
 
-unsigned int Pacman::GetLives() {
-	return lives;
-}
-
 void Pacman::Reset() {
 	SetPosition(startPosition);
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -35,7 +30,22 @@ void Pacman::Reset() {
 	nextX = startX;
 	nextZ = startZ;
 	stopped = true;
+	shouldRotate = true;
 	KeyInput::PressedKey = 0;
+}
+
+int Pacman::GetLives() {
+	return lives;
+}
+
+void Pacman::DecreaseLives() {
+	if (lives >= 0) {
+		lives--;
+	}
+}
+
+void Pacman::RestoreLives() {
+	lives = 2;
 }
 
 void Pacman::HandleInput() {
@@ -68,22 +78,23 @@ void Pacman::EvaluateDirection() {
 		EvaluatePoints();
 		EvaluateMove();
 	}
-	else if (currentDirection == -wantedDirection && currentDirection != glm::vec3(0.0f, 0.0f, 0.0f)) {
+	else if (currentDirection == -wantedDirection && currentDirection != glm::vec3(0.0f, 0.0f, 0.0f) && 
+		CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
 		ReverseDirection();
 	}
 }
 
 void Pacman::ReverseDirection() {
-	if (currentDirection.x > 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
+	if (currentDirection.x > 0 ) {
 		nextX = nextX + wantedDirection.x;
 	}
-	else if (currentDirection.x < 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
+	else if (currentDirection.x < 0) {
 		nextX = nextX + wantedDirection.x;
 	}
-	else if (currentDirection.z > 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
+	else if (currentDirection.z > 0) {
 		nextZ = nextZ + wantedDirection.z;
 	}
-	else if (currentDirection.z < 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
+	else if (currentDirection.z < 0) {
 		nextZ = nextZ + wantedDirection.z;
 	}
 

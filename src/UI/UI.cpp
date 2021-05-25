@@ -1,6 +1,6 @@
 #include "UI.h"
 
-UI::UI() {
+UI::UI(std::shared_ptr<Pacman> player, std::shared_ptr<Points> points) : player(player), points(points) {
 	projection = glm::ortho(0.0f, (float)Game::WINDOW_WIDTH, 0.0f, (float)Game::WINDOW_HEIGHT);
 	pacmanLive = std::make_unique<Sprite>("Resources/Sprites/pacman.png");
 	pacmanLive->SetScale(glm::vec2(30.0f, 30.0f));
@@ -13,7 +13,7 @@ void UI::Draw() const {
 }
 
 void UI::DrawHealth() const {
-	unsigned int lives = Pacman::GetLives();
+	int lives = player->GetLives();
 
 	shaderMap["spriteShader"]->Use();
 	shaderMap["spriteShader"]->SetUniform("uProjection", projection);
@@ -27,6 +27,6 @@ void UI::DrawHealth() const {
 void UI::DrawScoreAndLevel() const {
 	shaderMap["textShader"]->Use();
 	shaderMap["textShader"]->SetUniform("uProjection", projection);
-	textRenderer->Draw(shaderMap["textShader"], "Score: " + std::to_string(Points::GetScore()), OFFSET, OFFSET);
-	textRenderer->Draw(shaderMap["textShader"], "Level: " + std::to_string(Points::GetLevel()), OFFSET, OFFSET + 2 * OFFSET);
+	textRenderer->Draw(shaderMap["textShader"], "Score: " + std::to_string(points->GetScore()), OFFSET, OFFSET);
+	textRenderer->Draw(shaderMap["textShader"], "Level: " + std::to_string(points->GetLevel()), OFFSET, OFFSET + 2 * OFFSET);
 }

@@ -81,3 +81,12 @@ bool Moveable::CanMakeMove(int x, int z) const {
 bool Moveable::CanMakeMove(glm::vec3 coordinates) const {
 	return CanMakeMove(coordinates.x, coordinates.z);
 }
+
+bool CheckCollision(std::shared_ptr<Moveable> object1, std::shared_ptr<Moveable> object2) {
+	float distance = glm::distance(object1->GetPosition(), object2->GetPosition());
+	if(distance < object1->SNAP_DISTANCE * 3) {
+		return true;
+	}
+
+	return false;
+}

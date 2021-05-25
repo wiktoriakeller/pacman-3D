@@ -1,17 +1,14 @@
 #define GLEW_STATIC
 
-#include "Model.h"
 #include "Light/PointLight.h"
 #include "Light/DirectionalLight.h"
 #include "GameObjects/Pacman.h"
-#include "GameObjects/Points.h"
 #include "GameObjects/Ghosts/Blinky.h"
 #include "GameObjects/Ghosts/Pinky.h"
 #include "GameObjects/Ghosts/Clyde.h"
 #include "GameObjects/Ghosts/Inky.h"
 #include "Camera.h"
 #include "UI/UI.h"
-#include "Game.h"
 
 void init(GLFWwindow* window);
 
@@ -57,11 +54,6 @@ int main() {
     std::unique_ptr<Model> inkyModel = std::make_unique<Model>("Resources/Models/Inky.obj", true);
     std::unique_ptr<Model> pinkyModel = std::make_unique<Model>("Resources/Models/Pinky.obj", true);
 
-    mazeModel->ChangeMeshMaterialShininess(1, 32.0f);
-    mazeModel->ChangeMeshMaterialSpecular(1, glm::vec3(0.5f, 0.5f, 0.5f));
-    blinkyModel->ChangeMeshMaterialShininess(1, 128.0f);
-    blinkyModel->ChangeMeshMaterialSpecular(1, glm::vec3(1.0f, 1.0f, 1.0f));
-
     std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel));
     std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel));
 
@@ -69,17 +61,23 @@ int main() {
     std::function<void(MapElement, int, int)> pointsAdder = [pointsCast](MapElement element, int x, int z) { pointsCast->AddPoints(element, x, z); };
     
     std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel), pointsAdder);
+    std::shared_ptr<Moveable> moveablePlayer = std::dynamic_pointer_cast<Moveable>(player);
+    std::shared_ptr<Pacman> pacman = std::dynamic_pointer_cast<Pacman>(player);
 
-    std::shared_ptr<Entity> blinky = std::make_shared<Blinky>(std::move(blinkyModel), std::dynamic_pointer_cast<Moveable>(player));
-    std::shared_ptr<Entity> clyde = std::make_shared<Clyde>(std::move(clydeModel), std::dynamic_pointer_cast<Moveable>(player));
-    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), std::dynamic_pointer_cast<Moveable>(player), 
-        std::dynamic_pointer_cast<Moveable>(blinky));
-    std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), std::dynamic_pointer_cast<Moveable>(player));
+    std::shared_ptr<Entity> blinky = std::make_shared<Blinky>(std::move(blinkyModel), moveablePlayer);
+    std::shared_ptr<Entity> clyde = std::make_shared<Clyde>(std::move(clydeModel), moveablePlayer);
+    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), moveablePlayer, std::dynamic_pointer_cast<Moveable>(blinky));
+    std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), moveablePlayer);
 
-    std::vector< std::shared_ptr<Entity>> entities = { maze, points, player, blinky, clyde, inky, pinky};
+    std::vector<std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, maze, points };
 
+    std::vector<std::shared_ptr<Moveable>> ghosts = { std::dynamic_pointer_cast<Moveable>(blinky), std::dynamic_pointer_cast<Moveable>(clyde), 
+        std::dynamic_pointer_cast<Moveable>(inky), std::dynamic_pointer_cast<Moveable>(pinky) };
+
+    bool collision;
+    Game game;
     Camera camera(player);
-    UI ui;
+    UI ui(pacman, pointsCast);
 
     float deltaTime;
     float oldTimeSinceStart = (float) glfwGetTime();
@@ -89,15 +87,35 @@ int main() {
         timeSinceStart = (float) glfwGetTime();
         deltaTime = timeSinceStart - oldTimeSinceStart;
         oldTimeSinceStart = timeSinceStart;
-       
-        for (int i = 0; i < entities.size(); i++) {
+      
+        collision = false;
+
+        for (int i = 0; i < entities.size() - 2; i++) {
             entities[i]->Update(deltaTime);
         }
 
-        if (pointsCast->GetPointsLeft() == 0) {
+        //checking collision
+        for (int i = 0; i < ghosts.size(); i++) {
+            if (CheckCollision(moveablePlayer, ghosts[i])) {
+                collision = true;
+                pacman->DecreaseLives();
+
+                if (pacman->GetLives() < 0) {
+                    pacman->RestoreLives();
+                    Game::SetIsGameOver(true);
+                }
+
+                break;
+            }
+        }
+
+        //reseting
+        if (pointsCast->GetPointsLeft() == 0 || collision) {
             for (int i = 0; i < entities.size(); i++) {
                 entities[i]->Reset();
             }
+
+            game.Reset();
         }
 
         //drawing
@@ -112,7 +130,6 @@ int main() {
         for (int i = 0; i < entities.size(); i++) {
             entities[i]->Draw(shaderMap["lightShader"]);
         }
-
         ui.Draw();
 
         glfwSwapBuffers(window);

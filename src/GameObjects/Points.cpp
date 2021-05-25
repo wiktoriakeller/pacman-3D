@@ -1,11 +1,10 @@
 #include "Points.h"
 
-unsigned int Points::score = 0;
-unsigned int Points::level = 0;
-
 Points::Points(std::unique_ptr<Model> model) : Entity(std::move(model)) { 
     Scale(glm::vec3(0.25f, 0.25f, 0.25f));
     pointsLeft = World::START_POINTS;
+    level = 0;
+    score = 0;
 }
 
 void Points::Draw(std::shared_ptr<Shader> shader) {
@@ -43,19 +42,28 @@ void Points::AddPoints(MapElement element, int x, int z) {
 }
 
 void Points::Reset() {
-    for (int y = 0; y < World::HEIGHT; y++) {
-        for (int x = 0; x < World::WIDTH; x++) {
-            if (World::Instance().GetMapElement(x, y) == MapElement::MissingPoint) {
-                World::Instance().SetMapElement(x, y, MapElement::Point);
-            }
-            else if (World::Instance().GetMapElement(x, y) == MapElement::MissingPower) {
-                World::Instance().SetMapElement(x, y, MapElement::Power);
+    if (pointsLeft == 0 || Game::GetIsGameOver()) {
+        for (int y = 0; y < World::HEIGHT; y++) {
+            for (int x = 0; x < World::WIDTH; x++) {
+                if (World::Instance().GetMapElement(x, y) == MapElement::MissingPoint) {
+                    World::Instance().SetMapElement(x, y, MapElement::Point);
+                }
+                else if (World::Instance().GetMapElement(x, y) == MapElement::MissingPower) {
+                    World::Instance().SetMapElement(x, y, MapElement::Power);
+                }
             }
         }
-    }
 
-    pointsLeft = World::START_POINTS;
-    level++;
+        pointsLeft = World::START_POINTS;
+
+        if (Game::GetIsGameOver()) {
+            level = 0;
+            score = 0;
+        }
+        else {
+            level++;
+        }
+    }
 }
 
 unsigned int Points::GetScore() {

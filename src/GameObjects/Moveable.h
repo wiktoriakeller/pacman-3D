@@ -5,6 +5,8 @@
 class Moveable : public Entity
 {
 public:
+	const float SNAP_DISTANCE = 0.15f;
+
 	Moveable(std::unique_ptr<Model> model);
 	bool SnapToGrid();
 	void Move(float deltaTime);
@@ -13,7 +15,6 @@ public:
 	glm::vec3 GetCoordinates() const;
 
 protected:
-	const float SNAP_DISTANCE = 0.09f;
 	glm::vec3 currentDirection;
 	glm::vec3 startPosition;
 	float speed;
@@ -29,3 +30,5 @@ protected:
 private:
 	int currentRotation;
 };
+
+bool CheckCollision(std::shared_ptr<Moveable> object1, std::shared_ptr<Moveable> object2);

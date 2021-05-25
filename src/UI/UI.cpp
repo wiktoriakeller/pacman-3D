@@ -28,5 +28,5 @@ void UI::DrawScoreAndLevel() const {
 	shaderMap["textShader"]->Use();
 	shaderMap["textShader"]->SetUniform("uProjection", projection);
 	textRenderer->Draw(shaderMap["textShader"], "Score: " + std::to_string(Points::GetScore()), OFFSET, OFFSET);
-	textRenderer->Draw(shaderMap["textShader"], "Level: 0", OFFSET, OFFSET + 2 * OFFSET);
+	textRenderer->Draw(shaderMap["textShader"], "Level: " + std::to_string(Points::GetLevel()), OFFSET, OFFSET + 2 * OFFSET);
 }

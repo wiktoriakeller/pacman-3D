@@ -1,10 +1,10 @@
 #include "Clyde.h"
 
 Clyde::Clyde(std::unique_ptr<Model> model, std::shared_ptr<Moveable> pacman) : Ghost(std::move(model), pacman) {
-	START_X = 12;
-	START_Z = 17;
-	nextX = START_X;
-	nextZ = START_Z;
+	startX = 12;
+	startZ = 17;
+	nextX = startX;
+	nextZ = startZ;
 	cornerX = 0;
 	cornerZ = 35;
 	startPosition = World::Instance().GetPosition(nextX, nextZ);

@@ -1,6 +1,7 @@
 #include "Points.h"
 
 unsigned int Points::score = 0;
+unsigned int Points::level = 0;
 
 Points::Points(std::unique_ptr<Model> model) : Entity(std::move(model)) { 
     Scale(glm::vec3(0.25f, 0.25f, 0.25f));
@@ -28,13 +29,16 @@ void Points::Draw(std::shared_ptr<Shader> shader) {
     }
 }
 
-void Points::AddPoints(MapElement element) {
+void Points::AddPoints(MapElement element, int x, int z) {
     if (element == MapElement::Point) {
         score += POINT_SCORE;
+        World::Instance().SetMapElement(x, z, MapElement::MissingPoint);
     }
     else if (element == MapElement::Power) {
         score += POWER_SCORE;
+        World::Instance().SetMapElement(x, z, MapElement::MissingPower);
     }
+
     pointsLeft -= 1;
 }
 
@@ -49,13 +53,19 @@ void Points::Reset() {
             }
         }
     }
+
     pointsLeft = World::START_POINTS;
+    level++;
 }
 
 unsigned int Points::GetScore() {
     return score;
 }
 
-int Points::GetPointsLeft(){
+unsigned int Points::GetLevel() {
+    return level;
+}
+
+unsigned int Points::GetPointsLeft(){
     return pointsLeft;
 }

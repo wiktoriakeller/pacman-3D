@@ -166,8 +166,8 @@ void Ghost::Reset() {
 	SetPosition(startPosition);
 	currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 	shouldRotate = true;
-	nextX = START_X;
-	nextZ = START_Z;
+	nextX = startX;
+	nextZ = startZ;
 	currentState = startState;
 	leavingState = LeavingState::CenterX;
 	speed = baseSpeed;

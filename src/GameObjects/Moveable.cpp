@@ -30,7 +30,6 @@ bool Moveable::SnapToGrid() {
 }
 
 void Moveable::Move(float deltaTime) {
-	
 	SetPosition(GetPosition() + currentDirection * deltaTime * speed);
 	
 	if (shouldRotate) {

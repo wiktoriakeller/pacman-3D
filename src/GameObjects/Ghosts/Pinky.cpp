@@ -1,10 +1,10 @@
 #include "Pinky.h"
 
 Pinky::Pinky(std::unique_ptr<Model> model, std::shared_ptr<Moveable> pacman) : Ghost(std::move(model), pacman) {
-	START_X = 14;
-	START_Z = 17;
-	nextX = START_X;
-	nextZ = START_Z;
+	startX = 14;
+	startZ = 17;
+	nextX = startX;
+	nextZ = startZ;
 	cornerX = 2;
 	cornerZ = 0;
 	startPosition = World::Instance().WorldCenter;

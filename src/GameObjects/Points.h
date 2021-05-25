@@ -9,13 +9,15 @@ public:
 	const unsigned int POWER_SCORE = 50;
 
 	Points(std::unique_ptr<Model> model);
-	void Draw(std::shared_ptr<Shader> shader) override;
-	void AddPoints(MapElement element);
-	void Reset() override;
 	static unsigned int GetScore();
-	int GetPointsLeft();
+	static unsigned int GetLevel();
+	void Draw(std::shared_ptr<Shader> shader) override;
+	void AddPoints(MapElement element, int x, int z);
+	void Reset() override;
+	unsigned int GetPointsLeft();
 
 private:
-	int pointsLeft;
+	static unsigned int level;
 	static unsigned int score;
+	unsigned int pointsLeft;
 };

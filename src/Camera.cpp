@@ -3,12 +3,12 @@
 Camera::Camera(std::shared_ptr<Entity> target) {
 	targetObject = target;
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
-	positionOffset = glm::vec3(0.0f, 12.0f, 4.0f);
+	positionOffset = glm::vec3(0.0f, 15.0f, 6.0f);
 	projection = glm::perspective(glm::radians(60.0f), (float)Game::WINDOW_WIDTH / Game::WINDOW_HEIGHT, 0.1f, 100.0f);
 }
 
 glm::mat4 Camera::GetView() {
-	glm::vec3 targetPosition(std::clamp(targetObject->GetPosition().x, -10.0f, 10.0f), 0.5, std::clamp(targetObject->GetPosition().z, -16.0f, 13.0f));
+	glm::vec3 targetPosition(std::clamp(targetObject->GetPosition().x, -10.0f, 10.0f), 0.5, std::clamp(targetObject->GetPosition().z, -11.0f, 11.0f));
 	return glm::lookAt(targetPosition + positionOffset, targetPosition, up);
 }
 

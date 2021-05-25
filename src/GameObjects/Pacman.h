@@ -8,7 +8,7 @@
 class Pacman : public Moveable
 {
 public:
-	Pacman(std::unique_ptr<Model> model, std::function<void(MapElement)> pointsAdder);
+	Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder);
 	void Update(float deltaTime) override;
 	static unsigned int GetLives();
 	void Reset() override;
@@ -17,7 +17,7 @@ private:
 	static unsigned int lives;
 	bool stopped;
 	glm::vec3 wantedDirection;
-	std::function<void(MapElement)> addPoints;
+	std::function<void(MapElement, int, int)> addPoints;
 
 	void EvaluatePoints() const;
 	void EvaluateDirection();

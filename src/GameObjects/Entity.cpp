@@ -19,6 +19,7 @@ void Entity::SetPosition(glm::vec3 position) {
 	modelMatrix[3].x = position.x;
 	modelMatrix[3].y = position.y;
 	modelMatrix[3].z = position.z;
+	UpdateNormalMatrix();
 }
 
 void Entity::Translate(glm::vec3 translation) {
@@ -39,6 +40,7 @@ void Entity::SetScale(glm::vec3 factor) {
 	modelMatrix[0].x = factor.x;
 	modelMatrix[1].y = factor.y;
 	modelMatrix[2].z = factor.z;
+	UpdateNormalMatrix();
 }
 
 void Entity::Scale(glm::vec3 factor) {

@@ -44,8 +44,6 @@ int main() {
         "Resources/Shaders/Fragment/fText.glsl");
     shaderMap["spriteShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vSprite.glsl",
         "Resources/Shaders/Fragment/fSprite.glsl");
-    shaderMap["screenShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vScreenShader.glsl",
-        "Resources/Shaders/Fragment/fScreenShader.glsl");
 
     DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
     PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -68,7 +66,7 @@ int main() {
     std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel));
 
     std::shared_ptr<Points> pointsCast = std::dynamic_pointer_cast<Points>(points);
-    std::function<void(MapElement)> pointsAdder = [pointsCast](MapElement element) { pointsCast->AddPoints(element); };
+    std::function<void(MapElement, int, int)> pointsAdder = [pointsCast](MapElement element, int x, int z) { pointsCast->AddPoints(element, x, z); };
     
     std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel), pointsAdder);
 
@@ -78,13 +76,13 @@ int main() {
         std::dynamic_pointer_cast<Moveable>(blinky));
     std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), std::dynamic_pointer_cast<Moveable>(player));
 
-    std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
+    std::vector< std::shared_ptr<Entity>> entities = { maze, points, player, blinky, clyde, inky, pinky};
 
     Camera camera(player);
     UI ui;
 
     float deltaTime;
-    float oldTimeSinceStart = glfwGetTime();
+    float oldTimeSinceStart = (float) glfwGetTime();
     float timeSinceStart = 0.0f;
 
     while (!glfwWindowShouldClose(window)) {
@@ -94,6 +92,12 @@ int main() {
        
         for (int i = 0; i < entities.size(); i++) {
             entities[i]->Update(deltaTime);
+        }
+
+        if (pointsCast->GetPointsLeft() == 0) {
+            for (int i = 0; i < entities.size(); i++) {
+                entities[i]->Reset();
+            }
         }
 
         //drawing

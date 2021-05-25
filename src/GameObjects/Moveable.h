@@ -1,7 +1,6 @@
 #pragma once
 #include "Entity.h"
 #include "World.h"
-#include <math.h>
 
 class Moveable : public Entity
 {
@@ -14,15 +13,16 @@ public:
 	glm::vec3 GetCoordinates() const;
 
 protected:
-	const float SNAP_DISTANCE = 0.12f;
+	const float SNAP_DISTANCE = 0.09f;
 	glm::vec3 currentDirection;
 	glm::vec3 startPosition;
 	float speed;
 	int nextX;
 	int nextZ;
-	int START_X;
-	int START_Z;
+	int startX;
+	int startZ;
 	bool shouldRotate;
+
 	bool CanMakeMove(int x, int z) const;
 	bool CanMakeMove(glm::vec3 coordinates) const;
 

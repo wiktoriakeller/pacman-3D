@@ -2,13 +2,13 @@
 
 unsigned int Pacman::lives = 2;
 
-Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement)> pointsAdder) : Moveable(std::move(model)) {
+Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder) : Moveable(std::move(model)) {
 	addPoints = pointsAdder;
 	speed = 6.0;
-	START_X = 14;
-	START_Z = 26;
-	nextX = START_X;
-	nextZ = START_Z;
+	startX = 14;
+	startZ = 26;
+	nextX = startX;
+	nextZ = startZ;
 	startPosition = World::Instance().GetPosition(nextX, nextZ);
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -32,8 +32,8 @@ void Pacman::Reset() {
 	SetPosition(startPosition);
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
-	nextX = START_X;
-	nextZ = START_Z;
+	nextX = startX;
+	nextZ = startZ;
 	stopped = true;
 	KeyInput::PressedKey = 0;
 }
@@ -64,27 +64,27 @@ void Pacman::HandleInput() {
 }
 
 void Pacman::EvaluateDirection() {
-	if (currentDirection == -wantedDirection && currentDirection != glm::vec3(0.0f, 0.0f, 0.0f)) {
-		ReverseDirection();
-	}
-	else if(SnapToGrid()) {
+	if(SnapToGrid()) {
 		EvaluatePoints();
 		EvaluateMove();
+	}
+	else if (currentDirection == -wantedDirection && currentDirection != glm::vec3(0.0f, 0.0f, 0.0f)) {
+		ReverseDirection();
 	}
 }
 
 void Pacman::ReverseDirection() {
-	if (currentDirection.x > 0 && CanMakeMove(nextX - 1 + wantedDirection.x, nextZ + wantedDirection.z)) {
-		nextX = nextX - 1 + wantedDirection.x;
+	if (currentDirection.x > 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
+		nextX = nextX + wantedDirection.x;
 	}
-	else if (currentDirection.x < 0 && CanMakeMove(nextX + 1 + wantedDirection.x, nextZ + wantedDirection.z)) {
-		nextX = nextX + 1 + wantedDirection.x;
+	else if (currentDirection.x < 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
+		nextX = nextX + wantedDirection.x;
 	}
-	else if (currentDirection.z > 0 && CanMakeMove(nextX + wantedDirection.x, nextZ - 1 + wantedDirection.z)) {
-		nextZ = nextZ - 1 + wantedDirection.z;
+	else if (currentDirection.z > 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
+		nextZ = nextZ + wantedDirection.z;
 	}
-	else if (currentDirection.z < 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + 1 + wantedDirection.z)) {
-		nextZ = nextZ + 1 + wantedDirection.z;
+	else if (currentDirection.z < 0 && CanMakeMove(nextX + wantedDirection.x, nextZ + wantedDirection.z)) {
+		nextZ = nextZ + wantedDirection.z;
 	}
 
 	currentDirection = wantedDirection;
@@ -95,13 +95,7 @@ void Pacman::EvaluatePoints() const {
 	MapElement element = World::Instance().GetMapElement(nextX, nextZ);
 
 	if (element == MapElement::Point || element == MapElement::Power) {
-		addPoints(element);
-		if (element == MapElement::Point) {
-			World::Instance().SetMapElement(nextX, nextZ, MapElement::MissingPoint);
-		}
-		else {
-			World::Instance().SetMapElement(nextX, nextZ, MapElement::MissingPower);
-		}
+		addPoints(element, nextX, nextZ);
 	}
 }
 

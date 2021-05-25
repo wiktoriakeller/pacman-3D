@@ -8,6 +8,8 @@ MapElement World::NumberToMapElement(int number) {
     case 2: return MapElement::Point;
     case 3: return MapElement::Power;
     case 4: return MapElement::Tunnel;
+    case 5: return MapElement::MissingPoint;
+    case 6: return MapElement::MissingPower;
     }
 }
 
@@ -36,7 +38,7 @@ MapElement World::GetMapElement(int x, int y) {
 }
 
 void World::SetMapElement(int x, int y, MapElement element) {
-    map[y][x] = (int) element;
+    map[y][x] = (int)element;
 }
 
 bool World::IsPositionValid(int x, int y) const {

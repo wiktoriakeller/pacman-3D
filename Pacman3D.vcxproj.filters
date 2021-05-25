@@ -78,7 +78,7 @@
     <ClCompile Include="src\GameObjects\Moveable.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Render\Framebuffer.cpp">
+    <ClCompile Include="src\Render\FrameBuffers\Framebuffer.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\UI\Text.cpp">
@@ -176,7 +176,7 @@
     <ClInclude Include="src\GameObjects\Moveable.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Render\Framebuffer.h">
+    <ClInclude Include="src\Render\FrameBuffers\Framebuffer.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="src\UI\Text.h">

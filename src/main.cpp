@@ -1,10 +1,5 @@
 #define GLEW_STATIC
 
-#include <GLM/glm.hpp>
-#include <GLM/gtc/type_ptr.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
-
-#include "Render/Framebuffer.h"
 #include "Model.h"
 #include "Light/PointLight.h"
 #include "Light/DirectionalLight.h"
@@ -52,7 +47,7 @@ int main() {
     shaderMap["screenShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vScreenShader.glsl",
         "Resources/Shaders/Fragment/fScreenShader.glsl");
 
-    DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-0.2f, -1.0f, -0.2f));
+    DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
     PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
         1.0f, 0.09, 0.032);
 
@@ -84,8 +79,6 @@ int main() {
     std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), std::dynamic_pointer_cast<Moveable>(player));
 
     std::vector< std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
-    
-    std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>();
 
     Camera camera(player);
     UI ui;
@@ -104,7 +97,6 @@ int main() {
         }
 
         //drawing
-        frameBuffer->Bind();
         Renderer::Instance().Clear();
 
         shaderMap["lightShader"]->Use();
@@ -117,10 +109,6 @@ int main() {
             entities[i]->Draw(shaderMap["lightShader"]);
         }
 
-        frameBuffer->Unbind();
-        frameBuffer->Draw();
-       
-        Renderer::Instance().ClearDepth();
         ui.Draw();
 
         glfwSwapBuffers(window);

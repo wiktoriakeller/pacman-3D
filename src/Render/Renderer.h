@@ -4,6 +4,10 @@
 #include <GLM/vec4.hpp>
 #include "VertexArray.h"
 
+enum class ClearType : unsigned char {
+	Color, Depth, All
+};
+
 class Renderer
 {
 public:
@@ -14,8 +18,7 @@ public:
 
 	void SetClearColor(const glm::vec4& color) const;
 	void Clear() const;
-	void ClearColor() const;
-	void ClearDepth() const;
+	void Clear(ClearType type) const;
 	void Draw(GLsizei IBOcount) const;
 
 private:
@@ -24,4 +27,7 @@ private:
 	Renderer(Renderer&&) = delete;
 	void operator=(const Renderer&) = delete;
 	void operator=(const Renderer&&) = delete;
+
+	void ClearColor() const;
+	void ClearDepth() const;
 };

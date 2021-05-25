@@ -51,3 +51,5 @@ void Entity::UpdateNormalMatrix() {
 }
 
 void Entity::Update(float deltaTime) { }
+
+void Entity::Reset() {}

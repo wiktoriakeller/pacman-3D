@@ -18,6 +18,7 @@ public:
 	Ghost(std::unique_ptr<Model> model, std::shared_ptr<Moveable> pacman);
 	void Update(float deltaTime) override;
 	virtual void PickTarget();
+	void Reset() override;
 
 protected:
 	int targetX;
@@ -26,6 +27,7 @@ protected:
 	int cornerZ;
 	float houseTime;
 	State currentState;
+	State startState;
 	std::shared_ptr<Moveable> pacman;
 	void PickPath(bool canTurnAround);
 	void TargetCorner();

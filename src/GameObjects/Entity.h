@@ -19,7 +19,7 @@ public:
 	void SetScale(glm::vec3 factor);
 	void Scale(glm::vec3 factor);
 	virtual void Update(float deltaTime);
-
+	virtual void Reset();
 protected:
 	std::unique_ptr<Model> model;
 	glm::mat4 modelMatrix;

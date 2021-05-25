@@ -11,8 +11,11 @@ public:
 	Points(std::unique_ptr<Model> model);
 	void Draw(std::shared_ptr<Shader> shader) override;
 	void AddPoints(MapElement element);
+	void Reset() override;
 	static unsigned int GetScore();
+	int GetPointsLeft();
 
 private:
+	int pointsLeft;
 	static unsigned int score;
 };

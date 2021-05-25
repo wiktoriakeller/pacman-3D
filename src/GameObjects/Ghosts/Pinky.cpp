@@ -1,6 +1,8 @@
 #include "Pinky.h"
 
 Pinky::Pinky(std::unique_ptr<Model> model, std::shared_ptr<Moveable> pacman) : Ghost(std::move(model), pacman) {
+	START_X = 14;
+	START_Z = 17;
 	nextX = START_X;
 	nextZ = START_Z;
 	cornerX = 2;
@@ -9,6 +11,8 @@ Pinky::Pinky(std::unique_ptr<Model> model, std::shared_ptr<Moveable> pacman) : G
 	SetPosition(startPosition);
 	currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 	currentState = State::House;
+	startState = currentState;
+
 	targetX = nextX;
 	targetZ = nextZ;
 	houseTime = 2;

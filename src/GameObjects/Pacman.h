@@ -11,6 +11,7 @@ public:
 	Pacman(std::unique_ptr<Model> model, std::function<void(MapElement)> pointsAdder);
 	void Update(float deltaTime) override;
 	static unsigned int GetLives();
+	void Reset() override;
 
 private:
 	static unsigned int lives;

@@ -186,7 +186,8 @@ void Ghost::EnterHouse() {
 		break;
 
 	case ReturningState::StartPosition:
-		if (!World::Instance().ArePositionsEqual(GetPosition(), startPosition) && startZ == HOUSE_CENTER_Z) {
+		if (!World::Instance().ArePositionsEqual(GetPosition(), glm::vec3(startPosition.x, GetPosition().y, GetPosition().z)) 
+			&& (startZ == HOUSE_CENTER_Z || startX != HOUSE_CENTER_X)) {
 			float direction = 1.0f;
 			if (startPosition.x < World::Instance().WorldCenter.x) {
 				direction = -1.0f;
@@ -200,7 +201,7 @@ void Ghost::EnterHouse() {
 			frightenedTimer = 0.0f;
 			ChangeBaseState(State::Leaving);
 
-			if (startZ != HOUSE_CENTER_Z) {
+			if (startZ != HOUSE_CENTER_Z || startX == HOUSE_CENTER_X) {
 				leavingState = LeavingState::CenterZ;
 			}
 			else {

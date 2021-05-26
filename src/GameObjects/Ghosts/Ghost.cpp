@@ -25,6 +25,18 @@ void Ghost::Update(float deltaTime) {
 		frightenedTimer += deltaTime;
 	}
 
+	if (isFrightened && !IsReturning() && frightenedTimer < frightenedTime && frightenedTimer >= (frightenedTime - 1.0f)) {
+		float whole;
+		if (int(std::modf(frightenedTimer, &whole) * 1000.0f) % 2 == 0) {
+			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+			std::cout << "blue\n";
+		}
+		else {
+			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			std::cout << "white\n";
+		}
+	}
+
 	UpdateState();
 	HandleMovement(deltaTime);
 }
@@ -287,12 +299,14 @@ void Ghost::Frighten() {
 	model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, true);
 	glm::vec3 reversedDirection = -currentDirection;
 
-	if (currentDirection.x != 0 && CanMakeMove(nextX + reversedDirection.x, nextZ)) {
+	if (currentDirection.x != 0 && CanMakeMove(nextX + reversedDirection.x, nextZ)
+		&& (currentState == State::Chase || currentState == State::Scatter)) {
 		currentDirection = reversedDirection;
 		nextX = nextX + reversedDirection.x;
 		shouldRotate = true;
 	}
-	else if (currentDirection.z != 0 && CanMakeMove(nextX, nextZ + reversedDirection.z)) {
+	else if (currentDirection.z != 0 && CanMakeMove(nextX, nextZ + reversedDirection.z)
+		&& (currentState == State::Chase || currentState == State::Scatter)) {
 		currentDirection = reversedDirection;
 		nextZ = nextZ + reversedDirection.z;
 		shouldRotate = true;

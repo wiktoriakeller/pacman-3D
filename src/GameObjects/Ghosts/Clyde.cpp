@@ -1,6 +1,7 @@
 #include "Clyde.h"
 
-Clyde::Clyde(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman) : Ghost(std::move(model), pacman) {
+Clyde::Clyde(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool createPointLight) : 
+	Ghost(std::move(model), pacman, createPointLight) {
 	startX = 12;
 	startZ = 17;
 	cornerX = 0;

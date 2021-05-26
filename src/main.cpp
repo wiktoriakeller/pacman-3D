@@ -43,8 +43,6 @@ int main() {
         "Resources/Shaders/Fragment/fSprite.glsl");
 
     DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
-    PointLight pointLight(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-        1.0f, 0.22f, 0.20f);
 
     std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/Models/maze.obj", true);
     std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/Models/pacman.obj", true);
@@ -54,20 +52,20 @@ int main() {
     std::unique_ptr<Model> inkyModel = std::make_unique<Model>("Resources/Models/Inky.obj", true);
     std::unique_ptr<Model> pinkyModel = std::make_unique<Model>("Resources/Models/Pinky.obj", true);
 
-    std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel));
-    std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel));
+    std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel), false);
+    std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel), false);
 
     std::shared_ptr<Points> pointsCast = std::dynamic_pointer_cast<Points>(points);
     std::function<void(MapElement, int, int)> pointsAdder = [pointsCast](MapElement element, int x, int z) { pointsCast->AddPoints(element, x, z); };
     
-    std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel), pointsAdder);
+    std::shared_ptr<Entity> player = std::make_shared<Pacman>(std::move(pacmanModel), pointsAdder, true);
     std::shared_ptr<Moveable> moveablePlayer = std::dynamic_pointer_cast<Moveable>(player);
     std::shared_ptr<Pacman> pacman = std::dynamic_pointer_cast<Pacman>(player);
 
-    std::shared_ptr<Entity> clyde = std::make_shared<Clyde>(std::move(clydeModel), pacman);
-    std::shared_ptr<Entity> blinky = std::make_shared<Blinky>(std::move(blinkyModel), pacman);
-    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), pacman, std::dynamic_pointer_cast<Moveable>(blinky));
-    std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), pacman);
+    std::shared_ptr<Entity> clyde = std::make_shared<Clyde>(std::move(clydeModel), pacman, true);
+    std::shared_ptr<Entity> blinky = std::make_shared<Blinky>(std::move(blinkyModel), pacman, true);
+    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), pacman, std::dynamic_pointer_cast<Moveable>(blinky), true);
+    std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), pacman, true);
 
     std::vector<std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
 
@@ -142,8 +140,11 @@ int main() {
         shaderMap["lightShader"]->Use();
         camera.SendToShader(shaderMap["lightShader"]);
         dirLight.SendToShader(shaderMap["lightShader"]);
-        pointLight.SetPosition(player->GetPosition().x, player->GetPosition().y - 0.5f, player->GetPosition().z);
-        pointLight.SendToShader(shaderMap["lightShader"]);
+
+        //sending light
+        for (int i = 0; i < entities.size(); i++) {
+            entities[i]->SendLightToShader(shaderMap["lightShader"]);
+        }
 
         for (int i = 0; i < entities.size(); i++) {
             entities[i]->Draw(shaderMap["lightShader"]);

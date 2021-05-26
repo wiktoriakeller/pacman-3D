@@ -1,6 +1,6 @@
 #include "Moveable.h"
     
-Moveable::Moveable(std::unique_ptr<Model> model) : Entity(std::move(model)) {
+Moveable::Moveable(std::unique_ptr<Model> model, bool createPointLight) : Entity(std::move(model), createPointLight) {
 	currentRotation = 0;
 	shouldRotate = false;
 	speed = 0;

@@ -1,6 +1,7 @@
 #include "Pacman.h"
 
-Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder) : Moveable(std::move(model)) {
+Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder,
+	bool createPointLight) : Moveable(std::move(model), createPointLight) {
 	addPoints = pointsAdder;
 	speed = 6.0f;
 	startX = 14;

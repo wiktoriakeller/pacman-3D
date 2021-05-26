@@ -9,7 +9,7 @@
 class Pacman : public Moveable
 {
 public:
-	Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder);
+	Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder, bool createPointLight);
 	void Update(float deltaTime) override;
 	void Reset() override;
 	void DecreaseLives();

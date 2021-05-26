@@ -1,6 +1,6 @@
 #include "Points.h"
 
-Points::Points(std::unique_ptr<Model> model) : Entity(std::move(model)) {
+Points::Points(std::unique_ptr<Model> model, bool createPointLight) : Entity(std::move(model), createPointLight) {
     Scale(glm::vec3(0.25f, 0.25f, 0.25f));
     pointsLeft = World::START_POINTS;
     level = 0;

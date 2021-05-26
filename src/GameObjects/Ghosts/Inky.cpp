@@ -1,6 +1,7 @@
 #include "Inky.h"
 
-Inky::Inky(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, std::shared_ptr<Moveable> blinky) : Ghost(std::move(model), pacman), blinky(blinky) {
+Inky::Inky(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, std::shared_ptr<Moveable> blinky, bool createPointLight) : 
+	Ghost(std::move(model), pacman, createPointLight), blinky(blinky) {
 	startX = 15;
 	startZ = 17;
 	cornerX = 27;

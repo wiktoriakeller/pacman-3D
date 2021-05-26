@@ -1,8 +1,15 @@
 #include "Entity.h"
 
-Entity::Entity(std::unique_ptr<Model> model) : model(std::move(model)) {
+Entity::Entity(std::unique_ptr<Model> model, bool createPointLight) : model(std::move(model)) {
 	modelMatrix = glm::mat4(1.0f);
 	UpdateNormalMatrix();
+	if (createPointLight) {
+		pointLight = std::make_unique<PointLight>(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 0.22f, 0.20f);
+	}
+	else {
+		pointLight = nullptr;
+	}
 }
 
 void Entity::Draw(std::shared_ptr<Shader> shader) {
@@ -46,6 +53,13 @@ void Entity::SetScale(glm::vec3 factor) {
 void Entity::Scale(glm::vec3 factor) {
 	modelMatrix = glm::scale(modelMatrix, factor);
 	UpdateNormalMatrix();
+}
+
+void Entity::SendLightToShader(std::shared_ptr<Shader> shader) {
+	if (pointLight != nullptr) {
+		pointLight->SetPosition(GetPosition().x, GetPosition().y - 0.5f, GetPosition().z);
+		pointLight->SendToShader(shader);
+	}
 }
 
 void Entity::UpdateNormalMatrix() {

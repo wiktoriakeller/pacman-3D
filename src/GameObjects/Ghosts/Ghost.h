@@ -20,7 +20,7 @@ enum class ReturningState : unsigned char
 class Ghost : public Moveable
 {
 public:
-	Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman);
+	Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool createPointLight);
 	void Update(float deltaTime) override;
 	virtual void PickTarget() = 0;
 	void Reset() override;

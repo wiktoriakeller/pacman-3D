@@ -1,6 +1,7 @@
 #include "Blinky.h"
 
-Blinky::Blinky(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman) : Ghost(std::move(model), pacman) {
+Blinky::Blinky(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool createPointLight) : 
+	Ghost(std::move(model), pacman, createPointLight) {
 	startX = 14;
 	startZ = 14;
 	cornerX = 26;

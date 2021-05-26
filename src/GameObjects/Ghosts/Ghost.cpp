@@ -1,6 +1,7 @@
 #include "Ghost.h"
 
-Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman) : Moveable(std::move(model)), pacman(pacman) {
+Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool createPointLight) : 
+	Moveable(std::move(model), createPointLight), pacman(pacman) {
 	timer = 0.0f;
 	frightenedTimer = 0.0f;
 	chaseTime = 50.0f;
@@ -26,10 +27,10 @@ void Ghost::Update(float deltaTime) {
 		frightenedTimer += deltaTime;
 	}
 
-	if (isFrightened && !IsReturning() && frightenedTimer < frightenedTime && frightenedTimer >= (frightenedTime - 1.0f)) {
+	if (isFrightened && !IsReturning() && frightenedTimer < frightenedTime && frightenedTimer >= (frightenedTime - 1.5f)) {
 		blinkingTimer++;
-		int reminder = blinkingTimer % 35;
-		if (reminder < 17) {
+		int reminder = blinkingTimer % 25;
+		if (reminder < 13) {
 			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
 		}
 		else {

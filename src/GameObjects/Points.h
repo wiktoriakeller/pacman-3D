@@ -12,7 +12,7 @@ public:
 	const unsigned int POWER_SCORE = 50;
 	const unsigned int GHOST_KILL_SCORE = 200;
 
-	Points(std::unique_ptr<Model> model);
+	Points(std::unique_ptr<Model> model, bool createPointLight);
 	unsigned int GetScore();
 	unsigned int GetLevel();
 	unsigned int GetPointsLeft();

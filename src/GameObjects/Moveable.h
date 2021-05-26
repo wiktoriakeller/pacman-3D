@@ -7,7 +7,7 @@ class Moveable : public Entity
 public:
 	const float SNAP_DISTANCE = 0.15f;
 
-	Moveable(std::unique_ptr<Model> model);
+	Moveable(std::unique_ptr<Model> model, bool createPointLight);
 	bool SnapToGrid();
 	void Move(float deltaTime);
 	void CrossTunnel();

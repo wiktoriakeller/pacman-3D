@@ -1,6 +1,7 @@
 #include "Pinky.h"
 
-Pinky::Pinky(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman) : Ghost(std::move(model), pacman) {
+Pinky::Pinky(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool createPointLight) :
+	Ghost(std::move(model), pacman, createPointLight) {
 	startX = 14;
 	startZ = 17;
 	cornerX = 2;

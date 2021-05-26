@@ -7,6 +7,7 @@ Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman) : Mov
 	scatterTime = 10.0f;
 	frightenedTime = 8.0f;
 	baseSpeed = 4.5f;
+	blinkingTimer = 0;
 	speed = baseSpeed;
 	isFrightened = false;
 	leavingState = LeavingState::CenterX;
@@ -26,14 +27,13 @@ void Ghost::Update(float deltaTime) {
 	}
 
 	if (isFrightened && !IsReturning() && frightenedTimer < frightenedTime && frightenedTimer >= (frightenedTime - 1.0f)) {
-		float whole;
-		if (int(std::modf(frightenedTimer, &whole) * 1000.0f) % 2 == 0) {
+		blinkingTimer++;
+		int reminder = blinkingTimer % 35;
+		if (reminder < 17) {
 			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
-			std::cout << "blue\n";
 		}
 		else {
 			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-			std::cout << "white\n";
 		}
 	}
 
@@ -75,6 +75,7 @@ void Ghost::UpdateState() {
 
 	if (isFrightened && frightenedTimer > frightenedTime) {
 		isFrightened = false;
+		blinkingTimer = 0;
 
 		if (currentState != State::Returning) {
 			model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, false);

@@ -46,6 +46,7 @@ protected:
 	
 private:
 	const unsigned int MAT_COLOR_INDEX = 1;
+	unsigned int blinkingTimer;
 	float timer;
 	float frightenedTimer;
 	float baseSpeed;

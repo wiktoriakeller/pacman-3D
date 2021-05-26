@@ -26,7 +26,9 @@ public:
     void SetMeshMaterial(Material& newMaterial, unsigned int materialIndex);
     void ChangeMeshMaterialShininess(unsigned int materialIndex, float shininess);
     void ChangeMeshMaterialSpecular(unsigned int materialIndex, glm::vec3 specularColor);
-    void ChangeMeshMaterialDiffuse(unsigned int materialIndex, glm::vec3 diffuseColor);
+    void ChangeMeshMaterialDiffuse(unsigned int materialIndex, glm::vec4 diffuseColor);
+    void UseMeshMaterialSpecularColor(unsigned int materialIndex, bool use);
+    void UseMeshMaterialDiffuseColor(unsigned int materialIndex, bool use);
 
 private:
     std::vector<std::unique_ptr<Mesh>> meshes;

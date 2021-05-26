@@ -64,20 +64,21 @@ int main() {
     std::shared_ptr<Moveable> moveablePlayer = std::dynamic_pointer_cast<Moveable>(player);
     std::shared_ptr<Pacman> pacman = std::dynamic_pointer_cast<Pacman>(player);
 
-    std::shared_ptr<Entity> blinky = std::make_shared<Blinky>(std::move(blinkyModel), moveablePlayer);
-    std::shared_ptr<Entity> clyde = std::make_shared<Clyde>(std::move(clydeModel), moveablePlayer);
-    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), moveablePlayer, std::dynamic_pointer_cast<Moveable>(blinky));
-    std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), moveablePlayer);
+    std::shared_ptr<Entity> clyde = std::make_shared<Clyde>(std::move(clydeModel), pacman);
+    std::shared_ptr<Entity> blinky = std::make_shared<Blinky>(std::move(blinkyModel), pacman);
+    std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), pacman, std::dynamic_pointer_cast<Moveable>(blinky));
+    std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), pacman);
 
     std::vector<std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, maze, points };
 
-    std::vector<std::shared_ptr<Moveable>> ghosts = { std::dynamic_pointer_cast<Moveable>(blinky), std::dynamic_pointer_cast<Moveable>(clyde), 
-        std::dynamic_pointer_cast<Moveable>(inky), std::dynamic_pointer_cast<Moveable>(pinky) };
+    std::vector<std::shared_ptr<Ghost>> ghosts = { std::dynamic_pointer_cast<Ghost>(blinky), std::dynamic_pointer_cast<Ghost>(clyde),
+        std::dynamic_pointer_cast<Ghost>(inky), std::dynamic_pointer_cast<Ghost>(pinky) };
 
     bool collision;
     Game game;
     Camera camera(player);
     UI ui(pacman, pointsCast);
+    srand(time(0));
 
     float deltaTime;
     float oldTimeSinceStart = (float) glfwGetTime();
@@ -97,15 +98,19 @@ int main() {
         //checking collision
         for (int i = 0; i < ghosts.size(); i++) {
             if (CheckCollision(moveablePlayer, ghosts[i])) {
-                collision = true;
-                pacman->DecreaseLives();
-
-                if (pacman->GetLives() < 0) {
-                    pacman->RestoreLives();
-                    Game::SetIsGameOver(true);
+                if (ghosts[i]->IsFrightened()) {
+                    ghosts[i]->ReturnToHouse();
+                    continue;
                 }
-
-                break;
+                else {
+                    collision = true;
+                    pacman->DecreaseLives();
+                    if (pacman->GetLives() < 0) {
+                        pacman->RestoreLives();
+                        Game::SetIsGameOver(true);
+                    }
+                    break;
+                }
             }
         }
 

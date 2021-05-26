@@ -2,7 +2,7 @@
 
 Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder) : Moveable(std::move(model)) {
 	addPoints = pointsAdder;
-	speed = 6.0;
+	speed = 6.0f;
 	startX = 14;
 	startZ = 26;
 	lives = 2;
@@ -12,12 +12,14 @@ Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int,
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	stopped = true;
+	powerPillEffect = false;
 	Rotate(-30, glm::vec3(1.0f, 0.0f, 0.0f));
 	Scale(glm::vec3(0.8f, 0.8f, 0.8f));
 	SetPosition(startPosition);
 }
 
 void Pacman::Update(float deltaTime) {
+	powerPillEffect = false;
 	HandleInput();
 	EvaluateDirection();
 	Move(deltaTime);
@@ -34,7 +36,7 @@ void Pacman::Reset() {
 	KeyInput::PressedKey = 0;
 }
 
-int Pacman::GetLives() {
+int Pacman::GetLives() const {
 	return lives;
 }
 
@@ -46,6 +48,10 @@ void Pacman::DecreaseLives() {
 
 void Pacman::RestoreLives() {
 	lives = 2;
+}
+
+bool Pacman::GetPowerPillEffect() const {
+	return powerPillEffect;
 }
 
 void Pacman::HandleInput() {
@@ -102,11 +108,15 @@ void Pacman::ReverseDirection() {
 	shouldRotate = true;
 }
 
-void Pacman::EvaluatePoints() const {
+void Pacman::EvaluatePoints() {
 	MapElement element = World::Instance().GetMapElement(nextX, nextZ);
 
 	if (element == MapElement::Point || element == MapElement::Power) {
 		addPoints(element, nextX, nextZ);
+
+		if (element == MapElement::Power) {
+			powerPillEffect = true;
+		}
 	}
 }
 

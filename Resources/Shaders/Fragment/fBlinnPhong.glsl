@@ -2,7 +2,7 @@
 #define NR_POINT_LIGHTS 1
 
 struct Material {
-	vec3 diffuseColor;
+	vec4 diffuseColor;
 	vec3 specularColor;
 
 	bool useNormalMap;
@@ -74,6 +74,10 @@ void main() {
 		result += CalculatePointLight(uPointLights[i], viewDir, normal);
 	}
 
+	if(uMaterial.useDiffuseColor && uMaterial.diffuseColor.a < 0.1) {
+		discard;
+	}
+	
 	fragmentColor = vec4(result, 1.0);
 }
 
@@ -86,7 +90,7 @@ vec3 CalculateDirLight(vec3 viewDir, vec3 normal) {
 
 	//ambient component
 	if(uMaterial.useDiffuseColor) {
-		ambient = uDirLight.ambient * uMaterial.diffuseColor;
+		ambient = uDirLight.ambient * vec3(uMaterial.diffuseColor);
 	}
 	else {
 		ambient = uDirLight.ambient * texture(uMaterial.diffuseMap1, textureCoord).rgb;
@@ -95,7 +99,7 @@ vec3 CalculateDirLight(vec3 viewDir, vec3 normal) {
 	//diffuse component
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
 	if(uMaterial.useDiffuseColor) {
-		diffuse = uDirLight.diffuse * diffuseStrength * uMaterial.diffuseColor;
+		diffuse = uDirLight.diffuse * diffuseStrength * vec3(uMaterial.diffuseColor);
 	}
 	else {
 		diffuse = uDirLight.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, textureCoord).rgb;
@@ -123,7 +127,7 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal) {
 
 	//ambient component
 	if(uMaterial.useDiffuseColor) {
-		ambient = light.ambient * uMaterial.diffuseColor;
+		ambient = light.ambient * vec3(uMaterial.diffuseColor);
 	}
 	else {
 		ambient = light.ambient * texture(uMaterial.diffuseMap1, textureCoord).rgb;
@@ -132,7 +136,7 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal) {
 	//diffuse component
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
 	if(uMaterial.useDiffuseColor) {
-		diffuse = light.diffuse * diffuseStrength * uMaterial.diffuseColor;
+		diffuse = light.diffuse * diffuseStrength * vec3(uMaterial.diffuseColor);
 	}
 	else {
 		diffuse = light.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, textureCoord).rgb;

@@ -1,20 +1,18 @@
 #include "Clyde.h"
 
-Clyde::Clyde(std::unique_ptr<Model> model, std::shared_ptr<Moveable> pacman) : Ghost(std::move(model), pacman) {
+Clyde::Clyde(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman) : Ghost(std::move(model), pacman) {
 	startX = 12;
 	startZ = 17;
-	nextX = startX;
-	nextZ = startZ;
 	cornerX = 0;
 	cornerZ = 35;
+	nextX = startX;
+	nextZ = startZ;
+	targetX = nextX;
+	targetZ = nextZ;
+	houseTime = 15.0f;
 	startPosition = World::Instance().GetPosition(nextX, nextZ);
 	SetPosition(startPosition);
 	currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
-	currentState = State::House;
-	startState = currentState;
-	targetX = nextX;
-	targetZ = nextZ;
-	houseTime = 20;
 }
 
 void Clyde::PickTarget() {

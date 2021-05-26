@@ -11,17 +11,19 @@ public:
 	Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder);
 	void Update(float deltaTime) override;
 	void Reset() override;
-	int GetLives();
 	void DecreaseLives();
 	void RestoreLives();
+	int GetLives() const;
+	bool GetPowerPillEffect() const;
 
 private:
 	int lives;
 	bool stopped;
+	bool powerPillEffect;
 	glm::vec3 wantedDirection;
 	std::function<void(MapElement, int, int)> addPoints;
 
-	void EvaluatePoints() const;
+	void EvaluatePoints();
 	void EvaluateDirection();
 	void ReverseDirection();
 	void EvaluateMove();

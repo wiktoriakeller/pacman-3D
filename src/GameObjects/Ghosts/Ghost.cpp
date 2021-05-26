@@ -1,18 +1,30 @@
 #include "Ghost.h"
 
-Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Moveable> pacman) : Moveable(std::move(model)), pacman(pacman) {
-	chaseTime = 50;
-	scatterTime = 10;
-	speed = 4.0f;
-	baseSpeed = speed;
-	timer = 0;
+Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman) : Moveable(std::move(model)), pacman(pacman) {
+	timer = 0.0f;
+	frightenedTimer = 0.0f;
+	chaseTime = 50.0f;
+	scatterTime = 10.0f;
+	frightenedTime = 60.0f;
+	baseSpeed = 4.0f;
+	speed = baseSpeed;
+	isFrightened = false;
+	leavingState = LeavingState::CenterX;
+	returningState = ReturningState::GoingBack;
+	currentState = State::House;
+	startState = currentState;
 	Scale(glm::vec3(0.7f, 0.7f, 0.7f));
 	Rotate(90, glm::vec3(0.0f, 1.0f, 0.0f));
-	leavingState = LeavingState::CenterX;
+	this->model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
 }
 
 void Ghost::Update(float deltaTime) {
 	timer += deltaTime;
+	
+	if (isFrightened) {
+		frightenedTimer += deltaTime;
+	}
+
 	UpdateState();
 	HandleMovement(deltaTime);
 }
@@ -26,9 +38,13 @@ void Ghost::HandleMovement(float deltaTime) {
 		LeaveHouse();
 		break;
 
+	case State::Returning:
+		EnterHouse();
+		break;
+
 	default:
 		if (SnapToGrid()) {
-			PickPath(false);
+			PickPath();
 		}
 		break;
 	}
@@ -41,42 +57,70 @@ void Ghost::HandleMovement(float deltaTime) {
 }
 
 void Ghost::UpdateState() {
+	if(pacman->GetPowerPillEffect()) {
+		Frighten();
+	}
+
+	if (isFrightened && frightenedTimer > frightenedTime) {
+		isFrightened = false;
+
+		if (currentState != State::Returning) {
+			model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, false);
+			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+		}
+	}
+
 	switch (currentState) {
 	case State::House:
 		speed = 0.0f;
 		if (timer > houseTime) {
 			speed = baseSpeed;
-			ChangeState(State::Leaving);
+			ChangeBaseState(State::Leaving);
 		}
 		break;
 
 	case State::Scatter:
-		TargetCorner();
+		if (isFrightened) {
+			TargetRandom();
+		}
+		else {
+			TargetCorner();
+		}
+
 		if (timer > scatterTime) {
-			ChangeState(State::Chase);
+			ChangeBaseState(State::Chase);
 		}
 		break;
 
 	case State::Chase:
-		PickTarget();
+		if (isFrightened) {
+			TargetRandom();
+		}
+		else {
+			PickTarget();
+		}
+
 		if (timer > chaseTime) {
-			ChangeState(State::Scatter);
+			ChangeBaseState(State::Scatter);
 		}
 		break;
 
-	case State::Frightened:
-		TargetRandom();
-		if (timer > frightenedTime) {
-			ChangeState(State::Chase);
+	case State::Returning:
+		if (returningState == ReturningState::GoingBack && GetCoordinates().x == targetX && GetCoordinates().z == targetZ) {
+			SetPosition(glm::vec3(World::Instance().WorldCenter.x, GetPosition().y, GetPosition().z));
+			returningState = ReturningState::CenterZ;
+			speed = baseSpeed;
 		}
+		break;
+
 	default:
 		break;
 	}
 }
 
-void Ghost::ChangeState(State newState) {
+void Ghost::ChangeBaseState(State newState) {
 	currentState = newState;
-	timer = 0;
+	timer = 0.0f;
 }
 
 void Ghost::LeaveHouse() {
@@ -93,6 +137,7 @@ void Ghost::LeaveHouse() {
 			currentDirection = glm::vec3(direction, 0.0f, 0.0f);
 		}
 		else {
+			SetPosition(glm::vec3(World::Instance().WorldCenter.x, GetPosition().y, World::Instance().WorldCenter.z));
 			leavingState = LeavingState::CenterZ;
 		}
 		break;
@@ -109,9 +154,9 @@ void Ghost::LeaveHouse() {
 	case LeavingState::BackToNormal:
 		nextZ = HOUSE_CENTER_Z - 3;
 		nextX = HOUSE_CENTER_X;
-		ChangeState(State::Scatter);
+		ChangeBaseState(State::Scatter);
 		UpdateState();
-		PickPath(false);
+		PickPath();
 		break;
 
 	default:
@@ -119,35 +164,84 @@ void Ghost::LeaveHouse() {
 	}
 }
 
-void Ghost::PickPath(bool canTurnAround) {
-	float minDistance = std::numeric_limits<float>::max();
-	int bestDirectionIndex = 0;
-	for (int i = 0; i < directions.size(); i++) {
-		if (!canTurnAround) {
-			if (currentDirection.x != 0) {
-				if (directions[i].x == currentDirection.x * -1) {
-					continue;
-				}
+void Ghost::EnterHouse() {
+	shouldRotate = true;
+
+	switch (returningState)
+	{
+	case ReturningState::GoingBack:
+		if (SnapToGrid()) {
+			PickPath();
+		}
+		break;
+
+	case ReturningState::CenterZ:
+		if (!World::Instance().ArePositionsEqual(GetPosition(), World::Instance().WorldCenter)) {
+			currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+		}
+		else {
+			SetPosition(glm::vec3(World::Instance().WorldCenter.x, GetPosition().y, World::Instance().WorldCenter.z));
+			returningState = ReturningState::StartPosition;
+		}
+		break;
+
+	case ReturningState::StartPosition:
+		if (!World::Instance().ArePositionsEqual(GetPosition(), startPosition) && startZ == HOUSE_CENTER_Z) {
+			float direction = 1.0f;
+			if (startPosition.x < World::Instance().WorldCenter.x) {
+				direction = -1.0f;
 			}
-			else if (currentDirection.z != 0) {
-				if (directions[i].z == currentDirection.z * -1) {
-					continue;
-				}
+			currentDirection = glm::vec3(direction, 0.0f, 0.0f);
+		}
+		else {
+			model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, false);
+			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+			isFrightened = false;
+			frightenedTimer = 0.0f;
+			ChangeBaseState(State::Leaving);
+
+			if (startZ != HOUSE_CENTER_Z) {
+				leavingState = LeavingState::CenterZ;
+			}
+			else {
+				SetPosition(startPosition);
+				leavingState = LeavingState::CenterX;
 			}
 		}
+		break;
+
+	default:
+		break;
+	}
+}
+
+void Ghost::PickPath() {
+	float minDistance = std::numeric_limits<float>::max();
+	int bestDirectionIndex = 0;
+	
+	for (int i = 0; i < directions.size(); i++) {
+		if (currentDirection.x != 0 && directions[i].x == currentDirection.x * -1) {
+			continue;
+		}
+		else if (currentDirection.z != 0 && directions[i].z == currentDirection.z * -1) {
+			continue;
+		}
+
 		if (CanMakeMove(GetCoordinates() + directions[i])) {
 			glm::vec3 futurePosition = World::Instance().GetPosition(GetCoordinates().x + directions[i].x, GetCoordinates().z + directions[i].z);
 			float distance = glm::distance(futurePosition, World::Instance().GetPosition(targetX, targetZ));
+
 			if (distance < minDistance) {
 				minDistance = distance;
 				bestDirectionIndex = i;
 			}
 		}
 	}
+
 	currentDirection = directions[bestDirectionIndex];
-	shouldRotate = true;
 	nextX += currentDirection.x;
 	nextZ += currentDirection.z;
+	shouldRotate = true;
 }
 
 void Ghost::TargetRandom() {
@@ -162,12 +256,39 @@ void Ghost::TargetCorner() {
 
 void Ghost::Reset() {
 	SetPosition(startPosition);
+	model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+	model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, false);
 	currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
-	shouldRotate = true;
 	nextX = startX;
 	nextZ = startZ;
-	currentState = startState;
-	leavingState = LeavingState::CenterX;
 	speed = baseSpeed;
-	timer = 0;
+	timer = 0.0f;
+	frightenedTimer = 0.0f;
+	currentState = startState;
+	leavingState = LeavingState::CenterZ;
+	returningState = ReturningState::GoingBack;
+	isFrightened = false;
+	shouldRotate = true;
+}
+
+void Ghost::ReturnToHouse() {
+	targetX = HOUSE_CENTER_X;
+	targetZ = HOUSE_CENTER_Z - 3;
+	speed = 2.5f * baseSpeed;
+	model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 0.0f));
+	returningState = ReturningState::GoingBack;
+	ChangeBaseState(State::Returning);
+}
+
+void Ghost::Frighten() {
+	isFrightened = true;
+	frightenedTimer = 0.0f;
+	model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, true);
+}
+
+bool Ghost::IsFrightened() {
+	if(isFrightened || currentState == State::Returning) {
+		return true;
+	}
+	return false;
 }

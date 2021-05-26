@@ -134,10 +134,16 @@ void Model::ChangeMeshMaterialShininess(unsigned int materialIndex, float shinin
 
 void Model::ChangeMeshMaterialSpecular(unsigned int materialIndex, glm::vec3 specularColor) {
     materials[materialIndex]->SetSpecularColor(specularColor);
-    materials[materialIndex]->UseSpecularColor(true);
 }
 
-void Model::ChangeMeshMaterialDiffuse(unsigned int materialIndex, glm::vec3 diffuseColor) {
+void Model::ChangeMeshMaterialDiffuse(unsigned int materialIndex, glm::vec4 diffuseColor) {
     materials[materialIndex]->SetDiffuseColor(diffuseColor);
-    materials[materialIndex]->UseDiffuseColor(true);
+}
+
+void Model::UseMeshMaterialSpecularColor(unsigned int materialIndex, bool use) {
+    materials[materialIndex]->UseSpecularColor(use);
+}
+
+void Model::UseMeshMaterialDiffuseColor(unsigned int materialIndex, bool use) {
+    materials[materialIndex]->UseDiffuseColor(use);
 }

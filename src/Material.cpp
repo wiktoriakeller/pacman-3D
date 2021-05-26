@@ -2,21 +2,21 @@
 
 Material::Material(float shininess) : 
     shininess(shininess),
-    diffuseColor(glm::vec3(0.0f, 0.0f, 0.0f)),
+    diffuseColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)),
     specularColor(glm::vec3(0.0f, 0.0f, 0.0f)) {
     useDiffuseColor = false;
     useSpecularColor = false;
 }
 
 Material::Material(glm::vec3 specularCol, float shininess) :
-    diffuseColor(glm::vec3(0.0f, 0.0f, 0.0f)),
+    diffuseColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)),
     specularColor(specularCol),
     shininess(shininess) {
     useDiffuseColor = false;
     useSpecularColor = true;
 }
 
-Material::Material(glm::vec3 diffuseCol, glm::vec3 specularCol, float shininess) :
+Material::Material(glm::vec4 diffuseCol, glm::vec3 specularCol, float shininess) :
     diffuseColor(diffuseCol),
     specularColor(specularCol),
     shininess(shininess) {
@@ -84,7 +84,7 @@ void Material::SetShininess(float newShininess) {
     shininess = newShininess;
 }
 
-void Material::SetDiffuseColor(glm::vec3 color) {
+void Material::SetDiffuseColor(glm::vec4 color) {
     diffuseColor = color;
 }
 

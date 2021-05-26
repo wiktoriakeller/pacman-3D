@@ -22,13 +22,11 @@ protected:
 	int nextZ;
 	int startX;
 	int startZ;
+	int currentRotation;
 	bool shouldRotate;
 
 	bool CanMakeMove(int x, int z) const;
 	bool CanMakeMove(glm::vec3 coordinates) const;
-
-private:
-	int currentRotation;
 };
 
 bool CheckCollision(std::shared_ptr<Moveable> object1, std::shared_ptr<Moveable> object2);

@@ -1,20 +1,18 @@
 #include "Inky.h"
 
-Inky::Inky(std::unique_ptr<Model> model, std::shared_ptr<Moveable> pacman, std::shared_ptr<Moveable> blinky) : Ghost(std::move(model), pacman), blinky(blinky) {
-	cornerX = 27;
-	cornerZ = 35;
+Inky::Inky(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, std::shared_ptr<Moveable> blinky) : Ghost(std::move(model), pacman), blinky(blinky) {
 	startX = 15;
 	startZ = 17;
+	cornerX = 27;
+	cornerZ = 35;
 	nextX = startX;
 	nextZ = startZ;
-	startPosition = World::Instance().GetPosition(nextX, nextZ);
-	SetPosition(startPosition);
-	currentState = State::House;
-	startState = currentState;
-	currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 	targetX = nextX;
 	targetZ = nextZ;
-	houseTime = 15;
+	houseTime = 10.0f;
+	startPosition = World::Instance().GetPosition(nextX, nextZ);
+	SetPosition(startPosition);
+	currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
 void Inky::PickTarget() {

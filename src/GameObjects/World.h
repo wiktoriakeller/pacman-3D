@@ -2,7 +2,7 @@
 #include <GLM/glm.hpp>
 
 enum class MapElement : unsigned char {
-    None = 0, Wall, Point, Power, Tunnel, MissingPoint, MissingPower
+    None = 0, Wall, Point, Power, Tunnel, MissingPoint, MissingPower, Ghost
 };
 
 class World

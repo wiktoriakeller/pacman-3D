@@ -1,10 +1,11 @@
 #include "Points.h"
 
-Points::Points(std::unique_ptr<Model> model) : Entity(std::move(model)) { 
+Points::Points(std::unique_ptr<Model> model) : Entity(std::move(model)) {
     Scale(glm::vec3(0.25f, 0.25f, 0.25f));
     pointsLeft = World::START_POINTS;
     level = 0;
     score = 0;
+    ghostScoreMultiplier = 1;
 }
 
 void Points::Draw(std::shared_ptr<Shader> shader) {
@@ -32,13 +33,21 @@ void Points::AddPoints(MapElement element, int x, int z) {
     if (element == MapElement::Point) {
         score += POINT_SCORE;
         World::Instance().SetMapElement(x, z, MapElement::MissingPoint);
+        pointsLeft -= 1;
     }
     else if (element == MapElement::Power) {
         score += POWER_SCORE;
         World::Instance().SetMapElement(x, z, MapElement::MissingPower);
+        pointsLeft -= 1;
     }
+    else if (element == MapElement::Ghost) {
+        score += (GHOST_KILL_SCORE * ghostScoreMultiplier);
+        ghostScoreMultiplier++;
+    }
+}
 
-    pointsLeft -= 1;
+void Points::ResetGhostScoreMultiplier() {
+    ghostScoreMultiplier = 1;
 }
 
 void Points::Reset() {

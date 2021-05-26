@@ -5,8 +5,8 @@ Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman) : Mov
 	frightenedTimer = 0.0f;
 	chaseTime = 50.0f;
 	scatterTime = 10.0f;
-	frightenedTime = 60.0f;
-	baseSpeed = 4.0f;
+	frightenedTime = 8.0f;
+	baseSpeed = 4.5f;
 	speed = baseSpeed;
 	isFrightened = false;
 	leavingState = LeavingState::CenterX;
@@ -266,7 +266,7 @@ void Ghost::Reset() {
 	timer = 0.0f;
 	frightenedTimer = 0.0f;
 	currentState = startState;
-	leavingState = LeavingState::CenterZ;
+	leavingState = LeavingState::CenterX;
 	returningState = ReturningState::GoingBack;
 	isFrightened = false;
 	shouldRotate = true;
@@ -285,10 +285,29 @@ void Ghost::Frighten() {
 	isFrightened = true;
 	frightenedTimer = 0.0f;
 	model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, true);
+	glm::vec3 reversedDirection = -currentDirection;
+
+	if (currentDirection.x != 0 && CanMakeMove(nextX + reversedDirection.x, nextZ)) {
+		currentDirection = reversedDirection;
+		nextX = nextX + reversedDirection.x;
+		shouldRotate = true;
+	}
+	else if (currentDirection.z != 0 && CanMakeMove(nextX, nextZ + reversedDirection.z)) {
+		currentDirection = reversedDirection;
+		nextZ = nextZ + reversedDirection.z;
+		shouldRotate = true;
+	}
 }
 
 bool Ghost::IsFrightened() {
 	if(isFrightened || currentState == State::Returning) {
+		return true;
+	}
+	return false;
+}
+
+bool Ghost::IsReturning() {
+	if (currentState == State::Returning) {
 		return true;
 	}
 	return false;

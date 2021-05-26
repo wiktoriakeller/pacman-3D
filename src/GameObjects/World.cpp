@@ -10,6 +10,7 @@ MapElement World::NumberToMapElement(int number) {
     case 4: return MapElement::Tunnel;
     case 5: return MapElement::MissingPoint;
     case 6: return MapElement::MissingPower;
+    case 7: return MapElement::Ghost;
     }
 }
 

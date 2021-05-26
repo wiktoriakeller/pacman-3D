@@ -69,12 +69,13 @@ int main() {
     std::shared_ptr<Entity> inky = std::make_shared<Inky>(std::move(inkyModel), pacman, std::dynamic_pointer_cast<Moveable>(blinky));
     std::shared_ptr<Entity> pinky = std::make_shared<Pinky>(std::move(pinkyModel), pacman);
 
-    std::vector<std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, maze, points };
+    std::vector<std::shared_ptr<Entity>> entities = { player, blinky, clyde, inky, pinky, points, maze };
 
     std::vector<std::shared_ptr<Ghost>> ghosts = { std::dynamic_pointer_cast<Ghost>(blinky), std::dynamic_pointer_cast<Ghost>(clyde),
         std::dynamic_pointer_cast<Ghost>(inky), std::dynamic_pointer_cast<Ghost>(pinky) };
 
     bool collision;
+    bool noFrightenedGhost;
     Game game;
     Camera camera(player);
     UI ui(pacman, pointsCast);
@@ -90,15 +91,23 @@ int main() {
         oldTimeSinceStart = timeSinceStart;
       
         collision = false;
+        noFrightenedGhost = true;
 
-        for (int i = 0; i < entities.size() - 2; i++) {
+        for (int i = 0; i < entities.size(); i++) {
             entities[i]->Update(deltaTime);
         }
 
         //checking collision
         for (int i = 0; i < ghosts.size(); i++) {
+            if (ghosts[i]->IsFrightened()) {
+                noFrightenedGhost = false;
+            }
+
             if (CheckCollision(moveablePlayer, ghosts[i])) {
                 if (ghosts[i]->IsFrightened()) {
+                    if (!ghosts[i]->IsReturning()) {
+                        pointsCast->AddPoints(MapElement::Ghost, 0, 0);
+                    }
                     ghosts[i]->ReturnToHouse();
                     continue;
                 }
@@ -112,6 +121,10 @@ int main() {
                     break;
                 }
             }
+        }
+
+        if (noFrightenedGhost) {
+            pointsCast->ResetGhostScoreMultiplier();
         }
 
         //reseting

@@ -26,6 +26,7 @@ public:
 	void Reset() override;
 	void ReturnToHouse();
 	bool IsFrightened();
+	bool IsReturning();
 
 protected:
 	const int HOUSE_CENTER_X = 14;

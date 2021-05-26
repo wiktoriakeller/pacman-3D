@@ -91,16 +91,10 @@ void Pacman::EvaluateDirection() {
 }
 
 void Pacman::ReverseDirection() {
-	if (currentDirection.x > 0 ) {
+	if (currentDirection.x != 0 ) {
 		nextX = nextX + wantedDirection.x;
 	}
-	else if (currentDirection.x < 0) {
-		nextX = nextX + wantedDirection.x;
-	}
-	else if (currentDirection.z > 0) {
-		nextZ = nextZ + wantedDirection.z;
-	}
-	else if (currentDirection.z < 0) {
+	else if (currentDirection.z != 0) {
 		nextZ = nextZ + wantedDirection.z;
 	}
 

@@ -12,11 +12,13 @@ class UI
 public:
 	UI(std::shared_ptr<Pacman> player, std::shared_ptr<Points> points);
 	void Draw() const;
+	void DrawGameBegin() const;
 
 private:
 	const float OFFSET = 15.0f;
 	glm::mat4 projection;
 	std::unique_ptr<Text> textRenderer;
+	std::unique_ptr<Text> waitingTextRenderer;
 	std::unique_ptr<Sprite> pacmanLive;
 	std::shared_ptr<Pacman> player;
 	std::shared_ptr<Points> points;

@@ -1,6 +1,6 @@
 #include "Text.h"
 
-Text::Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, unsigned int height, unsigned int width) :
+Text::Text(const std::string fontPath, float fontScale, glm::vec4 fontColor, unsigned int height, unsigned int width) :
 	fontScale(fontScale), fontColor(fontColor), width(width), height(height) {
 	
 	if (FT_Init_FreeType(&ftLibrary)) {
@@ -88,8 +88,16 @@ void Text::SetFontScale(float scale) {
 	fontScale = scale;
 }
 
-void Text::SetFontColor(glm::vec3 color) {
+void Text::SetFontColor(glm::vec4 color) {
 	fontColor = color;
+}
+
+unsigned int Text::GetWidth() const {
+	return width;
+}
+
+unsigned int Text::GetHeight() const {
+	return height;
 }
 
 void Text::LoadCharacters() {

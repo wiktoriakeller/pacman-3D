@@ -7,6 +7,7 @@ class KeyInput
 public:
 	static unsigned char PressedKey;
 	static void SetupKeyInputs(GLFWwindow* window);
+	static bool AnyKeyPressed;
 
 private:
 	KeyInput();

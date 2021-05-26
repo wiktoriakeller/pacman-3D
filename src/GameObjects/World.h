@@ -32,7 +32,7 @@ private:
     const float MAZE_SCALE = 1.23f;
     const float XOFF = 0.5f;
     const float YOFF = -1.35f;
-    const float EPSILON = 0.1f;
+    const float EPSILON = 0.18f;
 
     glm::vec3 positionMap[HEIGHT][WIDTH];
 

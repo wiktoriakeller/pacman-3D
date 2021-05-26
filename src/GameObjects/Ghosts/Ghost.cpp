@@ -4,8 +4,8 @@ Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool 
 	Moveable(std::move(model), createPointLight), pacman(pacman) {
 	timer = 0.0f;
 	frightenedTimer = 0.0f;
-	chaseTime = 50.0f;
-	scatterTime = 10.0f;
+	chaseTime = 52.0f;
+	scatterTime = 8.0f;
 	frightenedTime = 8.0f;
 	baseSpeed = 4.5f;
 	blinkingTimer = 0;
@@ -81,6 +81,7 @@ void Ghost::UpdateState() {
 		if (currentState != State::Returning) {
 			model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, false);
 			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+			ChangeBaseState(State::Chase);
 		}
 	}
 
@@ -284,6 +285,7 @@ void Ghost::Reset() {
 	returningState = ReturningState::GoingBack;
 	isFrightened = false;
 	shouldRotate = true;
+	Move(0.0f);
 }
 
 void Ghost::ReturnToHouse() {

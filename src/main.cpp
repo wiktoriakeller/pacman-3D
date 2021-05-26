@@ -88,50 +88,55 @@ int main() {
         deltaTime = timeSinceStart - oldTimeSinceStart;
         oldTimeSinceStart = timeSinceStart;
       
-        collision = false;
-        noFrightenedGhost = true;
+        if (!Game::GetIsGameOver()) {
+            collision = false;
+            noFrightenedGhost = true;
 
-        for (int i = 0; i < entities.size(); i++) {
-            entities[i]->Update(deltaTime);
-        }
-
-        //checking collision
-        for (int i = 0; i < ghosts.size(); i++) {
-            if (ghosts[i]->IsFrightened()) {
-                noFrightenedGhost = false;
-            }
-
-            if (CheckCollision(moveablePlayer, ghosts[i])) {
-                if (ghosts[i]->IsFrightened()) {
-                    if (!ghosts[i]->IsReturning()) {
-                        pointsCast->AddPoints(MapElement::Ghost, 0, 0);
-                    }
-                    ghosts[i]->ReturnToHouse();
-                    continue;
-                }
-                else {
-                    collision = true;
-                    pacman->DecreaseLives();
-                    if (pacman->GetLives() < 0) {
-                        pacman->RestoreLives();
-                        Game::SetIsGameOver(true);
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (noFrightenedGhost) {
-            pointsCast->ResetGhostScoreMultiplier();
-        }
-
-        //reseting
-        if (pointsCast->GetPointsLeft() == 0 || collision) {
             for (int i = 0; i < entities.size(); i++) {
-                entities[i]->Reset();
+                entities[i]->Update(deltaTime);
             }
 
-            game.Reset();
+            //checking collision
+            for (int i = 0; i < ghosts.size(); i++) {
+                if (ghosts[i]->IsFrightened()) {
+                    noFrightenedGhost = false;
+                }
+
+                if (CheckCollision(moveablePlayer, ghosts[i])) {
+                    if (ghosts[i]->IsFrightened()) {
+                        if (!ghosts[i]->IsReturning()) {
+                            pointsCast->AddPoints(MapElement::Ghost, 0, 0);
+                        }
+                        ghosts[i]->ReturnToHouse();
+                        continue;
+                    }
+                    else {
+                        collision = true;
+                        pacman->DecreaseLives();
+                        if (pacman->GetLives() < 0) {
+                            pacman->RestoreLives();
+                            Game::SetIsGameOver(true);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (noFrightenedGhost) {
+                pointsCast->ResetGhostScoreMultiplier();
+            }
+
+            //reseting
+            if (pointsCast->GetPointsLeft() == 0 || collision) {
+                for (int i = 0; i < entities.size(); i++) {
+                    entities[i]->Reset();
+                }
+
+                game.Reset();
+            }
+        }
+        else if (KeyInput::AnyKeyPressed) {
+            Game::SetIsGameOver(false);
         }
 
         //drawing
@@ -150,6 +155,10 @@ int main() {
             entities[i]->Draw(shaderMap["lightShader"]);
         }
         ui.Draw();
+        
+        if (Game::GetIsGameOver()) {
+            ui.DrawGameBegin();
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();

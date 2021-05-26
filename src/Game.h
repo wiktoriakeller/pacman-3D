@@ -1,4 +1,5 @@
 #pragma once
+#include "Input/KeyInput.h"
 
 class Game
 {

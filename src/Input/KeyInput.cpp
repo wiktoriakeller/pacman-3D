@@ -1,6 +1,7 @@
 #include "KeyInput.h"
 
 unsigned char KeyInput::PressedKey = 0;
+bool KeyInput::AnyKeyPressed = false;
 
 void KeyInput::SetupKeyInputs(GLFWwindow* window) {
     glfwSetKeyCallback(window, callback);
@@ -8,6 +9,8 @@ void KeyInput::SetupKeyInputs(GLFWwindow* window) {
 
 void KeyInput::callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+        AnyKeyPressed = true;
+
         switch (key) {
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, true);

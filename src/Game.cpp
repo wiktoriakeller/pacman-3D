@@ -1,6 +1,6 @@
 #include "Game.h"
 
-bool Game::isGameOver = false;
+bool Game::isGameOver = true;
 
 void Game::SetIsGameOver(bool gameOver) {
 	isGameOver = gameOver;
@@ -12,6 +12,7 @@ bool Game::GetIsGameOver() {
 
 void Game::Reset() {
 	if (isGameOver) {
-		isGameOver = false;
+		isGameOver = true;
+		KeyInput::AnyKeyPressed = false;
 	}
 }

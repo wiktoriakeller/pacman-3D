@@ -16,10 +16,12 @@
 class Text
 {
 public:
-	Text(const std::string fontPath, float fontScale, glm::vec3 fontColor, unsigned int height, unsigned int width = 0);
+	Text(const std::string fontPath, float fontScale, glm::vec4 fontColor, unsigned int height, unsigned int width = 0);
 	void Draw(std::shared_ptr<Shader> shader, const std::string& text, float x, float y);
 	void SetFontScale(float scale);
-	void SetFontColor(glm::vec3 color);
+	void SetFontColor(glm::vec4 color);
+	unsigned int GetWidth() const;
+	unsigned int GetHeight() const;
 
 private:
 	FT_Library ftLibrary;
@@ -29,7 +31,7 @@ private:
 	unsigned int width;
 	unsigned int height;
 	float fontScale;
-	glm::vec3 fontColor;
+	glm::vec4 fontColor;
 
 	//position, tex coords of a single character
 	GLfloat vertices[4][4] = {

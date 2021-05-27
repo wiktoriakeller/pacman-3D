@@ -36,7 +36,7 @@ int main() {
     init(window);
 
     shaderMap["lightShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vBlinnPhong.glsl",
-        "Resources/Shaders/Fragment/fBlinnPhong.glsl");;
+        "Resources/Shaders/Fragment/fBlinnPhong.glsl");
     shaderMap["textShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vText.glsl",
         "Resources/Shaders/Fragment/fText.glsl");
     shaderMap["spriteShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vSprite.glsl",
@@ -133,9 +133,10 @@ int main() {
                 }
 
                 game.Reset();
+                KeyInput::Reset();
             }
         }
-        else if (KeyInput::AnyKeyPressed) {
+        else if (KeyInput::GetAnyKeyPressed()) {
             Game::SetIsGameOver(false);
         }
 

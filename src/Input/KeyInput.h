@@ -5,11 +5,15 @@
 class KeyInput
 {
 public:
-	static unsigned char PressedKey;
 	static void SetupKeyInputs(GLFWwindow* window);
-	static bool AnyKeyPressed;
+	static unsigned char GetPressedKey();
+	static bool GetAnyKeyPressed();
+	static void Reset();
 
 private:
+	static bool AnyKeyPressed;
+	static unsigned char PressedKey;
+
 	KeyInput();
 	static void callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

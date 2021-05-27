@@ -5,7 +5,7 @@ Entity::Entity(std::unique_ptr<Model> model, bool createPointLight) : model(std:
 	UpdateNormalMatrix();
 	if (createPointLight) {
 		pointLight = std::make_unique<PointLight>(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 0.22f, 0.20f);
+			glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 0.14f, 0.07f);
 	}
 	else {
 		pointLight = nullptr;

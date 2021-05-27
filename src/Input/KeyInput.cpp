@@ -7,6 +7,19 @@ void KeyInput::SetupKeyInputs(GLFWwindow* window) {
     glfwSetKeyCallback(window, callback);
 }
 
+unsigned char KeyInput::GetPressedKey() {
+    return PressedKey;
+}
+
+bool KeyInput::GetAnyKeyPressed() {
+    return AnyKeyPressed;
+}
+
+void KeyInput::Reset() {
+    AnyKeyPressed = false;
+    PressedKey = 0;
+}
+
 void KeyInput::callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (action == GLFW_PRESS || action == GLFW_REPEAT) {
         AnyKeyPressed = true;

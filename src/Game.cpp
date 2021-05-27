@@ -13,6 +13,5 @@ bool Game::GetIsGameOver() {
 void Game::Reset() {
 	if (isGameOver) {
 		isGameOver = true;
-		KeyInput::AnyKeyPressed = false;
 	}
 }

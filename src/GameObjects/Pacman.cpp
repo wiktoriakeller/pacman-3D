@@ -34,7 +34,6 @@ void Pacman::Reset() {
 	nextZ = startZ;
 	stopped = true;
 	shouldRotate = true;
-	KeyInput::PressedKey = 0;
 }
 
 int Pacman::GetLives() const {
@@ -58,7 +57,7 @@ bool Pacman::GetPowerPillEffect() const {
 void Pacman::HandleInput() {
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	switch (KeyInput::PressedKey)
+	switch (KeyInput::GetPressedKey())
 	{
 	case 'A':
 		wantedDirection.x = -1;

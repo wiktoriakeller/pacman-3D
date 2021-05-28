@@ -1,7 +1,7 @@
 #include "Text.h"
 
 Text::Text(const std::string fontPath, float fontScale, glm::vec4 fontColor, unsigned int height, unsigned int width) :
-	fontScale(fontScale), fontColor(fontColor), width(width), height(height) {
+	fontScale(fontScale), fontColor(fontColor), height(height) {
 	
 	if (FT_Init_FreeType(&ftLibrary)) {
 		std::cout << "Could not init FreeType library\n";
@@ -128,4 +128,5 @@ void Text::LoadCharacters() {
 	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	width = face->glyph->bitmap.width;
 }

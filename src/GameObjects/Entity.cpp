@@ -4,8 +4,8 @@ Entity::Entity(std::unique_ptr<Model> model, bool createPointLight) : model(std:
 	modelMatrix = glm::mat4(1.0f);
 	UpdateNormalMatrix();
 	if (createPointLight) {
-		pointLight = std::make_unique<PointLight>(glm::vec3(0.3f, 0.3f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 0.14f, 0.07f);
+		pointLight = std::make_unique<PointLight>(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f);
 	}
 	else {
 		pointLight = nullptr;

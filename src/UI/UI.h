@@ -16,9 +16,9 @@ public:
 
 private:
 	const float OFFSET = 15.0f;
+	const float FONT_SCALE = 78.0f;
 	glm::mat4 projection;
 	std::unique_ptr<Text> textRenderer;
-	std::unique_ptr<Text> waitingTextRenderer;
 	std::unique_ptr<Sprite> pacmanLive;
 	std::shared_ptr<Pacman> player;
 	std::shared_ptr<Points> points;

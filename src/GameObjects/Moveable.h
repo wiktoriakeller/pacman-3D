@@ -5,7 +5,7 @@
 class Moveable : public Entity
 {
 public:
-	const float SNAP_DISTANCE = 0.05f;
+	const float SNAP_DISTANCE = 0.1f;
 
 	Moveable(std::unique_ptr<Model> model, bool createPointLight);
 	bool SnapToGrid();

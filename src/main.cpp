@@ -49,7 +49,7 @@ int main() {
 
     std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>();
 
-    DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
+    DirectionalLight dirLight(glm::vec3(0.18f, 0.18f, 0.18f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
 
     std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/Models/maze.obj", true);
     std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/Models/pacman.obj", true);
@@ -89,6 +89,7 @@ int main() {
     UI ui(pacman, pointsCast);
     srand(time(0));
 
+    float offsetFactor = 1.0f;
     float deltaTime;
     float oldTimeSinceStart = (float) glfwGetTime();
     float timeSinceStart = 0.0f;
@@ -97,10 +98,10 @@ int main() {
         timeSinceStart = (float) glfwGetTime();
         deltaTime = timeSinceStart - oldTimeSinceStart;
         oldTimeSinceStart = timeSinceStart;
-      
+        noFrightenedGhost = true;
+
         if (!Game::GetIsGameOver()) {
             collision = false;
-            noFrightenedGhost = true;
 
             for (int i = 0; i < entities.size(); i++) {
                 entities[i]->Update(deltaTime);
@@ -109,11 +110,12 @@ int main() {
             //checking collision
             for (int i = 0; i < ghosts.size(); i++) {
                 if (ghosts[i]->IsFrightened()) {
+                    offsetFactor = ghosts[i]->GetFrightenedTime() - ghosts[i]->GetFrightenedTimer() + 1;
                     noFrightenedGhost = false;
                 }
 
                 if (CheckCollision(moveablePlayer, ghosts[i])) {
-                    if (ghosts[i]->IsFrightened()) {
+                    if (ghosts[i]->IsFrightenedOrReturning()) {
                         if (!ghosts[i]->IsReturning()) {
                             pointsCast->AddPoints(MapElement::Ghost, 0, 0);
                         }
@@ -174,6 +176,17 @@ int main() {
 
         frameBuffer->Unbind();
         shaderMap["postProcessing"]->Use();
+
+        if (!noFrightenedGhost) {
+            float min = 1.0f;
+            float max = 3.5f;
+            offsetFactor = min + (offsetFactor / (ghosts[0]->GetFrightenedTime() + 1)) * (max - min);
+            shaderMap["postProcessing"]->SetUniform("offsetFactor", glm::vec2(3.0f, 2.0f) * offsetFactor);
+        }
+        else {
+            shaderMap["postProcessing"]->SetUniform("offsetFactor", glm::vec2(3.0f, 2.0f));
+        }
+
         frameBuffer->Draw();
      
 

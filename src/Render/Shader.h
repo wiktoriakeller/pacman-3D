@@ -26,6 +26,7 @@ public:
 	void SetUniform(const std::string& name, glm::mat4 value);
 	void SetUniform(const std::string& name, glm::fvec4 value);
 	void SetUniform(const std::string& name, glm::fvec3 value);
+	void SetUniform(const std::string& name, glm::fvec2 value);
 	void SetUniform(const std::string& name, glm::mat3 value);
 
 private:

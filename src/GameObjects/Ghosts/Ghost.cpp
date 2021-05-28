@@ -7,7 +7,7 @@ Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool 
 	chaseTime = 52.0f;
 	scatterTime = 8.0f;
 	frightenedTime = 8.0f;
-	baseSpeed = 4.5f;
+	baseSpeed = 5.0f;
 	blinkingTimer = 0;
 	speed = baseSpeed;
 	isFrightened = false;
@@ -76,7 +76,8 @@ void Ghost::UpdateState() {
 
 	if (isFrightened && frightenedTimer > frightenedTime) {
 		isFrightened = false;
-		blinkingTimer = 0;
+		blinkingTimer = 0.0f;
+		frightenedTimer = 0.0f;
 
 		if (currentState != State::Returning && currentState != State::House && currentState != State::Leaving) {
 			ChangeBaseState(State::Chase);
@@ -320,7 +321,7 @@ void Ghost::Frighten() {
 	}
 }
 
-bool Ghost::IsFrightened() {
+bool Ghost::IsFrightenedOrReturning() {
 	if(isFrightened || currentState == State::Returning) {
 		return true;
 	}
@@ -332,4 +333,16 @@ bool Ghost::IsReturning() {
 		return true;
 	}
 	return false;
+}
+
+bool Ghost::IsFrightened() {
+	return isFrightened;
+}
+
+float Ghost::GetFrightenedTimer() {
+	return frightenedTimer;
+}
+
+float Ghost::GetFrightenedTime() {
+	return frightenedTime;
 }

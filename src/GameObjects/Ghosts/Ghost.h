@@ -25,8 +25,11 @@ public:
 	virtual void PickTarget() = 0;
 	void Reset() override;
 	void ReturnToHouse();
-	bool IsFrightened();
+	bool IsFrightenedOrReturning();
 	bool IsReturning();
+	bool IsFrightened();
+	float GetFrightenedTimer();
+	float GetFrightenedTime();
 
 protected:
 	const int HOUSE_CENTER_X = 14;

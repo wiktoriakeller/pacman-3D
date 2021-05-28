@@ -217,6 +217,7 @@
   <ItemGroup>
     <None Include="Resources\Shaders\Fragment\fBasic.glsl" />
     <None Include="Resources\Shaders\Fragment\fBlinnPhong.glsl" />
+    <None Include="Resources\Shaders\Fragment\fCellShading.glsl" />
     <None Include="Resources\Shaders\Fragment\fLightMaps.glsl" />
     <None Include="Resources\Shaders\Fragment\fLightSource.glsl" />
     <None Include="Resources\Shaders\Fragment\fPhongLight.glsl" />
@@ -225,6 +226,7 @@
     <None Include="Resources\Shaders\Fragment\fText.glsl" />
     <None Include="Resources\Shaders\Vertex\vBasic.glsl" />
     <None Include="Resources\Shaders\Vertex\vBlinnPhong.glsl" />
+    <None Include="Resources\Shaders\Vertex\vCellShading.glsl" />
     <None Include="Resources\Shaders\Vertex\vLightMaps.glsl" />
     <None Include="Resources\Shaders\Vertex\vLightSource.glsl" />
     <None Include="Resources\Shaders\Vertex\vPhongLight.glsl" />

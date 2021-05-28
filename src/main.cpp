@@ -41,6 +41,8 @@ int main() {
         "Resources/Shaders/Fragment/fText.glsl");
     shaderMap["spriteShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vSprite.glsl",
         "Resources/Shaders/Fragment/fSprite.glsl");
+    shaderMap["cellShading"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vCellShading.glsl",
+        "Resources/Shaders/Fragment/fCellShading.glsl");
 
     DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
 
@@ -51,6 +53,9 @@ int main() {
     std::unique_ptr<Model> clydeModel = std::make_unique<Model>("Resources/Models/Clyde.obj", true);
     std::unique_ptr<Model> inkyModel = std::make_unique<Model>("Resources/Models/Inky.obj", true);
     std::unique_ptr<Model> pinkyModel = std::make_unique<Model>("Resources/Models/Pinky.obj", true);
+
+    //mazeModel->ChangeMeshMaterialDiffuse(3, glm::vec4(0.109f, 0.0f, 0.839f, 1.0f));
+    //mazeModel->UseMeshMaterialDiffuseColor(3, true);
 
     std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel), false);
     std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel), false);

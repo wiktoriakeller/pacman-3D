@@ -17,9 +17,11 @@ public:
 	~Framebuffer();
 	virtual void Bind();
 	virtual void Unbind();
-	virtual void Draw() = 0;
+	virtual void Draw();
 
 private:
 	GLuint frameBufferID;
+	GLuint colorTextureID;
+	GLuint renderBufferID;
 	std::unique_ptr<VertexArray> VAO;
 };

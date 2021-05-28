@@ -1,6 +1,35 @@
 #include "Framebuffer.h"
 
 Framebuffer::Framebuffer() {
+	glGenFramebuffers(1, &frameBufferID);
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+
+	//generating color texture
+	glGenTextures(1, &colorTextureID);
+	glBindTexture(GL_TEXTURE_2D, colorTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//attaching texture to framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTextureID, 0);
+
+	//creating rendering buffer
+	glGenRenderbuffers(1, &renderBufferID);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferID);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//attaching render buffer to framebuffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferID);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Framebuffer is not complete\n";
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
 	//position, tex coord
 	GLfloat vertices[] = {
 		-1.0f, 1.0f, 0.0f, 1.0f,
@@ -26,13 +55,12 @@ Framebuffer::Framebuffer() {
 
 	std::unique_ptr<IndexBuffer> IBO = std::make_unique<IndexBuffer>(indices, 6, GL_STATIC_DRAW);
 	VAO->SetIndexBuffer(std::move(IBO));
-
-	glGenFramebuffers(1, &frameBufferID);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 Framebuffer::~Framebuffer() {
 	glDeleteFramebuffers(1, &frameBufferID);
+	glDeleteTextures(1, &colorTextureID);
+	glDeleteRenderbuffers(1, &renderBufferID);
 }
 
 void Framebuffer::Bind() {
@@ -41,4 +69,21 @@ void Framebuffer::Bind() {
 
 void Framebuffer::Unbind() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Framebuffer::Draw() {
+	Renderer::Instance().Clear(ClearType::Color);
+
+	VAO->Bind();
+	glDisable(GL_DEPTH_TEST);
+
+	glActiveTexture(0);
+	glBindTexture(GL_TEXTURE_2D, colorTextureID);
+
+	Renderer::Instance().Draw(VAO->GetIBOCount());
+
+	glActiveTexture(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glEnable(GL_DEPTH_TEST);
 }

@@ -7,6 +7,7 @@
 #include "GameObjects/Ghosts/Pinky.h"
 #include "GameObjects/Ghosts/Clyde.h"
 #include "GameObjects/Ghosts/Inky.h"
+#include "Render/FrameBuffers/Framebuffer.h"
 #include "Camera.h"
 #include "UI/UI.h"
 
@@ -43,6 +44,10 @@ int main() {
         "Resources/Shaders/Fragment/fSprite.glsl");
     shaderMap["cellShading"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vCellShading.glsl",
         "Resources/Shaders/Fragment/fCellShading.glsl");
+    shaderMap["postProcessing"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vChromaticAberration.glsl",
+        "Resources/Shaders/Fragment/fChromaticAberration.glsl");
+
+    std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>();
 
     DirectionalLight dirLight(glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
 
@@ -146,6 +151,7 @@ int main() {
         }
 
         //drawing
+        frameBuffer->Bind();
         Renderer::Instance().Clear();
 
         shaderMap["lightShader"]->Use();
@@ -160,11 +166,16 @@ int main() {
         for (int i = 0; i < entities.size(); i++) {
             entities[i]->Draw(shaderMap["lightShader"]);
         }
-        ui.Draw();
         
+        ui.Draw();
         if (Game::GetIsGameOver()) {
             ui.DrawGameBegin();
         }
+
+        frameBuffer->Unbind();
+        shaderMap["postProcessing"]->Use();
+        frameBuffer->Draw();
+     
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -221,7 +221,7 @@
     <None Include="Resources\Shaders\Fragment\fLightMaps.glsl" />
     <None Include="Resources\Shaders\Fragment\fLightSource.glsl" />
     <None Include="Resources\Shaders\Fragment\fPhongLight.glsl" />
-    <None Include="Resources\Shaders\Fragment\fScreenShader.glsl" />
+    <None Include="Resources\Shaders\Fragment\fChromaticAberration.glsl" />
     <None Include="Resources\Shaders\Fragment\fSprite.glsl" />
     <None Include="Resources\Shaders\Fragment\fText.glsl" />
     <None Include="Resources\Shaders\Vertex\vBasic.glsl" />
@@ -230,7 +230,7 @@
     <None Include="Resources\Shaders\Vertex\vLightMaps.glsl" />
     <None Include="Resources\Shaders\Vertex\vLightSource.glsl" />
     <None Include="Resources\Shaders\Vertex\vPhongLight.glsl" />
-    <None Include="Resources\Shaders\Vertex\vScreenShader.glsl" />
+    <None Include="Resources\Shaders\Vertex\vChromaticAberration.glsl" />
     <None Include="Resources\Shaders\Vertex\vSprite.glsl" />
     <None Include="Resources\Shaders\Vertex\vText.glsl" />
   </ItemGroup>

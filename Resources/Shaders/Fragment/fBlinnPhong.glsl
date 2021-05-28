@@ -48,7 +48,9 @@ uniform vec3 uViewPosition;
 
 out vec4 fragmentColor;
 
-//functions
+float levels = 6;
+
+//functions	
 vec3 CalculateDirLight(vec3 viewDir, vec3 normal);
 vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal);
 
@@ -98,6 +100,8 @@ vec3 CalculateDirLight(vec3 viewDir, vec3 normal) {
 
 	//diffuse component
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
+	float level = floor(diffuseStrength * levels);
+	diffuseStrength = level / levels;
 	if(uMaterial.useDiffuseColor) {
 		diffuse = uDirLight.diffuse * diffuseStrength * vec3(uMaterial.diffuseColor);
 	}
@@ -135,6 +139,8 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal) {
 
 	//diffuse component
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
+	float level = floor(diffuseStrength * levels);
+	diffuseStrength = level / levels;
 	if(uMaterial.useDiffuseColor) {
 		diffuse = light.diffuse * diffuseStrength * vec3(uMaterial.diffuseColor);
 	}

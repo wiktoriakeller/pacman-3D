@@ -225,8 +225,8 @@
     <None Include="Resources\Shaders\Vertex\vText.glsl" />
     <None Include="Resources\Shaders\Fragment\fSprite.glsl" />
     <None Include="Resources\Shaders\Vertex\vSprite.glsl" />
-    <None Include="Resources\Shaders\Fragment\fScreenShader.glsl" />
-    <None Include="Resources\Shaders\Vertex\vScreenShader.glsl" />
+    <None Include="Resources\Shaders\Fragment\fChromaticAberration.glsl" />
+    <None Include="Resources\Shaders\Vertex\vChromaticAberration.glsl" />
     <None Include="Resources\Shaders\Fragment\fCellShading.glsl" />
     <None Include="Resources\Shaders\Vertex\vCellShading.glsl" />
   </ItemGroup>

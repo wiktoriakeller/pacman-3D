@@ -47,7 +47,7 @@ int main() {
     shaderMap["postProcessing"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vChromaticAberration.glsl",
         "Resources/Shaders/Fragment/fChromaticAberration.glsl");
 
-    std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>();
+    std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>(8);
 
     DirectionalLight dirLight(glm::vec3(0.18f, 0.18f, 0.18f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
 
@@ -174,6 +174,7 @@ int main() {
             ui.DrawGameBegin();
         }
 
+        frameBuffer->BlitMultisampledBuffer();
         frameBuffer->Unbind();
         shaderMap["postProcessing"]->Use();
 

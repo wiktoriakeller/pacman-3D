@@ -13,15 +13,18 @@
 class Framebuffer
 {
 public:
-	Framebuffer();
+	Framebuffer(GLsizei samples);
 	~Framebuffer();
 	virtual void Bind();
 	virtual void Unbind();
 	virtual void Draw();
+	void BlitMultisampledBuffer() const;
 
 private:
 	GLuint frameBufferID;
+	GLuint intermidiateFrameBufferID;
 	GLuint colorTextureID;
+	GLuint intermidiateTextureID;
 	GLuint renderBufferID;
 	std::unique_ptr<VertexArray> VAO;
 };

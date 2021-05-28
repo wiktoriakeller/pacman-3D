@@ -1,26 +1,22 @@
 #include "Framebuffer.h"
 
-Framebuffer::Framebuffer() {
+Framebuffer::Framebuffer(GLsizei samples) {
 	glGenFramebuffers(1, &frameBufferID);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 
 	//generating color texture
 	glGenTextures(1, &colorTextureID);
-	glBindTexture(GL_TEXTURE_2D, colorTextureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, colorTextureID);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, GL_TRUE);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
 	//attaching texture to framebuffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTextureID, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, colorTextureID, 0);
 
 	//creating rendering buffer
 	glGenRenderbuffers(1, &renderBufferID);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferID);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH24_STENCIL8, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	//attaching render buffer to framebuffer
@@ -32,6 +28,25 @@ Framebuffer::Framebuffer() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
+	//creating FBO for stroing results from first frame buffer
+	glGenFramebuffers(1, &intermidiateFrameBufferID);
+	glBindFramebuffer(GL_FRAMEBUFFER, intermidiateFrameBufferID);
+
+	glGenTextures(1, &intermidiateTextureID);
+	glBindTexture(GL_TEXTURE_2D, intermidiateTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, intermidiateTextureID, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Framebuffer is not complete\n";
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	//position, tex coord
 	GLfloat vertices[] = {
 		-1.0f, 1.0f, 0.0f, 1.0f,
@@ -80,7 +95,7 @@ void Framebuffer::Draw() {
 	glDisable(GL_DEPTH_TEST);
 
 	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, colorTextureID);
+	glBindTexture(GL_TEXTURE_2D, intermidiateTextureID);
 
 	Renderer::Instance().Draw(VAO->GetIBOCount());
 
@@ -88,4 +103,10 @@ void Framebuffer::Draw() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glEnable(GL_DEPTH_TEST);
+}
+
+void Framebuffer::BlitMultisampledBuffer() const {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBufferID);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermidiateFrameBufferID);
+	glBlitFramebuffer(0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, 0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }

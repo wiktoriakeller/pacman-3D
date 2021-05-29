@@ -18,8 +18,7 @@ int main() {
 
     if (!glfwInit())
         return -1;
-    
-    glfwWindowHint(GLFW_SAMPLES, 4);
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -42,14 +41,14 @@ int main() {
         "Resources/Shaders/Fragment/fText.glsl");
     shaderMap["spriteShader"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vSprite.glsl",
         "Resources/Shaders/Fragment/fSprite.glsl");
-    shaderMap["cellShading"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vCellShading.glsl",
-        "Resources/Shaders/Fragment/fCellShading.glsl");
+    //shaderMap["cellShading"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vCellShading.glsl",
+        //"Resources/Shaders/Fragment/fCellShading.glsl");
     shaderMap["postProcessing"] = std::make_shared<Shader>("Resources/Shaders/Vertex/vChromaticAberration.glsl",
         "Resources/Shaders/Fragment/fChromaticAberration.glsl");
 
     std::unique_ptr<Framebuffer> frameBuffer = std::make_unique<Framebuffer>(8);
 
-    DirectionalLight dirLight(glm::vec3(0.18f, 0.18f, 0.18f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-2.0f, 3.0f, -1.0f));
+    DirectionalLight dirLight(glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.65f, 0.65f, 0.65f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(-2.0f, 3.0f, -1.0f));
 
     std::unique_ptr<Model> mazeModel = std::make_unique<Model>("Resources/Models/maze.obj", true);
     std::unique_ptr<Model> pacmanModel = std::make_unique<Model>("Resources/Models/pacman.obj", true);
@@ -89,7 +88,9 @@ int main() {
     UI ui(pacman, pointsCast);
     srand(time(0));
 
-    float offsetFactor = 1.0f;
+    float min = 1.0f;
+    float max = 3.5f;
+    float offsetFactor;
     float deltaTime;
     float oldTimeSinceStart = (float) glfwGetTime();
     float timeSinceStart = 0.0f;
@@ -179,9 +180,7 @@ int main() {
         shaderMap["postProcessing"]->Use();
 
         if (!noFrightenedGhost) {
-            float min = 1.0f;
-            float max = 3.5f;
-            offsetFactor = min + (offsetFactor / (ghosts[0]->GetFrightenedTime() + 1)) * (max - min);
+            offsetFactor = min + (offsetFactor / (ghosts[0]->GetFrightenedTime() + 1.0f)) * (max - min);
             shaderMap["postProcessing"]->SetUniform("offsetFactor", glm::vec2(3.0f, 2.0f) * offsetFactor);
         }
         else {
@@ -190,7 +189,6 @@ int main() {
 
         frameBuffer->Draw();
      
-
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -201,8 +199,6 @@ int main() {
 
 void init(GLFWwindow* window) {
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_FRAMEBUFFER_SRGB);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glfwSetWindowAspectRatio(window, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT);

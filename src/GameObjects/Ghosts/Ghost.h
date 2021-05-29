@@ -65,6 +65,8 @@ private:
 		glm::vec3(-1.0f, 0.0f, 0.0f),			//up
 		glm::vec3(0.0f, 0.0f, 1.0f)			//down
 	};	
+	glm::vec4 frightenedColor;
+	glm::vec4 returningColor;
 
 	void Frighten();
 	void LeaveHouse();

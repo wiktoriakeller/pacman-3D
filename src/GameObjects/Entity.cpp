@@ -4,8 +4,8 @@ Entity::Entity(std::unique_ptr<Model> model, bool createPointLight) : model(std:
 	modelMatrix = glm::mat4(1.0f);
 	UpdateNormalMatrix();
 	if (createPointLight) {
-		pointLight = std::make_unique<PointLight>(glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+		pointLight = std::make_unique<PointLight>(glm::vec3(0.25f, 0.25f, 0.25f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.7f, 0.7f, 0.7f),
+			glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 0.22f, 0.20f);
 	}
 	else {
 		pointLight = nullptr;
@@ -57,7 +57,7 @@ void Entity::Scale(glm::vec3 factor) {
 
 void Entity::SendLightToShader(std::shared_ptr<Shader> shader) {
 	if (pointLight != nullptr) {
-		pointLight->SetPosition(GetPosition().x, GetPosition().y - 0.5f, GetPosition().z);
+		pointLight->SetPosition(GetPosition().x, GetPosition().y + 0.5f, GetPosition().z);
 		pointLight->SendToShader(shader);
 	}
 }

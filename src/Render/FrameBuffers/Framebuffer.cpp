@@ -78,6 +78,8 @@ Framebuffer::~Framebuffer() {
 	glDeleteFramebuffers(1, &frameBufferID);
 	glDeleteTextures(1, &colorTextureID);
 	glDeleteRenderbuffers(1, &renderBufferID);
+	glDeleteFramebuffers(1, &intermidiateFrameBufferID);
+	glDeleteTextures(1, &intermidiateTextureID);
 }
 
 void Framebuffer::Bind() {

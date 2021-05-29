@@ -10,6 +10,7 @@ Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int,
 	nextX = startX;
 	nextZ = startZ;
 	startPosition = World::Instance().GetPosition(nextX, nextZ);
+	startPosition.x -= 0.6f;
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	stopped = true;

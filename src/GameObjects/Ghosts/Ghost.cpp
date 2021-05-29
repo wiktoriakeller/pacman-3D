@@ -17,7 +17,8 @@ Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool 
 	startState = currentState;
 	Scale(glm::vec3(0.7f, 0.7f, 0.7f));
 	Rotate(90, glm::vec3(0.0f, 1.0f, 0.0f));
-	this->model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+	frightenedColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+	this->model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, frightenedColor);
 }
 
 void Ghost::Update(float deltaTime) {
@@ -31,10 +32,10 @@ void Ghost::Update(float deltaTime) {
 		blinkingTimer++;
 		int reminder = blinkingTimer % 30;
 		if (reminder < 15) {
-			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, frightenedColor);
 		}
 		else {
-			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(1.0f));
 		}
 	}
 
@@ -85,7 +86,7 @@ void Ghost::UpdateState() {
 		
 		if (currentState != State::Returning) {
 			model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, false);
-			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, frightenedColor);
 		}
 	}
 
@@ -215,7 +216,7 @@ void Ghost::EnterHouse() {
 		}
 		else {
 			model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, false);
-			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, frightenedColor);
 			isFrightened = false;
 			frightenedTimer = 0.0f;
 			ChangeBaseState(State::Leaving);
@@ -276,7 +277,7 @@ void Ghost::TargetCorner() {
 
 void Ghost::Reset() {
 	SetPosition(startPosition);
-	model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 1.0f));
+	model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, frightenedColor);
 	model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, false);
 	currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 	nextX = startX;
@@ -296,7 +297,7 @@ void Ghost::ReturnToHouse() {
 	targetX = HOUSE_CENTER_X;
 	targetZ = HOUSE_CENTER_Z - 3;
 	speed = 2.5f * baseSpeed;
-	model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(0.2f, 0.0f, 1.0f, 0.0f));
+	model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, returningColor);
 	returningState = ReturningState::GoingBack;
 	ChangeBaseState(State::Returning);
 }

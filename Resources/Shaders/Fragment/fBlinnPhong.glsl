@@ -47,8 +47,7 @@ uniform PointLight uPointLights[NR_POINT_LIGHTS];
 uniform vec3 uViewPosition;
 
 out vec4 fragmentColor;
-
-float levels = 6;
+const float gamma = 1.5;
 
 //functions	
 vec3 CalculateDirLight(vec3 viewDir, vec3 normal);
@@ -95,18 +94,16 @@ vec3 CalculateDirLight(vec3 viewDir, vec3 normal) {
 		ambient = uDirLight.ambient * vec3(uMaterial.diffuseColor);
 	}
 	else {
-		ambient = uDirLight.ambient * texture(uMaterial.diffuseMap1, textureCoord).rgb;
+		ambient = uDirLight.ambient * pow(texture(uMaterial.diffuseMap1, textureCoord).rgb, vec3(gamma));
 	}
 
 	//diffuse component
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
-	float level = floor(diffuseStrength * levels);
-	diffuseStrength = level / levels;
 	if(uMaterial.useDiffuseColor) {
 		diffuse = uDirLight.diffuse * diffuseStrength * vec3(uMaterial.diffuseColor);
 	}
 	else {
-		diffuse = uDirLight.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, textureCoord).rgb;
+		diffuse = uDirLight.diffuse * diffuseStrength * pow(texture(uMaterial.diffuseMap1, textureCoord).rgb, vec3(gamma));
 	}
 
 	//specular component
@@ -134,18 +131,16 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal) {
 		ambient = light.ambient * vec3(uMaterial.diffuseColor);
 	}
 	else {
-		ambient = light.ambient * texture(uMaterial.diffuseMap1, textureCoord).rgb;
+		ambient = light.ambient * pow(texture(uMaterial.diffuseMap1, textureCoord).rgb, vec3(gamma));
 	}
 
 	//diffuse component
 	float diffuseStrength = max(dot(normal, lightDir), 0.0);
-	float level = floor(diffuseStrength * levels);
-	diffuseStrength = level / levels;
 	if(uMaterial.useDiffuseColor) {
 		diffuse = light.diffuse * diffuseStrength * vec3(uMaterial.diffuseColor);
 	}
 	else {
-		diffuse = light.diffuse * diffuseStrength * texture(uMaterial.diffuseMap1, textureCoord).rgb;
+		diffuse = light.diffuse * diffuseStrength * pow(texture(uMaterial.diffuseMap1, textureCoord).rgb, vec3(gamma));
 	}
     
 	//specular component
@@ -161,6 +156,8 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir, vec3 normal) {
 	//calculating attentuation
 	float dist = length(light.position - fragmentPosition);
 	float attentuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
+	//float attentuation = 1.0 / (dist * dist);
+	//float attentuation = 1.0 / dist;
 
 	ambient *= attentuation;
 	diffuse *= attentuation;

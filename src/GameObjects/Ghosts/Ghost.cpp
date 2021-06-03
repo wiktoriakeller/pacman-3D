@@ -296,7 +296,7 @@ void Ghost::Reset() {
 void Ghost::ReturnToHouse() {
 	targetX = HOUSE_CENTER_X;
 	targetZ = HOUSE_CENTER_Z - 3;
-	speed = 3.0f * baseSpeed;
+	speed = 2.5f * baseSpeed;
 	model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, returningColor);
 	returningState = ReturningState::GoingBack;
 	ChangeBaseState(State::Returning);

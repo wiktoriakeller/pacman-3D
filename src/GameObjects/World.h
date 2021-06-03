@@ -2,7 +2,7 @@
 #include <GLM/glm.hpp>
 
 enum class MapElement : unsigned char {
-    None = 0, Wall, Point, Power, Tunnel, MissingPoint, MissingPower, Ghost
+    None = 0, Wall, Point, Power, Tunnel, MissingPoint, MissingPower, Ghost, Cherry
 };
 
 class World
@@ -11,7 +11,6 @@ public:
     glm::vec3 WorldCenter;
     static const int HEIGHT = 36;
     static const int WIDTH = 28;
-    static const int START_POINTS = 246;
     const glm::vec2 TUNNEL_LEFT_POS = glm::vec2(WIDTH - 1, 17);
     const glm::vec2 TUNNEL_RIGHT_POS = glm::vec2(0, 17);
 

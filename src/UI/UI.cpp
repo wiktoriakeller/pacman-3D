@@ -3,12 +3,15 @@
 UI::UI(std::shared_ptr<Pacman> player, std::shared_ptr<Points> points) : player(player), points(points) {
 	projection = glm::ortho(0.0f, (float)Game::WINDOW_WIDTH, 0.0f, (float)Game::WINDOW_HEIGHT);
 	pacmanLive = std::make_unique<Sprite>("Resources/Sprites/pacman.png");
+	cherry = std::make_unique<Sprite>("Resources/Sprites/cherry.png");
 	pacmanLive->SetScale(glm::vec2(35.0f, 35.0f));
+	cherry->SetScale(glm::vec2(45.0f, 45.0f));
 	textRenderer = std::make_unique<Text>("Resources/Fonts/minecraft.ttf", FONT_SCALE, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 48);
 }
 
 void UI::Draw() const {
 	DrawHealth();
+	DrawCherry();
 	DrawScoreAndLevel();
 }
 
@@ -32,6 +35,15 @@ void UI::DrawHealth() const {
 	for (int i = 0; i < lives; i++) {
 		pacmanLive->SetPosition(glm::vec2(Game::WINDOW_WIDTH - (i + 1) * (OFFSET + pacmanLive->GetSize().x) + i, OFFSET));
 		pacmanLive->Draw(shaderMap["spriteShader"]);
+	}
+}
+
+void UI::DrawCherry() const {
+	if (!points->GetIsCherrySpawned()) {
+		shaderMap["spriteShader"]->Use();
+		shaderMap["spriteShader"]->SetUniform("uProjection", projection);
+		cherry->SetPosition(glm::vec2(Game::WINDOW_WIDTH - 2 * (OFFSET + pacmanLive->GetSize().x) - cherry->GetSize().x - 2 * OFFSET + 1, OFFSET - 5.0f));
+		cherry->Draw(shaderMap["spriteShader"]);
 	}
 }
 

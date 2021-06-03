@@ -1,11 +1,16 @@
 #include "Points.h"
 
-Points::Points(std::unique_ptr<Model> model, bool createPointLight) : Entity(std::move(model), createPointLight) {
+Points::Points(std::unique_ptr<Model> model, std::unique_ptr<Entity> cherry, bool createPointLight) : Entity(std::move(model), createPointLight), 
+    cherry(std::move(cherry)) {
     Scale(glm::vec3(0.25f, 0.25f, 0.25f));
-    pointsLeft = World::START_POINTS;
+    pointsLeft = START_POINTS;
     level = 0;
     score = 0;
     ghostScoreMultiplier = 1;
+    cherrySpawned = false;
+    cherryTimer = 0.0f;
+    cherryDisappearTime = 30.0f;
+    this->cherry->SetScale(glm::vec3(0.35f, 0.35f, 0.35f));
 }
 
 void Points::Draw(std::shared_ptr<Shader> shader) {
@@ -24,6 +29,12 @@ void Points::Draw(std::shared_ptr<Shader> shader) {
                 shader->SetUniform("uNormalMatrix", normalMatrix);
                 model->Draw(shader);
                 SetScale(glm::vec3(0.25f, 0.25f, 0.25f));
+            }
+            else if (World::Instance().GetMapElement(x, y) == MapElement::Cherry) {
+                glm::vec3 cherryPos = World::Instance().GetPosition(x, y);
+                cherryPos.x -= 0.4f;
+                cherry->SetPosition(cherryPos);
+                cherry->Draw(shader);
             }
         }
     }
@@ -44,6 +55,10 @@ void Points::AddPoints(MapElement element, int x, int z) {
         score += (GHOST_KILL_SCORE * ghostScoreMultiplier);
         ghostScoreMultiplier++;
     }
+    else if (element == MapElement::Cherry) {
+        score += CHERRY_SCORE;
+        World::Instance().SetMapElement(x, z, MapElement::MissingPoint);
+    }
 }
 
 void Points::ResetGhostScoreMultiplier() {
@@ -60,10 +75,13 @@ void Points::Reset() {
                 else if (World::Instance().GetMapElement(x, y) == MapElement::MissingPower) {
                     World::Instance().SetMapElement(x, y, MapElement::Power);
                 }
+                else if (World::Instance().GetMapElement(x, y) == MapElement::Cherry) {
+                    World::Instance().SetMapElement(x, y, MapElement::Point);
+                }
             }
         }
 
-        pointsLeft = World::START_POINTS;
+        pointsLeft = START_POINTS;
 
         if (Game::GetIsGameOver()) {
             level = 0;
@@ -72,6 +90,12 @@ void Points::Reset() {
         else {
             level++;
         }
+        
+        cherryTimer = 0.0f;
+        cherrySpawned = false;
+    }
+    else if (cherrySpawned) {
+        World::Instance().SetMapElement(cherryX, cherryZ, MapElement::MissingPoint);
     }
 }
 
@@ -85,4 +109,35 @@ unsigned int Points::GetLevel() {
 
 unsigned int Points::GetPointsLeft(){
     return pointsLeft;
+}
+
+bool Points::GetIsCherrySpawned() {
+    return cherrySpawned;
+}
+
+void Points::Update(float deltaTime) {
+    if (cherrySpawned) {
+        cherryTimer += deltaTime;
+    }
+
+    if (!cherrySpawned && (START_POINTS - pointsLeft) >= POINTS_TO_SPAWN_CHERRY) {
+        std::vector<std::pair<int, int>> positions;
+        for (int y = 0; y < World::HEIGHT; y++) {
+            for (int x = 0; x < World::WIDTH; x++) {
+                if (World::Instance().GetMapElement(x, y) == MapElement::MissingPoint) {
+                    positions.push_back(std::pair(x, y));
+                }
+            }
+        }
+
+        int index = rand() % positions.size();
+        cherryX = positions[index].first;
+        cherryZ = positions[index].second;
+        World::Instance().SetMapElement(cherryX, cherryZ, MapElement::Cherry);
+        cherrySpawned = true;
+    }
+
+    if (cherrySpawned && cherryTimer > cherryDisappearTime) {
+        World::Instance().SetMapElement(cherryX, cherryZ, MapElement::MissingPoint);
+    }
 }

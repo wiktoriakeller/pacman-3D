@@ -108,7 +108,7 @@ void Pacman::ReverseDirection() {
 void Pacman::EvaluatePoints() {
 	MapElement element = World::Instance().GetMapElement(nextX, nextZ);
 
-	if (element == MapElement::Point || element == MapElement::Power) {
+	if (element == MapElement::Point || element == MapElement::Power || element == MapElement::Cherry) {
 		addPoints(element, nextX, nextZ);
 
 		if (element == MapElement::Power) {

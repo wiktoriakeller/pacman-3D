@@ -57,12 +57,14 @@ int main() {
     std::unique_ptr<Model> clydeModel = std::make_unique<Model>("Resources/Models/Clyde.obj", true);
     std::unique_ptr<Model> inkyModel = std::make_unique<Model>("Resources/Models/Inky.obj", true);
     std::unique_ptr<Model> pinkyModel = std::make_unique<Model>("Resources/Models/Pinky.obj", true);
+    std::unique_ptr<Model> cherryModel = std::make_unique<Model>("Resources/Models/Cherry.obj", true);
 
     //mazeModel->ChangeMeshMaterialDiffuse(3, glm::vec4(0.109f, 0.0f, 0.839f, 1.0f));
     //mazeModel->UseMeshMaterialDiffuseColor(3, true);
 
     std::shared_ptr<Entity> maze = std::make_shared<Entity>(std::move(mazeModel), false);
-    std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel), false);
+    std::unique_ptr<Entity> cherry = std::make_unique<Entity>(std::move(cherryModel), false);
+    std::shared_ptr<Entity> points = std::make_shared<Points>(std::move(pointModel), std::move(cherry), false);
 
     std::shared_ptr<Points> pointsCast = std::dynamic_pointer_cast<Points>(points);
     std::function<void(MapElement, int, int)> pointsAdder = [pointsCast](MapElement element, int x, int z) { pointsCast->AddPoints(element, x, z); };

@@ -20,9 +20,11 @@ private:
 	glm::mat4 projection;
 	std::unique_ptr<Text> textRenderer;
 	std::unique_ptr<Sprite> pacmanLive;
+	std::unique_ptr<Sprite> cherry;
 	std::shared_ptr<Pacman> player;
 	std::shared_ptr<Points> points;
 
 	void DrawScoreAndLevel() const;
 	void DrawHealth() const;
+	void DrawCherry() const;
 };

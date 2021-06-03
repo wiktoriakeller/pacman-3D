@@ -47,7 +47,7 @@ uniform PointLight uPointLights[NR_POINT_LIGHTS];
 uniform vec3 uViewPosition;
 
 out vec4 fragmentColor;
-const float gamma = 1.5;
+const float gamma = 1.4;
 
 //functions	
 vec3 CalculateDirLight(vec3 viewDir, vec3 normal);

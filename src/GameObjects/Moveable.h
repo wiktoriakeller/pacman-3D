@@ -5,7 +5,7 @@
 class Moveable : public Entity
 {
 public:
-	const float SNAP_DISTANCE = 0.10f;
+	const float SNAP_DISTANCE = 0.15f;
 	const float COLLISION_DISTANCE = 1.0f;
 
 	Moveable(std::unique_ptr<Model> model, bool createPointLight);

@@ -28,13 +28,15 @@ void Pacman::Update(float deltaTime) {
 }
 
 void Pacman::Reset() {
-	SetPosition(startPosition);
-	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
+	currentDirection = glm::vec3(0.0f, 0.0f, 1.0f);
 	wantedDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	nextX = startX;
 	nextZ = startZ;
 	stopped = true;
 	shouldRotate = true;
+	Move(0.0f);
+	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
+	SetPosition(startPosition);
 }
 
 int Pacman::GetLives() const {

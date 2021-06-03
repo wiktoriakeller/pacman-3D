@@ -9,7 +9,7 @@ out vec4 fragColor;
 float redOffset = 0.0012;
 float greenOffset = 0.0006;
 float blueOffset = -0.0006;
-const float gamma = 1.5;
+const float gamma = 1.4;
 
 uniform vec2 offsetFactor;
 

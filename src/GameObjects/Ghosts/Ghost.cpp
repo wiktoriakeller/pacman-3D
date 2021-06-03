@@ -296,29 +296,32 @@ void Ghost::Reset() {
 void Ghost::ReturnToHouse() {
 	targetX = HOUSE_CENTER_X;
 	targetZ = HOUSE_CENTER_Z - 3;
-	speed = 2.5f * baseSpeed;
+	speed = 3.0f * baseSpeed;
 	model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, returningColor);
 	returningState = ReturningState::GoingBack;
 	ChangeBaseState(State::Returning);
 }
 
 void Ghost::Frighten() {
-	isFrightened = true;
-	frightenedTimer = 0.0f;
-	model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, true);
-	glm::vec3 reversedDirection = -currentDirection;
+	if (currentState != State::Returning) {
+		isFrightened = true;
+		frightenedTimer = 0.0f;
+		model->UseMeshMaterialDiffuseColor(MAT_COLOR_INDEX, true);
+		model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, frightenedColor);
+		glm::vec3 reversedDirection = -currentDirection;
 
-	if (currentDirection.x != 0 && CanMakeMove(nextX + reversedDirection.x, nextZ)
-		&& (currentState == State::Chase || currentState == State::Scatter)) {
-		currentDirection = reversedDirection;
-		nextX = nextX + reversedDirection.x;
-		shouldRotate = true;
-	}
-	else if (currentDirection.z != 0 && CanMakeMove(nextX, nextZ + reversedDirection.z)
-		&& (currentState == State::Chase || currentState == State::Scatter)) {
-		currentDirection = reversedDirection;
-		nextZ = nextZ + reversedDirection.z;
-		shouldRotate = true;
+		if (currentDirection.x != 0 && CanMakeMove(nextX + reversedDirection.x, nextZ)
+			&& (currentState == State::Chase || currentState == State::Scatter)) {
+			currentDirection = reversedDirection;
+			nextX = nextX + reversedDirection.x;
+			shouldRotate = true;
+		}
+		else if (currentDirection.z != 0 && CanMakeMove(nextX, nextZ + reversedDirection.z)
+			&& (currentState == State::Chase || currentState == State::Scatter)) {
+			currentDirection = reversedDirection;
+			nextZ = nextZ + reversedDirection.z;
+			shouldRotate = true;
+		}
 	}
 }
 

@@ -18,6 +18,7 @@ public:
 	unsigned int GetLevel();
 	unsigned int GetPointsLeft();
 	bool GetIsCherrySpawned();
+	bool GetIsCherryPicked();
 	void Update(float deltaTime) override;
 	void Draw(std::shared_ptr<Shader> shader) override;
 	void Reset() override;
@@ -36,6 +37,7 @@ private:
 	int cherryZ;;
 	float cherryTimer;
 	float cherryDisappearTime;
-	bool cherrySpawned;
+	bool isCherrySpawned;
+	bool isCherryPicked;
 	std::unique_ptr<Entity> cherry;
 };

@@ -39,7 +39,7 @@ void UI::DrawHealth() const {
 }
 
 void UI::DrawCherry() const {
-	if (!points->GetIsCherrySpawned()) {
+	if (!points->GetIsCherryPicked()) {
 		shaderMap["spriteShader"]->Use();
 		shaderMap["spriteShader"]->SetUniform("uProjection", projection);
 		cherry->SetPosition(glm::vec2(Game::WINDOW_WIDTH - 2 * (OFFSET + pacmanLive->GetSize().x) - cherry->GetSize().x - 2 * OFFSET + 1, OFFSET - 5.0f));
@@ -54,5 +54,5 @@ void UI::DrawScoreAndLevel() const {
 	shaderMap["textShader"]->Use();
 	shaderMap["textShader"]->SetUniform("uProjection", projection);
 	textRenderer->Draw(shaderMap["textShader"], "Score: " + std::to_string(points->GetScore()), OFFSET, OFFSET);
-	textRenderer->Draw(shaderMap["textShader"], "Level: " + std::to_string(points->GetLevel()), OFFSET, OFFSET + 2.5f * OFFSET);
+	textRenderer->Draw(shaderMap["textShader"], "Level: " + std::to_string(points->GetLevel() + 1), OFFSET, OFFSET + 2.5f * OFFSET);
 }

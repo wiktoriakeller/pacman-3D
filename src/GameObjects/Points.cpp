@@ -7,7 +7,8 @@ Points::Points(std::unique_ptr<Model> model, std::unique_ptr<Entity> cherry, boo
     level = 0;
     score = 0;
     ghostScoreMultiplier = 1;
-    cherrySpawned = false;
+    isCherrySpawned = false;
+    isCherryPicked = false;
     cherryTimer = 0.0f;
     cherryDisappearTime = 30.0f;
     this->cherry->SetScale(glm::vec3(0.35f, 0.35f, 0.35f));
@@ -57,6 +58,7 @@ void Points::AddPoints(MapElement element, int x, int z) {
     }
     else if (element == MapElement::Cherry) {
         score += CHERRY_SCORE;
+        isCherryPicked = true;
         World::Instance().SetMapElement(x, z, MapElement::MissingPoint);
     }
 }
@@ -92,9 +94,10 @@ void Points::Reset() {
         }
         
         cherryTimer = 0.0f;
-        cherrySpawned = false;
+        isCherrySpawned = false;
+        isCherryPicked = false;
     }
-    else if (cherrySpawned) {
+    else if (isCherrySpawned) {
         World::Instance().SetMapElement(cherryX, cherryZ, MapElement::MissingPoint);
     }
 }
@@ -112,15 +115,19 @@ unsigned int Points::GetPointsLeft(){
 }
 
 bool Points::GetIsCherrySpawned() {
-    return cherrySpawned;
+    return isCherrySpawned;
+}
+
+bool Points::GetIsCherryPicked() {
+    return isCherryPicked;
 }
 
 void Points::Update(float deltaTime) {
-    if (cherrySpawned) {
+    if (isCherrySpawned) {
         cherryTimer += deltaTime;
     }
 
-    if (!cherrySpawned && (START_POINTS - pointsLeft) >= POINTS_TO_SPAWN_CHERRY) {
+    if (!isCherrySpawned && (START_POINTS - pointsLeft) >= POINTS_TO_SPAWN_CHERRY) {
         std::vector<std::pair<int, int>> positions;
         for (int y = 0; y < World::HEIGHT; y++) {
             for (int x = 0; x < World::WIDTH; x++) {
@@ -134,10 +141,10 @@ void Points::Update(float deltaTime) {
         cherryX = positions[index].first;
         cherryZ = positions[index].second;
         World::Instance().SetMapElement(cherryX, cherryZ, MapElement::Cherry);
-        cherrySpawned = true;
+        isCherrySpawned = true;
     }
 
-    if (cherrySpawned && cherryTimer > cherryDisappearTime) {
+    if (isCherrySpawned && cherryTimer > cherryDisappearTime) {
         World::Instance().SetMapElement(cherryX, cherryZ, MapElement::MissingPoint);
     }
 }

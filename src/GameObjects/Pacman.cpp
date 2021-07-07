@@ -47,17 +47,19 @@ void Pacman::Reset() {
 }
 
 void Pacman::Draw(std::shared_ptr<Shader> shader) {
-	shader->SetUniform("uNormalMatrix", normalMatrix);
-	
 	//top part
+	glm::mat4 modelMatrixTop = modelMatrix * topPart;
 	model->SendMaterialToShader(0, shader);
-	shader->SetUniform("uModel", modelMatrix * topPart);
+	shader->SetUniform("uModel", modelMatrixTop);
+	shader->SetUniform("uNormalMatrix", glm::transpose(glm::inverse(glm::mat3(modelMatrixTop))));
 	model->DrawMesh(0);
 	model->UnbindMaterial(0);
 
 	//bottom part
+	glm::mat4 modelMatrixBottom = modelMatrix * bottomPart;
 	model->SendMaterialToShader(1, shader);
-	shader->SetUniform("uModel", modelMatrix * bottomPart);
+	shader->SetUniform("uModel", modelMatrixBottom);
+	shader->SetUniform("uNormalMatrix", glm::transpose(glm::inverse(glm::mat3(modelMatrixBottom))));
 	model->DrawMesh(1);
 	model->UnbindMaterial(1);
 }

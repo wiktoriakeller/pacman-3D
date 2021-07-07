@@ -3,7 +3,7 @@
 Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder,
 	bool createPointLight) : Moveable(std::move(model), createPointLight) {
 	addPoints = pointsAdder;
-	speed = 7.0f;
+	speed = 6.0f;
 	startX = 14;
 	startZ = 26;
 	lives = 2;

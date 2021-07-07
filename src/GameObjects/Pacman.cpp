@@ -3,7 +3,7 @@
 Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int, int)> pointsAdder,
 	bool createPointLight) : Moveable(std::move(model), createPointLight) {
 	addPoints = pointsAdder;
-	speed = 6.0f;
+	speed = 7.0f;
 	startX = 14;
 	startZ = 26;
 	lives = 2;
@@ -41,6 +41,9 @@ void Pacman::Reset() {
 	nextZ = startZ;
 	stopped = true;
 	shouldRotate = true;
+	topPart = glm::mat4(1.0f);
+	bottomPart = glm::mat4(1.0f);
+	animationRotationAngle = 15.0f;
 	Move(0.0f);
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	SetPosition(startPosition);

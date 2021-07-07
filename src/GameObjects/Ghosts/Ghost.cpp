@@ -7,7 +7,7 @@ Ghost::Ghost(std::unique_ptr<Model> model, std::shared_ptr<Pacman> pacman, bool 
 	chaseTime = 52.0f;
 	scatterTime = 8.0f;
 	frightenedTime = 8.0f;
-	baseSpeed = 4.0f;
+	baseSpeed = 5.0f;
 	blinkingTimer = 0;
 	speed = baseSpeed;
 	isFrightened = false;
@@ -28,9 +28,6 @@ void Ghost::Update(float deltaTime) {
 		frightenedTimer += deltaTime;
 	}
 
-	UpdateState();
-	HandleMovement(deltaTime);
-
 	if (isFrightened && !IsReturning() && frightenedTimer < frightenedTime && frightenedTimer >= (frightenedTime - 1.5f)) {
 		blinkingTimer++;
 		int reminder = blinkingTimer % 30;
@@ -41,6 +38,9 @@ void Ghost::Update(float deltaTime) {
 			model->ChangeMeshMaterialDiffuse(MAT_COLOR_INDEX, glm::vec4(1.0f));
 		}
 	}
+
+	UpdateState();
+	HandleMovement(deltaTime);
 }
 
 void Ghost::HandleMovement(float deltaTime) {

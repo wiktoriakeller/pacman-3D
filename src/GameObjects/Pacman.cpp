@@ -18,12 +18,19 @@ Pacman::Pacman(std::unique_ptr<Model> model, std::function<void(MapElement, int,
 	Rotate(-30, glm::vec3(1.0f, 0.0f, 0.0f));
 	Scale(glm::vec3(0.8f, 0.8f, 0.8f));
 	SetPosition(startPosition);
+
+	//animation
+	animationRotationAngle = 15.0f;
+	animationRotationSpeed = -80.0f;
+	topPart = glm::mat4(1.0f);
+	bottomPart = glm::mat4(1.0f);
 }
 
 void Pacman::Update(float deltaTime) {
 	powerPillEffect = false;
 	HandleInput();
 	EvaluateDirection();
+	Animate(deltaTime);
 	Move(deltaTime);
 }
 
@@ -37,6 +44,22 @@ void Pacman::Reset() {
 	Move(0.0f);
 	currentDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	SetPosition(startPosition);
+}
+
+void Pacman::Draw(std::shared_ptr<Shader> shader) {
+	shader->SetUniform("uNormalMatrix", normalMatrix);
+	
+	//top part
+	model->SendMaterialToShader(0, shader);
+	shader->SetUniform("uModel", modelMatrix * topPart);
+	model->DrawMesh(0);
+	model->UnbindMaterial(0);
+
+	//bottom part
+	model->SendMaterialToShader(1, shader);
+	shader->SetUniform("uModel", modelMatrix * bottomPart);
+	model->DrawMesh(1);
+	model->UnbindMaterial(1);
 }
 
 int Pacman::GetLives() const {
@@ -80,6 +103,25 @@ void Pacman::HandleInput() {
 		EvaluateMove();
 		stopped = false;
 	}
+}
+
+void Pacman::Animate(float deltaTime) {
+	float angle = deltaTime * animationRotationSpeed;
+
+	if (animationRotationAngle + angle >= maxRotation) {
+		animationRotationSpeed *= -1;
+		angle = maxRotation - animationRotationAngle;
+
+	}
+	else if (animationRotationAngle + angle < minRotation) {
+		animationRotationSpeed *= -1;
+		angle = animationRotationAngle;
+	}
+
+	animationRotationAngle += angle;
+
+	topPart = glm::rotate(topPart, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+	bottomPart = glm::rotate(bottomPart, glm::radians(-angle), glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void Pacman::EvaluateDirection() {

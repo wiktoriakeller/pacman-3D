@@ -17,4 +17,5 @@ private:
 	glm::vec3 up;
 	glm::vec3 positionOffset;
 	glm::mat4 projection;
+	glm::vec3 targetPosition;
 };

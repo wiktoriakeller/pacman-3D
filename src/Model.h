@@ -29,6 +29,9 @@ public:
     void ChangeMeshMaterialDiffuse(unsigned int materialIndex, glm::vec4 diffuseColor);
     void UseMeshMaterialSpecularColor(unsigned int materialIndex, bool use);
     void UseMeshMaterialDiffuseColor(unsigned int materialIndex, bool use);
+    void SendMaterialToShader(unsigned int meshIndex, std::shared_ptr<Shader> shader);
+    void UnbindMaterial(unsigned int meshIndex);
+    void DrawMesh(unsigned int meshIndex);
 
 private:
     std::vector<std::unique_ptr<Mesh>> meshes;

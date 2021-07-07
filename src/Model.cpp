@@ -10,14 +10,9 @@ void Model::Draw(std::shared_ptr<Shader> shader) {
 
     for (int i = 0; i < meshes.size(); i++) {
         materialIndex = meshes[i]->GetMaterialIndex();
-
-        if (materialIndex >= 0)
-            materials[materialIndex]->SendToShader(shader, textures);
-
+        materials[materialIndex]->SendToShader(shader, textures);
         meshes[i]->Draw();
-
-        if (materialIndex >= 0)
-            materials[materialIndex]->UnbindMaterial(textures);
+        materials[materialIndex]->UnbindMaterial(textures);
     }
 }
 
@@ -145,4 +140,18 @@ void Model::UseMeshMaterialSpecularColor(unsigned int materialIndex, bool use) {
 
 void Model::UseMeshMaterialDiffuseColor(unsigned int materialIndex, bool use) {
     materials[materialIndex]->UseDiffuseColor(use);
+}
+
+void Model::SendMaterialToShader(unsigned int meshIndex, std::shared_ptr<Shader> shader) {
+    unsigned int materialIndex = meshes[meshIndex]->GetMaterialIndex();
+    materials[materialIndex]->SendToShader(shader, textures);
+}
+
+void Model::UnbindMaterial(unsigned int meshIndex) {
+    unsigned int materialIndex = meshes[meshIndex]->GetMaterialIndex();
+    materials[materialIndex]->UnbindMaterial(textures);
+}
+
+void Model::DrawMesh(unsigned int meshIndex) {
+    meshes[meshIndex]->Draw();
 }

@@ -13,6 +13,7 @@ public:
 	UI(std::shared_ptr<Pacman> player, std::shared_ptr<Points> points);
 	void Draw() const;
 	void DrawGameBegin() const;
+	void DrawReady() const;
 
 private:
 	const float OFFSET = 15.0f;

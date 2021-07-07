@@ -97,8 +97,11 @@ void Points::Reset() {
         isCherrySpawned = false;
         isCherryPicked = false;
     }
-    else if (isCherrySpawned) {
+    else if (isCherrySpawned && !isCherryPicked) {
         World::Instance().SetMapElement(cherryX, cherryZ, MapElement::MissingPoint);
+        cherryTimer = 0.0f;
+        isCherrySpawned = false;
+        isCherryPicked = false;
     }
 }
 

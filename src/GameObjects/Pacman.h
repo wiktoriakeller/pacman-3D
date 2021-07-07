@@ -19,8 +19,8 @@ public:
 	bool GetPowerPillEffect() const;
 
 private:
-	const float maxRotation = 30.0f;
-	const float minRotation = 0.0f;
+	const float maxRotation = 29.0f;
+	const float minRotation = 1.0f;
 
 	int lives;
 	bool stopped;

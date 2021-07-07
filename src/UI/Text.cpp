@@ -116,7 +116,7 @@ void Text::LoadCharacters() {
 			face->glyph->bitmap.buffer);
 		characters[c] = std::move(character);
 
-		if (c == 32) {
+		if (c == 33) {
 			c = 47;
 		}
 		else if (c == 58) {

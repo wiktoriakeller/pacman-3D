@@ -26,6 +26,17 @@ void UI::DrawGameBegin() const {
 		Game::WINDOW_HEIGHT / 2.0f);
 }
 
+void UI::DrawReady() const {
+	std::string text = "READY!";
+	float fontModifier = 0.8f;
+	textRenderer->SetFontColor(glm::vec4(1.0f, 1.0f, 0.0f, sin(glfwGetTime() * 5.5f) / 2.0f + 0.4f));
+	textRenderer->SetFontScale(fontModifier);
+	shaderMap["textShader"]->Use();
+	shaderMap["textShader"]->SetUniform("uProjection", projection);
+	textRenderer->Draw(shaderMap["textShader"], text, Game::WINDOW_WIDTH / 2.0f - (text.size() * textRenderer->GetWidth() / 2),
+		Game::WINDOW_HEIGHT / 2.0f);
+}
+
 void UI::DrawHealth() const {
 	int lives = player->GetLives();
 

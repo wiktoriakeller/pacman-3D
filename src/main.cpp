@@ -85,6 +85,7 @@ int main() {
 
     bool collision;
     bool noFrightenedGhost;
+    bool gameReseted = false;
     Game game;
     Camera camera(player);
     UI ui(pacman, pointsCast);
@@ -96,14 +97,19 @@ int main() {
     float deltaTime;
     float oldTimeSinceStart = (float) glfwGetTime();
     float timeSinceStart = 0.0f;
+    float resetTimer = 0.0f;
 
     while (!glfwWindowShouldClose(window)) {
         timeSinceStart = (float) glfwGetTime();
         deltaTime = timeSinceStart - oldTimeSinceStart;
         oldTimeSinceStart = timeSinceStart;
         noFrightenedGhost = true;
+        
+        if (gameReseted) {
+            resetTimer -= deltaTime;
+        }
 
-        if (!Game::GetIsGameOver()) {
+        if (!Game::GetIsGameOver() && !gameReseted) {
             collision = false;
 
             for (int i = 0; i < entities.size(); i++) {
@@ -149,10 +155,18 @@ int main() {
 
                 game.Reset();
                 KeyInput::Reset();
+                
+                if (!Game::GetIsGameOver()) {
+                    gameReseted = true;
+                    resetTimer = 3.0f;
+                }
             }
         }
-        else if (KeyInput::GetAnyKeyPressed()) {
+        else if (KeyInput::GetAnyKeyPressed() && Game::GetIsGameOver()) {
             Game::SetIsGameOver(false);
+        }
+        else if (gameReseted && resetTimer < 0) {
+            gameReseted = false;
         }
 
         //drawing
@@ -175,6 +189,10 @@ int main() {
         ui.Draw();
         if (Game::GetIsGameOver()) {
             ui.DrawGameBegin();
+        }
+
+        if (gameReseted) {
+            ui.DrawReady();
         }
 
         frameBuffer->BlitMultisampledBuffer();
